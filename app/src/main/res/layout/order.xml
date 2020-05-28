@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/order"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        tools:layout_conversion_absoluteHeight="0dp"
+        tools:layout_conversion_absoluteWidth="0dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        tools:layout_conversion_absoluteHeight="0dp"
+        tools:layout_conversion_absoluteWidth="0dp" />
+
+    <TextView
+        android:id="@+id/orderID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:text="TextView"
+        app:layout_constraintStart_toStartOf="@+id/guideline6"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_conversion_absoluteHeight="41dp"
+        tools:layout_conversion_absoluteWidth="59dp" />
+
+    <TextView
+        android:id="@+id/state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:text="TextView"
+        app:layout_constraintStart_toStartOf="@+id/guideline6"
+        app:layout_constraintTop_toBottomOf="@+id/orderID"
+        tools:layout_conversion_absoluteHeight="27dp"
+        tools:layout_conversion_absoluteWidth="715dp" />
+
+    <TextView
+        android:id="@+id/empleado"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:text="TextView"
+        app:layout_constraintStart_toEndOf="@+id/state"
+        app:layout_constraintTop_toBottomOf="@+id/orderID"
+        tools:layout_conversion_absoluteHeight="27dp"
+        tools:layout_conversion_absoluteWidth="723dp" />
+
+    <TextView
+        android:id="@+id/total"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:text="TextView"
+        app:layout_constraintStart_toStartOf="@+id/guideline6"
+        app:layout_constraintTop_toBottomOf="@+id/state"
+        tools:layout_conversion_absoluteHeight="5dp"
+        tools:layout_conversion_absoluteWidth="723dp" />
+
+    <TextView
+        android:id="@+id/item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:text="TextView"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@+id/guideline6"
+        app:layout_constraintTop_toBottomOf="@+id/total"
+        tools:layout_conversion_absoluteHeight="4dp"
+        tools:layout_conversion_absoluteWidth="723dp" />
+
+    <Button
+        android:id="@+id/boton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/item"
+        tools:layout_conversion_absoluteHeight="4dp"
+        tools:layout_conversion_absoluteWidth="88dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
