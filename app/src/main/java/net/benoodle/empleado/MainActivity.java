@@ -25,10 +25,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.cast.framework.CastButtonFactory;
@@ -52,6 +55,8 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static android.view.View.GONE;
 import static java.lang.Boolean.TRUE;
 
 public class MainActivity extends OptionsMenuActivity implements MainAdaptador.AsignarListener {
@@ -68,11 +73,16 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
     private RecyclerView.LayoutManager layoutManager;
     private MainAdaptador adaptador;
     public static String boton = "";
+    private TextView totalPedidos, store;
+    private String store_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(decorView.SYSTEM_UI_FLAG_FULLSCREEN);
         sharedPrefManager = new SharedPrefManager(this);
         if (!sharedPrefManager.getSPIsLoggedIn()) {
             Intent intent = new Intent(this, LoginActivity.class);
@@ -86,10 +96,11 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        /*adaptador = new MainAdaptador(orders, MainActivity.this, MainActivity.this);
-        recyclerView.setAdapter(adaptador);*/
         toolbar = findViewById(R.id.toolBar);
+        toolbar.setTitle("");
         setSupportActionBar(toolbar);
+        totalPedidos = findViewById(R.id.totalpedidos);
+        store = findViewById(R.id.store);
     }
 
     @Override
@@ -100,16 +111,17 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
         }
-        mApiService.getAllNodes(sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Nodecallback);
+        store_id = sharedPrefManager.getSPStore();
+        store.setText("Tienda : "+store_id);
+        mApiService.getStock(store_id, sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Nodecallback);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
         switch (item.getItemId()) {
             case R.id.getOrders:
                 boton = "Asignar";
-                mApiService.getSinAsignar(sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Orderscallback);
+                mApiService.getSinAsignar(store_id, sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Orderscallback);
                 return true;
             case R.id.MyOrders:
                 boton = "Completar";
@@ -125,31 +137,43 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
                 return true;
             case R.id.Preferencias:
                 boton = "";
-                LanzarPreferencias();
+                lanzarPreferencias();
                 return true;
             case R.id.Stock:
                 boton = "";
-                LanzarStock();
+                lanzarStock();
+                return true;
+            case R.id.Reasignar:
+                boton = "";
+                lanzarReasignar();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    public void CambiarAdaptador (){
-        //Se supone que con adaptador.notifyDataSetChange() debería ir pero no funciona
+    public void cambiarAdaptador (){
+        if (boton.compareTo("") == 0) {
+            totalPedidos.setText("Pedidos entregados : "+ String.valueOf(orders.size()));
+        }else {
+            totalPedidos.setText("Pedidos para " + boton.toLowerCase() + " :" + String.valueOf(orders.size()));
+        }
         adaptador = new MainAdaptador(orders, MainActivity.this, MainActivity.this);
         recyclerView.setAdapter(adaptador);
-        //recyclerView.getAdapter().notifyDataSetChanged();
     }
 
-    public void LanzarPreferencias() {
+    public void lanzarPreferencias() {
         Intent intent = new Intent(this, PreferenciasActivity.class);
         this.startActivity(intent);
     }
 
-    public void LanzarStock() {
+    public void lanzarStock() {
         Intent intent = new Intent(this, StockActivity.class);
+        this.startActivity(intent);
+    }
+
+    public void lanzarReasignar() {
+        Intent intent = new Intent(this, ReasignarActivity.class);
         this.startActivity(intent);
     }
 
@@ -177,10 +201,10 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
 
     @Override
     public void Completar (int i){
-        LanzarOrderDetailActivity(i);
+        lanzarOrderDetailActivity(i);
     }
 
-    public void LanzarOrderDetailActivity(int position){
+    public void lanzarOrderDetailActivity(int position){
         Intent intent = new Intent(this, OrderDetailActivity.class);
         intent.putExtra("i", position);
         this.startActivity(intent);
@@ -193,14 +217,14 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
                 if (response.isSuccessful()) {
                     orders = response.body();
                 }else {
-                    String error = response.errorBody().string();
-                    Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show();
+                    JSONObject jObjError = new JSONObject(response.errorBody().string());
+                    Toast.makeText(getApplicationContext(), jObjError.get("message").toString(), Toast.LENGTH_LONG).show();
                     orders.clear();
                 }
             } catch (Exception e) {
                 Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
             }
-            CambiarAdaptador();
+            cambiarAdaptador();
         }
 
         @Override
@@ -216,13 +240,15 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
             if (response.isSuccessful()) {
                 orders.remove(Integer.valueOf(body.get("position"))); //Lo elimino porque orders son los pedidos sin empleado.
                 Toast.makeText(getApplicationContext(), "Pedido asignado.", Toast.LENGTH_LONG).show();
-                LanzarOrderDetailActivity(Integer.valueOf(body.get("position").toString()));
+                lanzarOrderDetailActivity(Integer.valueOf(body.get("position").toString()));
             }else{
                 try {
                     JSONObject jObjError = new JSONObject(response.errorBody().string());
                     Toast.makeText(getApplicationContext(), jObjError.get("message").toString(), Toast.LENGTH_LONG).show();
-                    orders.clear();
+                    int position = Integer.valueOf(body.get("position"));
+                    orders.remove(position);
                     body.remove("position");
+                    adaptador.notifyDataSetChanged();
                 } catch (Exception e) {
                     Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                 }
@@ -242,7 +268,7 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
                 catalog = new Catalog(response.body());
                 /*Con el catálogo cargado se pasa a mostrar los pedidos sin asignar*/
                 boton = "Asignar";
-                mApiService.getSinAsignar(sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Orderscallback);
+                mApiService.getSinAsignar(store_id, sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Orderscallback);
             }else{
                 try {
                     JSONObject jObjError = new JSONObject(response.errorBody().string());
@@ -267,7 +293,7 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
                 Toast.makeText(getApplicationContext(), "Orden entregada", Toast.LENGTH_LONG).show();
                 int position = Integer.valueOf(body.get("position")); //Lo elimino porque orders son los pedidos sin entregar.
                 orders.remove(position);
-                CambiarAdaptador();
+                cambiarAdaptador();
             } else {
                 try {
                     JSONObject jObjError = new JSONObject(response.errorBody().string());

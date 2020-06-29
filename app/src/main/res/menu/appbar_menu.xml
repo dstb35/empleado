@@ -14,7 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:title="Pedidos asignados"
-        app:showAsAction="always"/>
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/EntregarOrders"
@@ -36,11 +36,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:icon="@drawable/ic_settings"
-        app:showAsAction="always"/>
+        app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/Stock"
         android:title="Stock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/Reasignar"
+        android:title="Modificar pedidos"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:showAsAction="ifRoom"/>

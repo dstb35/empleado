@@ -43,13 +43,13 @@ public interface ApiService {
     @Headers({"Content-type: application/x-www-form-urlencoded"})
     Call<ResponseBody> loginRequest(@Body LoginData body);
 
-    @GET("eorder/?_format=json")
+    /*@GET("eorder/?_format=json")
     @Headers({"Content-type: application/json"})
-    Call<ArrayList<Node>> getAllNodes(@Header("Authorization") String user_auth, @Header("X-CSRF-Token") String x_csrf_token);
+    Call<ArrayList<Node>> getAllNodes(@Header("Authorization") String user_auth, @Header("X-CSRF-Token") String x_csrf_token);*/
 
     @GET("eorders/sinasignar?_format=json")
     @Headers({"Content-type: application/json"})
-    Call<ArrayList<Order>> getSinAsignar(@Header("Authorization") String user_auth, @Header("X-CSRF-Token") String x_csrf_token);
+    Call<ArrayList<Order>> getSinAsignar(@Query("store_id") String store_id, @Header("Authorization") String user_auth, @Header("X-CSRF-Token") String x_csrf_token);
 
     @GET("eorders/asignados?_format=json")
     @Headers({"Content-type: application/json"})
@@ -71,9 +71,13 @@ public interface ApiService {
     @Headers({"Content-type: application/json"})
     Call<ArrayList<Order>> OrderById(@Query("id") String id, @Header("Authorization") String user_auth, @Header("X-CSRF-Token") String x_csrf_token);
 
+    @GET("eorders/reasignar?_format=json")
+    @Headers({"Content-type: application/json"})
+    Call<Order> reasignar(@Query("id") String id, @Query("store_id") String store_id, @Header("Authorization") String user_auth, @Header("X-CSRF-Token") String x_csrf_token);
+
     @GET("eorders/stock?_format=json")
     @Headers({"Content-type: application/json"})
-    Call<ArrayList<Node>> getStock(@Header("Authorization") String user_auth, @Header("X-CSRF-Token") String x_csrf_token);
+    Call<ArrayList<Node>> getStock(@Query("store_id") String store_id, @Header("Authorization") String user_auth, @Header("X-CSRF-Token") String x_csrf_token);
 
     @GET("eorders/entregar?_format=json")
     @Headers({"Content-type: application/json"})

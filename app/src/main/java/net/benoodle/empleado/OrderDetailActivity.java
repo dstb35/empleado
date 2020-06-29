@@ -8,6 +8,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,7 +29,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class OrderDetailActivity extends AppCompatActivity {
-    private TextView orderID, state, total, item;
+    private TextView orderID, total, item;
     private Button btFinalizar;
     private Order order;
     private Toolbar toolbar;
@@ -40,6 +41,10 @@ public class OrderDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(decorView.SYSTEM_UI_FLAG_FULLSCREEN);
         setContentView(R.layout.activity_order_detail);
         sharedPrefManager = new SharedPrefManager(this);
         try {
@@ -52,19 +57,18 @@ public class OrderDetailActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         position = intent.getIntExtra("i", -1);
         this.orderID = findViewById(R.id.orderID);
-        this.state = findViewById(R.id.state);
         this.total = findViewById(R.id.total);
         this.btFinalizar = findViewById(R.id.btFinalizar);
         this.item = findViewById(R.id.item);
         if (position != -1) {
             order = orders.get(position);
             orderID.setText("Número de pedido: "+order.getOrderId());
-            state.setText("Estado del pedido: "+order.getState());
-            total.setText(order.getTotal()+" €");
+            total.setText("Total: "+order.getTotal()+" €");
             StringBuilder items = new StringBuilder();
-            for (OrderItem orderitem : order.getOrderItems()) {
+            for (int j=0; j<order.getOrderItems().size(); j++){
+                OrderItem orderitem = order.getOrderItems().get(j);
                 try {
-                    items.append("Producto :" + catalog.getNodeById(orderitem.getId()).getTitle() + " Cantidad: " + orderitem.getQuantity() + System.getProperty("line.separator"));
+                    items.append(j+1+". Producto :" + catalog.getNodeById(orderitem.getId()).getTitle() + " Cantidad: " + orderitem.getQuantity() + System.getProperty("line.separator"));
                 } catch (Exception e) {
                     items.append("Producto :" + e.getLocalizedMessage());
                 }
@@ -72,13 +76,14 @@ public class OrderDetailActivity extends AppCompatActivity {
                     items.append("Seleccion menú :");
                     for (String seleccion : orderitem.getSelecciones()) {
                         try {
-                            items.append(catalog.getNodeById(seleccion).getTitle() + " ");
+                            items.append(catalog.getNodeById(seleccion).getTitle() + ". ");
                         } catch (Exception e) {
                             items.append(e.getLocalizedMessage() + " ");
                         }
                     }
                     items.append(System.getProperty("line.separator"));
                 }
+                items.append(System.getProperty("line.separator"));
             }
             item.setText(items.toString());
             btFinalizar.setOnClickListener(new View.OnClickListener() {

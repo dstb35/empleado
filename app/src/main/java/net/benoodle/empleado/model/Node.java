@@ -12,32 +12,18 @@ public class Node implements Parcelable {
 
     @SerializedName("variation_id")
     private String productID;
-    /*@SerializedName("sku")
-    private String sku;*/
     private String title;
-    private String type;
-    private String body;
-    @SerializedName("field_image")
-    private String url;
-    @SerializedName("price__number")
-    private String price;
-    @SerializedName("field_productos")
-    private String productos;
     @SerializedName("status")
-    private Integer status;
-    @SerializedName("field_stock")
+    private boolean status;
+    @SerializedName("stock")
     private String stock;
     private String id;
     private String name;
     private String grade;
 
-    public Node(String productID, String title, String body, String url, String price, String type, String stock) {
+    public Node(String productID, String title, String stock) {
         this.productID = productID;
         this.title = title;
-        this.body = body;
-        this.url = url;
-        this.price = price;
-        this.type = type;
         this.stock = stock;
     }
 
@@ -51,44 +37,12 @@ public class Node implements Parcelable {
         this.grade = data[2];
     }
 
-    public String getPrice() {
-        return price;
-    }
-
-    public void setPrice(String price) {
-        this.price = price;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
     public String getTitle() {
         return title;
     }
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getBody() {
-        return body;
-    }
-
-    public void setBody(String body) {
-        this.body = body;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
     }
 
     public String getProductID() {
@@ -99,31 +53,11 @@ public class Node implements Parcelable {
         this.productID = productID;
     }
 
-    public String getSku() {
-        return sku;
+    public boolean getStatus() {
+        return status;
     }
 
-    public void setSku(String sku) {
-        this.sku = sku;
-    }
-
-    public String getProductos() {
-        return productos;
-    }
-
-    public void setProductos(String productos) {
-        this.productos = productos;
-    }
-
-    public Integer getStatus() {
-        if (status != null){
-            return status;
-        }else{
-            return 0;
-        }
-    }
-
-    public void setStatus(Integer status) {
+    public void setStatus(boolean status) {
         this.status = status;
     }
 
@@ -142,7 +76,7 @@ public class Node implements Parcelable {
             return false;
         if (obj == this)
             return true;
-        return this.getSku() == ((Node) obj).getSku();
+        return this.getProductID() == ((Node) obj).getProductID();
     }
 
     @Override

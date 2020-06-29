@@ -7,11 +7,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
-
 import net.benoodle.empleado.model.Order;
 import net.benoodle.empleado.model.OrderItem;
 import java.util.ArrayList;
-
 import static java.lang.Boolean.FALSE;
 import static net.benoodle.empleado.MainActivity.catalog;
 import static net.benoodle.empleado.MainActivity.boton;
@@ -59,15 +57,14 @@ public class MainAdaptador extends RecyclerView.Adapter<MainAdaptador.ViewHolder
         holder.empleado.setText("Empleado: "+order.getEmpleado());
         ArrayList<OrderItem> orderItems = order.getOrderItems();
         StringBuilder items = new StringBuilder();
-
             for (OrderItem orderitem : orderItems) {
                 try {
-                    items.append("Producto :" + catalog.getNodeById(orderitem.getId()).getTitle() + " Cantidad: " + orderitem.getQuantity()+ System.getProperty("line.separator"));
+                    items.append("Producto :" + catalog.getNodeById(orderitem.getId()).getTitle() + " Cantidad: " + orderitem.getQuantity());
                 } catch (Exception e) {
                     items.append("Producto :"+e.getLocalizedMessage());
                 }
                 if (orderitem.getSelecciones() != null) {
-                    items.append("Seleccion menú :");
+                    items.append("-> Seleccion menú :");
                     for (String seleccion : orderitem.getSelecciones()) {
                         try {
                             items.append(catalog.getNodeById(seleccion).getTitle()+" ");
@@ -75,10 +72,9 @@ public class MainAdaptador extends RecyclerView.Adapter<MainAdaptador.ViewHolder
                             items.append(e.getMessage());
                         }
                     }
-                    items.append(System.getProperty("line.separator"));
                 }
+                items.append(System.getProperty("line.separator"));
             }
-
         holder.item.setText(items.toString());
         if (boton.compareTo("Asignar") == 0){
             holder.boton.setText(boton);

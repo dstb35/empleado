@@ -31,7 +31,7 @@ import retrofit2.Response;
 public class LoginActivity extends OptionsMenuActivity{
 
     private AutoCompleteTextView mUsernameView;
-    private EditText mPasswordView;
+    private EditText mPasswordView, mStore;
     private TextView tURL;
     private View mProgressView;
     private String URL;
@@ -39,7 +39,7 @@ public class LoginActivity extends OptionsMenuActivity{
     private SharedPrefManager sharedPrefManager;
     private ApiService mApiService;
     private Toolbar toolbar;
-    private String email, password;
+    private String email, password, store_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,22 +48,25 @@ public class LoginActivity extends OptionsMenuActivity{
         toolbar = findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
         sharedPrefManager = new SharedPrefManager(this);
-        if (sharedPrefManager.getSPIsLoggedIn()) {
+        /*if (sharedPrefManager.getSPIsLoggedIn()) {
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
             finish();
-        }
+        }*/
         tURL = findViewById(R.id.tURL);
         mUsernameView = findViewById(R.id.username);
         mPasswordView = findViewById(R.id.password);
         mEmailSignInButton = findViewById(R.id.email_sign_in_button);
+        mStore = findViewById(R.id.store);
     }
 
     protected void onStart(){
         super.onStart();
         PreferenceManager.setDefaultValues(this, R.xml.preferencias, false);
         URL = sharedPrefManager.getURL();
+        mStore.setText(sharedPrefManager.getSPStore());
         tURL.setText("URL: "+URL);
+        mUsernameView.setText(sharedPrefManager.getSPEmail());
         if (!URL.isEmpty()) {
             try {
                 mApiService = UtilsApi.getAPIService(URL);
@@ -72,12 +75,14 @@ public class LoginActivity extends OptionsMenuActivity{
                     public void onClick(View view) {
                         email = mUsernameView.getText().toString().trim();
                         password = mPasswordView.getText().toString().trim();
+                        store_id = mStore.getText().toString().trim();
                         if (email.isEmpty() || password.isEmpty()){
                             Toast.makeText(getApplicationContext(), "Los campos email y password no pueden estar vacíos", Toast.LENGTH_SHORT).show();
+                        }else if(store_id.isEmpty()) {
+                            Toast.makeText(getApplicationContext(), "El campo tienda no puede estar vacío", Toast.LENGTH_SHORT).show();
                         }else{
                             attemptLogin();
                         }
-
                     }
                 });
                 mProgressView = findViewById(R.id.login_progress);
@@ -104,6 +109,7 @@ public class LoginActivity extends OptionsMenuActivity{
                                     String name = jsonRESULTS.getJSONObject("current_user").getString("name");
                                     sharedPrefManager.saveSPString(SharedPrefManager.SP_NAME, name);
                                     sharedPrefManager.saveSPString(SharedPrefManager.SP_EMAIL, email);
+                                    sharedPrefManager.saveSPString(SharedPrefManager.STORE, store_id);
                                     sharedPrefManager.saveSPString(SharedPrefManager.SP_CSRF_TOKEN, csrf_token);
                                     sharedPrefManager.saveSPString(SharedPrefManager.SP_LOGOUT_TOKEN, logout_token);
                                     sharedPrefManager.saveSPString(SharedPrefManager.SP_USER_ID, user_id);
@@ -131,7 +137,8 @@ public class LoginActivity extends OptionsMenuActivity{
                         } else {
                             mProgressView.setVisibility(View.GONE);
                             try {
-                                String error_message = response.errorBody().string();
+                                JSONObject jsonRESULTS = new JSONObject(response.errorBody().string());
+                                String error_message = jsonRESULTS.getString("message");
                                 Toast.makeText(LoginActivity.this, error_message, Toast.LENGTH_SHORT).show();
                             } catch (Exception e) {
                                 Toast.makeText(LoginActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();

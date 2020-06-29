@@ -22,15 +22,6 @@ public class Catalog {
         throw new Exception("Producto no encontrado con id: " + id);
     }
 
-    public Node getNodeBySku (String sku) throws Exception {
-        for (Node node : catalog){
-            if (node.getSku().compareTo(sku) == 0){
-                return node;
-            }
-        }
-        throw new Exception("Producto no encontrado con sku: " + sku);
-    }
-
     public int getSize() {
         return catalog.size();
     }
@@ -39,7 +30,7 @@ public class Catalog {
         return catalog.get(i);
     }
 
-    public void switchStock(String productID, Integer status){
+    public void switchStock(String productID, boolean status){
         try{
             int index = catalog.indexOf(getNodeById(productID));
             Node node = catalog.get(index);
@@ -58,6 +49,13 @@ public class Catalog {
             catalog.set(index, node);
         }catch (Exception e){
             e.getLocalizedMessage();
+        }
+    }
+
+    public void doActivateAll() {
+        for (int i=0; i < catalog.size(); i++){
+            catalog.get(i).setStatus(true);
+            catalog.get(i).setStock("-1");
         }
     }
 

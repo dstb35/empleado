@@ -22,9 +22,9 @@ public class SharedPrefManager {
     public static final String SP_IS_LOGGED_IN = "spIsLoggedLogin";
     public static final String COOKIE = "spCookie";
     public static final String COOKIE_EXPIRES = "spCookieExpires";
-
-    SharedPreferences sp;
-    SharedPreferences.Editor spEditor;
+    public static final String STORE = "store";
+    private SharedPreferences sp;
+    private SharedPreferences.Editor spEditor;
 
     public SharedPrefManager(Context context) {
         sp = PreferenceManager.getDefaultSharedPreferences(context);
@@ -77,26 +77,24 @@ public class SharedPrefManager {
     public Boolean getSPIsLoggedIn() {
         return sp.getBoolean(SP_IS_LOGGED_IN, false);
     }
-
     public String getSPCsrfToken() {
         return sp.getString(SP_CSRF_TOKEN, "");
     }
-
     public String getSPCsrfLogoutToken() {
         return sp.getString(SP_LOGOUT_TOKEN, "");
     }
-
     public String getSPUserId() {
         return sp.getString(SP_USER_ID, "");
     }
-
     public String getSPBasicAuth() {
         return sp.getString(SP_BASIC_AUTH, "");
     }
     public String getSPCookie() {
         return sp.getString(COOKIE, "");
     }
-
+    public String getSPStore() {
+        return sp.getString(STORE, "");
+    }
     public String getSPCookieExpires() {
         return sp.getString(COOKIE_EXPIRES, "");
     }

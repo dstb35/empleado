@@ -55,6 +55,15 @@
                 android:maxLines="1"
                 android:singleLine="true" />
 
+            <EditText
+                android:id="@+id/store"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:hint="Tienda"
+                android:ems="10"
+                android:importantForAutofill="no" />
+
             <TextView
                 android:id="@+id/tURL"
                 android:layout_width="wrap_content"
