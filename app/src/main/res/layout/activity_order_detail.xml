@@ -15,7 +15,7 @@
             android:id="@+id/orderID"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             android:autoSizeMaxTextSize="34sp"
             android:autoSizeTextType="uniform"
             android:paddingTop="4dp"
@@ -24,7 +24,6 @@
             android:textSize="28sp"
             app:layout_constraintEnd_toStartOf="@+id/total"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintHorizontal_chainStyle="spread"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -35,10 +34,26 @@
             android:text="Total €"
             android:textSize="28sp"
             app:layout_constraintBottom_toBottomOf="@+id/orderID"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/cobrado"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/orderID"
             app:layout_constraintTop_toTopOf="@+id/orderID" />
+
+        <Switch
+            android:id="@+id/cobrado"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:clickable="false"
+            android:showText="true"
+            android:text="Cobrado"
+            android:textOff="No"
+            android:textOn="Si"
+            app:layout_constraintBottom_toBottomOf="@+id/total"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/total"
+            app:layout_constraintTop_toTopOf="@+id/total" />
 
         <TextView
             android:id="@+id/item"

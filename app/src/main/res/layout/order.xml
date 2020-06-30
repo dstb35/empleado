@@ -85,6 +85,20 @@
         tools:layout_conversion_absoluteHeight="5dp"
         tools:layout_conversion_absoluteWidth="723dp" />
 
+    <Switch
+        android:id="@+id/cobrado"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:checked="false"
+        android:clickable="false"
+        android:showText="true"
+        android:text="Cobrado"
+        android:textOff="No"
+        android:textOn="Si"
+        app:layout_constraintStart_toEndOf="@+id/total"
+        app:layout_constraintTop_toTopOf="@+id/total" />
+
     <TextView
         android:id="@+id/item"
         android:layout_width="wrap_content"

@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Switch;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 import net.benoodle.empleado.model.Order;
@@ -33,6 +34,7 @@ public class MainAdaptador extends RecyclerView.Adapter<MainAdaptador.ViewHolder
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView orderID, state, total, empleado, item;
+        private Switch cobrado;
         private Button boton;
         AsignarListener asignarListener;
 
@@ -46,6 +48,7 @@ public class MainAdaptador extends RecyclerView.Adapter<MainAdaptador.ViewHolder
             this.asignarListener = asignarListener;
             this.boton = itemView.findViewById(R.id.boton);
             this.item = itemView.findViewById(R.id.item);
+            this.cobrado = itemView.findViewById(R.id.cobrado);
         }
     }
 
@@ -55,6 +58,7 @@ public class MainAdaptador extends RecyclerView.Adapter<MainAdaptador.ViewHolder
         holder.state.setText("Estado del pedido: "+order.getState());
         holder.total.setText("Importe: " + order.getTotal()+ " €");
         holder.empleado.setText("Empleado: "+order.getEmpleado());
+        holder.cobrado.setChecked(order.getPagado());
         ArrayList<OrderItem> orderItems = order.getOrderItems();
         StringBuilder items = new StringBuilder();
             for (OrderItem orderitem : orderItems) {
@@ -76,8 +80,8 @@ public class MainAdaptador extends RecyclerView.Adapter<MainAdaptador.ViewHolder
                 items.append(System.getProperty("line.separator"));
             }
         holder.item.setText(items.toString());
+        holder.boton.setText(boton);
         if (boton.compareTo("Asignar") == 0){
-            holder.boton.setText(boton);
             holder.boton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -85,15 +89,20 @@ public class MainAdaptador extends RecyclerView.Adapter<MainAdaptador.ViewHolder
                 }
             });
         }else if(boton.compareTo("Completar") == 0) {
-            holder.boton.setText(boton);
             holder.boton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     asignarListener.Completar(i);
                 }
             });
+        }else if(boton.compareTo("Cobrar") == 0) {
+            holder.boton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    asignarListener.Cobrar(i);
+                }
+            });
         }else if(boton.compareTo("Entregar") == 0) {
-            holder.boton.setText(boton);
             holder.boton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -111,6 +120,7 @@ public class MainAdaptador extends RecyclerView.Adapter<MainAdaptador.ViewHolder
     }
 
     public interface AsignarListener {
+        void Cobrar(int i);
         void Asignar(int i);
         void Completar(int i);
         void Entregar(int i);

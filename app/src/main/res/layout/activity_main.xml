@@ -11,27 +11,54 @@
 
     <include layout="@layout/toolbar_layout" />
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/searchView"
+        app:layout_constraintTop_toTopOf="@+id/searchView">
 
         <TextView
             android:id="@+id/store"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:gravity="center"
-            android:text="Tienda" />
+            android:text="Tienda"
+            app:layout_constraintEnd_toStartOf="@+id/totalpedidos"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_conversion_absoluteHeight="19dp"
+            tools:layout_conversion_absoluteWidth="43dp" />
 
         <TextView
             android:id="@+id/totalpedidos"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
             android:gravity="center"
-            android:text="Pedidos esperando" />
-    </LinearLayout>
+            android:text="Pedidos esperando"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/store"
+            app:layout_constraintTop_toTopOf="@+id/store"
+            tools:layout_conversion_absoluteHeight="19dp"
+            tools:layout_conversion_absoluteWidth="121dp" />
+
+        <SearchView
+            android:id="@+id/searchView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:minWidth="140sp"
+            app:layout_constraintBottom_toBottomOf="@+id/totalpedidos"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/totalpedidos"
+            app:layout_constraintTop_toTopOf="@+id/totalpedidos"
+            tools:layout_conversion_absoluteHeight="19dp"
+            tools:layout_conversion_absoluteWidth="140dp" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"

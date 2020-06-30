@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +31,7 @@ import retrofit2.Response;
 
 public class OrderDetailActivity extends AppCompatActivity {
     private TextView orderID, total, item;
+    private Switch cobrado;
     private Button btFinalizar;
     private Order order;
     private Toolbar toolbar;
@@ -60,10 +62,12 @@ public class OrderDetailActivity extends AppCompatActivity {
         this.total = findViewById(R.id.total);
         this.btFinalizar = findViewById(R.id.btFinalizar);
         this.item = findViewById(R.id.item);
+        this.cobrado = findViewById(R.id.cobrado);
         if (position != -1) {
             order = orders.get(position);
             orderID.setText("Número de pedido: "+order.getOrderId());
             total.setText("Total: "+order.getTotal()+" €");
+            cobrado.setChecked(order.getPagado());
             StringBuilder items = new StringBuilder();
             for (int j=0; j<order.getOrderItems().size(); j++){
                 OrderItem orderitem = order.getOrderItems().get(j);

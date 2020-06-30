@@ -14,7 +14,7 @@ public class Node implements Parcelable {
     private String productID;
     private String title;
     @SerializedName("status")
-    private boolean status;
+    private Boolean status;
     @SerializedName("stock")
     private String stock;
     private String id;

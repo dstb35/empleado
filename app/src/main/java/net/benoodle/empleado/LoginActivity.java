@@ -12,6 +12,7 @@ import android.view.View.OnClickListener;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,6 +33,7 @@ public class LoginActivity extends OptionsMenuActivity{
 
     private AutoCompleteTextView mUsernameView;
     private EditText mPasswordView, mStore;
+    private Switch swmodus;
     private TextView tURL;
     private View mProgressView;
     private String URL;
@@ -56,6 +58,7 @@ public class LoginActivity extends OptionsMenuActivity{
         tURL = findViewById(R.id.tURL);
         mUsernameView = findViewById(R.id.username);
         mPasswordView = findViewById(R.id.password);
+        swmodus = findViewById(R.id.modus);
         mEmailSignInButton = findViewById(R.id.email_sign_in_button);
         mStore = findViewById(R.id.store);
     }
@@ -66,6 +69,7 @@ public class LoginActivity extends OptionsMenuActivity{
         URL = sharedPrefManager.getURL();
         mStore.setText(sharedPrefManager.getSPStore());
         tURL.setText("URL: "+URL);
+        swmodus.setChecked(sharedPrefManager.getSPModus());
         mUsernameView.setText(sharedPrefManager.getSPEmail());
         if (!URL.isEmpty()) {
             try {
@@ -116,6 +120,7 @@ public class LoginActivity extends OptionsMenuActivity{
                                     sharedPrefManager.saveSPBoolean(SharedPrefManager.SP_IS_LOGGED_IN, true);
                                     sharedPrefManager.saveSPString(SharedPrefManager.COOKIE, Cookies[0]);
                                     sharedPrefManager.saveSPString(SharedPrefManager.COOKIE_EXPIRES, Cookies[1]);
+                                    sharedPrefManager.saveSPBoolean(SharedPrefManager.MODUS, swmodus.isChecked());
                                     //String basic_auth = username + ":" + password;
                                     String basic_auth = name + ":" + password;
                                     byte[] bytes_basic_auth = basic_auth.getBytes();

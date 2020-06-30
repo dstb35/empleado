@@ -119,9 +119,13 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.getOrdersNoPaid:
+                boton = "Cobrar";
+                mApiService.getSinCobrar(store_id, sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Orderscallback);
+                return true;
             case R.id.getOrders:
                 boton = "Asignar";
-                mApiService.getSinAsignar(store_id, sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Orderscallback);
+                mApiService.getSinAsignar(store_id, sharedPrefManager.getSPModus(), sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Orderscallback);
                 return true;
             case R.id.MyOrders:
                 boton = "Completar";
@@ -188,6 +192,14 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
         body.put("id", orders.get(i).getOrderId());
         body.put("position", String.valueOf(i));
         mApiService.asignar(sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken(), body).enqueue(Asignarcallback);
+    }
+
+    /*Método para cobrar un pedido*/
+    @Override
+    public void Cobrar (int i) {
+        body.put("id", orders.get(i).getOrderId());
+        body.put("position", String.valueOf(i));
+        mApiService.cobrar(sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken(), body).enqueue(Cobrarcallback);
     }
 
     /*Método para marcar como entregado un pedido.*/
@@ -261,14 +273,47 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
         }
     };
 
+    Callback<ResponseBody> Cobrarcallback = new Callback<ResponseBody>() {
+        @Override
+        public void onResponse(Call<ResponseBody> call, Response<ResponseBody>response) {
+            if (response.isSuccessful()) {
+                int position = Integer.valueOf(body.get("position"));
+                orders.remove(position); //Lo elimino porque orders son los pedidos sin cobrar.
+                body.remove("position");
+                Toast.makeText(getApplicationContext(), "Pedido cobrado.", Toast.LENGTH_LONG).show();
+                adaptador.notifyDataSetChanged();
+                //cambiarAdaptador();
+            }else{
+                try {
+                    JSONObject jObjError = new JSONObject(response.errorBody().string());
+                    Toast.makeText(getApplicationContext(), jObjError.get("message").toString(), Toast.LENGTH_LONG).show();
+                    int position = Integer.valueOf(body.get("position"));
+                    orders.remove(position);
+                    body.remove("position");
+                    adaptador.notifyDataSetChanged();
+                } catch (Exception e) {
+                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+        @Override
+        public void onFailure(Call<ResponseBody> call, Throwable t) {
+            t.printStackTrace();
+            Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    };
+
     Callback<ArrayList<Node>> Nodecallback = new Callback<ArrayList<Node>>() {
         @Override
         public void onResponse(Call<ArrayList<Node>> call, Response<ArrayList<Node>> response) {
             if (response.isSuccessful()) {
                 catalog = new Catalog(response.body());
+                /*TODO
+                Poner por preferencias el modo de funcionamiento, cobrar ahora o cobrar después
+                 */
                 /*Con el catálogo cargado se pasa a mostrar los pedidos sin asignar*/
                 boton = "Asignar";
-                mApiService.getSinAsignar(store_id, sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Orderscallback);
+                mApiService.getSinAsignar(store_id, sharedPrefManager.getSPModus(), sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Orderscallback);
             }else{
                 try {
                     JSONObject jObjError = new JSONObject(response.errorBody().string());

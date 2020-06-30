@@ -23,6 +23,7 @@ public class SharedPrefManager {
     public static final String COOKIE = "spCookie";
     public static final String COOKIE_EXPIRES = "spCookieExpires";
     public static final String STORE = "store";
+    public static final String MODUS = "modus";
     private SharedPreferences sp;
     private SharedPreferences.Editor spEditor;
 
@@ -95,8 +96,7 @@ public class SharedPrefManager {
     public String getSPStore() {
         return sp.getString(STORE, "");
     }
-    public String getSPCookieExpires() {
-        return sp.getString(COOKIE_EXPIRES, "");
-    }
+    public String getSPCookieExpires() { return sp.getString(COOKIE_EXPIRES, ""); }
+    public Boolean getSPModus() { return sp.getBoolean(MODUS, false); }
 
 }

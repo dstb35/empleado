@@ -2,6 +2,8 @@ package net.benoodle.empleado.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +23,8 @@ public class Order {
     private String total;
     @SerializedName("empleado")
     private String empleado = "0";
+    @SerializedName("pagado")
+    private Boolean pagado;
 
     public Order() {
     }
@@ -71,5 +75,13 @@ public class Order {
 
     public void setEmpleado(String empleado) {
         this.empleado = empleado;
+    }
+
+    public Boolean getPagado() {
+        if (pagado == null){
+            return false;
+        }else{
+            return pagado;
+        }
     }
 }

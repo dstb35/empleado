@@ -14,4 +14,10 @@
         android:title="Tienda"
         android:inputType="number"
         android:defaultValue="01"/>
+    <SwitchPreference
+        android:key="modus"
+        android:title="Los pedidos deben pagarse antes de asignarlos."
+        android:defaultValue="true"
+        android:switchTextOn="Si"
+        android:switchTextOff="No"/>
 </androidx.preference.PreferenceScreen>
