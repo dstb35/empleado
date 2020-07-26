@@ -51,6 +51,7 @@
             android:id="@+id/searchView"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:inputType="numberSigned"
             android:minWidth="140sp"
             app:layout_constraintBottom_toBottomOf="@+id/totalpedidos"
             app:layout_constraintEnd_toEndOf="parent"

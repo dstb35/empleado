@@ -30,7 +30,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -75,6 +77,7 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
     public static String boton = "";
     private TextView totalPedidos, store;
     private String store_id;
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,8 +100,9 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         toolbar = findViewById(R.id.toolBar);
-        toolbar.setTitle("");
         setSupportActionBar(toolbar);
+        searchView = findViewById(R.id.searchView);
+        searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
         totalPedidos = findViewById(R.id.totalpedidos);
         store = findViewById(R.id.store);
     }
@@ -164,6 +168,17 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
         }
         adaptador = new MainAdaptador(orders, MainActivity.this, MainActivity.this);
         recyclerView.setAdapter(adaptador);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                adaptador.getFilter().filter(newText);
+                return false;
+            }
+        });
     }
 
     public void lanzarPreferencias() {
@@ -241,8 +256,7 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
 
         @Override
         public void onFailure(Call<ArrayList<Order>> call, Throwable t) {
-            t.printStackTrace();
-            Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -268,8 +282,7 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
         }
         @Override
         public void onFailure(Call<ResponseBody> call, Throwable t) {
-            t.printStackTrace();
-            Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -298,8 +311,7 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
         }
         @Override
         public void onFailure(Call<ResponseBody> call, Throwable t) {
-            t.printStackTrace();
-            Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -326,8 +338,7 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
 
         @Override
         public void onFailure(Call<ArrayList<Node>> call, Throwable t) {
-            t.printStackTrace();
-            Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -350,7 +361,7 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
         }
         @Override
         public void onFailure(Call<ResponseBody> call, Throwable t) {
-            t.printStackTrace();
+            Toast.makeText(MainActivity.this, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
         }
     };
 }

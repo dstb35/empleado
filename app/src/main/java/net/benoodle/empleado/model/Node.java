@@ -17,15 +17,18 @@ public class Node implements Parcelable {
     private Boolean status;
     @SerializedName("stock")
     private String stock;
+    @SerializedName("price")
+    private String price;
     private String id;
     private String name;
     private String grade;
 
-    public Node(String productID, String title, String stock) {
+    /*public Node(String productID, String title, String stock) {
         this.productID = productID;
         this.title = title;
         this.stock = stock;
-    }
+        this.proce
+    }*/
 
     public Node (Parcel in){
         String[] data = new String[3];
@@ -35,6 +38,14 @@ public class Node implements Parcelable {
         this.id = data[0];
         this.name = data[1];
         this.grade = data[2];
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
     }
 
     public String getTitle() {

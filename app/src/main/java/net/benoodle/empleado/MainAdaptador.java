@@ -5,25 +5,30 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.Switch;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 import net.benoodle.empleado.model.Order;
 import net.benoodle.empleado.model.OrderItem;
 import java.util.ArrayList;
-import static java.lang.Boolean.FALSE;
+import java.util.List;
+
 import static net.benoodle.empleado.MainActivity.catalog;
 import static net.benoodle.empleado.MainActivity.boton;
 
-public class MainAdaptador extends RecyclerView.Adapter<MainAdaptador.ViewHolder> {
+public class MainAdaptador extends RecyclerView.Adapter<MainAdaptador.ViewHolder> implements Filterable {
     private Context context;
     private AsignarListener asignarListener;
     private ArrayList<Order> orders;
+    private ArrayList<Order> ordersFull;
 
     public MainAdaptador(ArrayList<Order> orders, Context context, AsignarListener asignarListener) {
         this.context = context;
         this.asignarListener = asignarListener;
         this.orders = orders;
+        ordersFull = new ArrayList<>(orders);
     }
 
     @Override
@@ -40,7 +45,6 @@ public class MainAdaptador extends RecyclerView.Adapter<MainAdaptador.ViewHolder
 
         public ViewHolder(View itemView, AsignarListener asignarListener) {
             super(itemView);
-            //this.view = itemView;
             this.orderID = itemView.findViewById(R.id.orderID);
             this.state = itemView.findViewById(R.id.state);
             this.total = itemView.findViewById(R.id.total);
@@ -54,7 +58,7 @@ public class MainAdaptador extends RecyclerView.Adapter<MainAdaptador.ViewHolder
 
     public void onBindViewHolder(ViewHolder holder, final int i) {
         final Order order = orders.get(i);
-        holder.orderID.setText("ID del pedido: "+order.getOrderId());
+        holder.orderID.setText("Nº del pedido: "+order.getOrderId());
         holder.state.setText("Estado del pedido: "+order.getState());
         holder.total.setText("Importe: " + order.getTotal()+ " €");
         holder.empleado.setText("Empleado: "+order.getEmpleado());
@@ -63,7 +67,7 @@ public class MainAdaptador extends RecyclerView.Adapter<MainAdaptador.ViewHolder
         StringBuilder items = new StringBuilder();
             for (OrderItem orderitem : orderItems) {
                 try {
-                    items.append("Producto :" + catalog.getNodeById(orderitem.getId()).getTitle() + " Cantidad: " + orderitem.getQuantity());
+                    items.append("Producto :" + catalog.getNodeById(orderitem.getProductID()).getTitle() + " Cantidad: " + orderitem.getQuantity());
                 } catch (Exception e) {
                     items.append("Producto :"+e.getLocalizedMessage());
                 }
@@ -110,6 +114,7 @@ public class MainAdaptador extends RecyclerView.Adapter<MainAdaptador.ViewHolder
                 }
             });
         }else {
+            holder.empleado.setText("Empleado: "+order.getEmpleado()+ " Tienda: "+order.getStore());
             holder.boton.setVisibility(View.INVISIBLE);
             holder.boton.setHeight(0);
         }
@@ -118,6 +123,37 @@ public class MainAdaptador extends RecyclerView.Adapter<MainAdaptador.ViewHolder
     public int getItemCount() {
         return orders.size();
     }
+
+    @Override
+    public Filter getFilter() {
+        return filter;
+    }
+
+    private Filter filter = new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            ArrayList<Order> filteredList = new ArrayList<>();
+            if (constraint == null || constraint.length() == 0) {
+                filteredList.addAll(ordersFull);
+            } else {
+                String filterPattern = constraint.toString().toLowerCase().trim();
+                for (Order order : ordersFull) {
+                    if (order.getOrderId().startsWith(filterPattern)) {
+                        filteredList.add(order);
+                    }
+                }
+            }
+            FilterResults results = new FilterResults();
+            results.values = filteredList;
+            return results;
+        }
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            orders.clear();
+            orders.addAll((ArrayList) results.values);
+            notifyDataSetChanged();
+        }
+    };
 
     public interface AsignarListener {
         void Cobrar(int i);

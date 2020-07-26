@@ -7,35 +7,35 @@
         android:id="@+id/getOrdersNoPaid"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:title="Pedidos sin cobrar"
+        android:title="Cobrar"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/getOrders"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:title="Pedidos sin asignar"
+        android:title="Asignar"
         app:showAsAction="always" />
     <item
         android:id="@+id/MyOrders"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:title="Pedidos asignados"
+        android:title="Asignados"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/EntregarOrders"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:title="Entregar pedidos"
-        app:showAsAction="always"/>
+        android:title="Entregar"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/CompleteOrders"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:title="Pedidos completos"
-        app:showAsAction="always"/>
+        android:title="Completos"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/Preferencias"
@@ -43,20 +43,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:icon="@drawable/ic_settings"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom|collapseActionView"/>
 
     <item
         android:id="@+id/Stock"
         android:title="Stock"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom|collapseActionView"/>
 
     <item
         android:id="@+id/Reasignar"
         android:title="Modificar pedidos"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom|collapseActionView"/>
 
 </menu>

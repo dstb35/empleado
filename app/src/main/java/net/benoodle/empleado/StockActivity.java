@@ -184,7 +184,6 @@ public class StockActivity extends AppCompatActivity {
 
         @Override
         public void onFailure(Call<ArrayList<Node>> call, Throwable t) {
-            t.printStackTrace();
             Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
         }
     };
@@ -209,7 +208,6 @@ public class StockActivity extends AppCompatActivity {
 
         @Override
         public void onFailure(Call<ResponseBody> call, Throwable t) {
-            t.printStackTrace();
             Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
         }
     };

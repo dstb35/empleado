@@ -10,11 +10,9 @@ public class OrderItem {
     private int quantity;
     @SerializedName("id")
     private String id;
-
     //Selecciones apunta al productID (variation ID) en el server, elecciones del menú.
     @SerializedName("selecciones")
-    private ArrayList<String> selecciones = new ArrayList<String>();
-
+    private ArrayList<String> selecciones = new ArrayList<>();
 
     public OrderItem(String id, int quantity){
         this.id = id;
@@ -35,12 +33,12 @@ public class OrderItem {
         this.quantity = quantity;
     }
 
-    public String getId() {
-        return id;
-    }
-
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getProductID() {
+        return id;
     }
 
     public ArrayList<String> getSelecciones() {

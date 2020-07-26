@@ -153,7 +153,7 @@ public class LoginActivity extends OptionsMenuActivity{
 
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        Log.e("debug", "onFailure: ERROR > " + t.toString());
+                        Toast.makeText(LoginActivity.this, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                         mProgressView.setVisibility(View.GONE);
                     }
                 });

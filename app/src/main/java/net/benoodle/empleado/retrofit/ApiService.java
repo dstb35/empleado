@@ -20,20 +20,26 @@ import retrofit2.http.Query;
     User login System
     User unlogin System
     GET
-    Catalog iniciar con los productos Views /eorder/
-    Stock diponible Todos los producto esten visibles o no Views /eorders/stock getStock()
+    Catalog productos para app eorder, sin uso en empleado /eorders/products
+    Types para eorder, sin uso en empleado /eorders/types
+
+    Stock diponible Todos los producto esten visibles o no  /eorders/stock getStock()
+    Pedidos sin cobrar SinCobrarResource.php /php/sincobrar getSinCobrar()
     Pedidos sin asignar e incompletos SinAsignarResource.php /eorders/sinasignar getSinAsignar()
     Pedidos asignados a un empleado e incompletos AsignadosResource.php /eorders/asignados getAsignados()
     Pedidos hecho per sin entregar EntregarResource.php /eorders/entregar getEntregar()
     Pedidos completos todos CompleteResource.php /eorders/complete getComplete()
 
     POST
+    Cobrar pedido CobrarResource.php /eorders/cobrar cobrar()
     Asignar pedido a un empleado AsignarResource.php /eorders/asignar asignar()
     Completar y entregar un pedido, recibe el id y el state, no el pedido completo CompletarResource.php /eorders/completar
     Cambiar Stock recibe el catalog stock completo con las mod ChstockResource.php /eorders/chstock changeStock()
+    Modificar Pedido recibe el pedido modificado ModificarResource.php /eorders/modificar
 
     Otros
     Pedido concreto por id, o todos sin filtrar AllResource.php  /eorders/all
+    Pedidos incompletos para cualquier empleado o tienda, sin uso /eorders/draft
 
  */
 
@@ -95,4 +101,7 @@ public interface ApiService {
     @Headers({"Content-type: application/json"})
     Call<ResponseBody> changeStock(@Header("Authorization") String user_auth, @Header("X-CSRF-Token") String x_csrf_token, @Body HashMap<String, Object> body);
 
+    @POST("/eorders/modificar")
+    @Headers({"Content-type: application/json"})
+    Call<ResponseBody> modificar(@Header("Authorization") String user_auth, @Header("X-CSRF-Token") String x_csrf_token, @Body HashMap<String, Object> body);
 }

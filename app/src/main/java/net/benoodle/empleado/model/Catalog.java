@@ -6,6 +6,8 @@ import net.benoodle.empleado.StockActivity;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
+import static net.benoodle.empleado.MainActivity.catalog;
+
 public class Catalog {
     private ArrayList<Node> catalog = new ArrayList<>();
 
@@ -65,5 +67,18 @@ public class Catalog {
 
     public void setCatalog(ArrayList<Node> catalog) {
         this.catalog = catalog;
+    }
+
+    public float getPriceById(String prooductId) {
+        Float price = new Float(0);
+        try {
+            Node node = getNodeById(prooductId);
+            String formatPrice = node.getPrice();
+            formatPrice = formatPrice.replaceAll("[^0-9\\.]", "");
+            price = new Float(formatPrice);
+        } catch (Exception e) {
+            e.getLocalizedMessage();
+        }
+        return price;
     }
 }
