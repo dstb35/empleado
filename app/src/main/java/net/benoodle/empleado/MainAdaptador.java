@@ -72,7 +72,7 @@ public class MainAdaptador extends RecyclerView.Adapter<MainAdaptador.ViewHolder
                     items.append("Producto :"+e.getLocalizedMessage());
                 }
                 if (orderitem.getSelecciones() != null) {
-                    items.append("-> Seleccion menú :");
+                    items.append("   ->Seleccion menú :");
                     for (String seleccion : orderitem.getSelecciones()) {
                         try {
                             items.append(catalog.getNodeById(seleccion).getTitle()+" ");

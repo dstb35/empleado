@@ -95,7 +95,7 @@ public interface ApiService {
 
     @GET("eorders/entregar?_format=json")
     @Headers({"Content-type: application/json"})
-    Call<ArrayList<Order>> getEntregar(@Header("Authorization") String user_auth, @Header("X-CSRF-Token") String x_csrf_token);
+    Call<ArrayList<Order>> getEntregar(@Query("store_id") String store_id, @Header("Authorization") String user_auth, @Header("X-CSRF-Token") String x_csrf_token);
 
     @POST("/eorders/chstock")
     @Headers({"Content-type: application/json"})

@@ -5,13 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
     android:layout_margin="0dp"
-    android:background="?attr/colorButtonNormal"
     android:elevation="4dp"
     android:gravity="left"
     android:orientation="horizontal"
-    app:titleMargin="0dp"
-    app:titleMarginBottom="0dp"
-    app:titleMarginEnd="0dp"
-    app:titleMarginStart="0dp"
-    app:titleMarginTop="0dp"
-    app:titleMargins="0dp" />
+    android:theme="@style/MyCustomToolbar"/>

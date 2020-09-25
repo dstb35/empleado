@@ -81,7 +81,7 @@ public class OrderDetailActivity extends AppCompatActivity {
         this.cobrado = findViewById(R.id.cobrado);
         this.lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
+                80);
         //El observer es porque no tengo el width del layout hasta que no se cargue.
         items.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -98,9 +98,11 @@ public class OrderDetailActivity extends AppCompatActivity {
                         LinearLayout itemLayout = new LinearLayout(context);
                         itemLayout.setOrientation(LinearLayout.HORIZONTAL);
                         itemLayout.setLayoutParams(lp);
-                        itemLayout.setMinimumHeight(200);
+                        //itemLayout.setMinimumHeight(120);
                         TextView item = new TextView(context);
+                        item.setTextAppearance(R.style.MyCustomTextView);
                         item.setWidth(itemWidth.intValue());
+                        item.setHeight(80);
                         item.setAutoSizeTextTypeUniformWithConfiguration(20, 100, 2, TypedValue.COMPLEX_UNIT_DIP);
                         OrderItem orderitem = order.getOrderItems().get(j);
                         StringBuilder stringBuilder = new StringBuilder();

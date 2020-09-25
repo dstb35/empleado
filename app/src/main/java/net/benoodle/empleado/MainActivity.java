@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.MediaRouteButton;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import net.benoodle.empleado.model.Catalog;
@@ -24,6 +25,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 import android.os.Bundle;
+import android.provider.CalendarContract;
+import android.text.Spannable;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -78,6 +82,7 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
     private TextView totalPedidos, store;
     private String store_id;
     private SearchView searchView;
+    private int itemSelected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,8 +113,8 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
         try {
             mApiService = UtilsApi.getAPIService(sharedPrefManager.getURL());
         } catch (Exception e) {
@@ -118,10 +123,14 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
         store_id = sharedPrefManager.getSPStore();
         store.setText("Tienda : "+store_id);
         mApiService.getStock(store_id, sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Nodecallback);
+        this.itemSelected = 0;
+        invalidateOptionsMenu();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        this.itemSelected = item.getItemId();
+        invalidateOptionsMenu();
         switch (item.getItemId()) {
             case R.id.getOrdersNoPaid:
                 boton = "Cobrar";
@@ -137,7 +146,7 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
                 return true;
             case R.id.EntregarOrders:
                 boton = "Entregar";
-                mApiService.getEntregar(sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Orderscallback);
+                mApiService.getEntregar(store_id, sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Orderscallback);
                 return true;
             case R.id.CompleteOrders:
                 boton = "";
@@ -237,6 +246,18 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
         this.startActivity(intent);
     }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu){
+        if (itemSelected == 0){
+            this.itemSelected = menu.getItem(1).getItemId();
+        }
+        android.text.SpannableString s = new android.text.SpannableString(menu.findItem(itemSelected).toString());
+        s.setSpan(new ForegroundColorSpan(getColor(R.color.menu_item_selected)), 0, s.length(), 0);
+        menu.findItem(itemSelected).setTitle(s);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+
     Callback<ArrayList<Order>> Orderscallback = new Callback<ArrayList<Order>>() {
         @Override
         public void onResponse(Call<ArrayList<Order>> call, Response<ArrayList<Order>> response) {
@@ -320,9 +341,6 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
         public void onResponse(Call<ArrayList<Node>> call, Response<ArrayList<Node>> response) {
             if (response.isSuccessful()) {
                 catalog = new Catalog(response.body());
-                /*TODO
-                Poner por preferencias el modo de funcionamiento, cobrar ahora o cobrar después
-                 */
                 /*Con el catálogo cargado se pasa a mostrar los pedidos sin asignar*/
                 boton = "Asignar";
                 mApiService.getSinAsignar(store_id, sharedPrefManager.getSPModus(), sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Orderscallback);

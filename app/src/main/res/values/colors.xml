@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6200EE</color>
-    <color name="colorPrimaryDark">#3700B3</color>
-    <color name="colorAccent">#03DAC5</color>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+    <color name="background">#FBEEE6</color>
+    <color name="menubar">#FAD7A0</color>
+    <color name="products">#FDEBD0</color>
+    <color name="text">#000000</color>
+    <color name="button">#FAB612</color>
+    <color name="scrollbar">#E67E22</color>
+    <color name="menu_item_selected">#E67E22</color>
 </resources>

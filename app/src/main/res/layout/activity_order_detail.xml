@@ -4,9 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    style="@style/Theme.AppCompat">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+<androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/linearLayout5"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -18,6 +19,7 @@
             android:layout_marginTop="16dp"
             android:autoSizeMaxTextSize="34sp"
             android:autoSizeTextType="uniform"
+            android:background="@drawable/shape"
             android:paddingTop="4dp"
             android:paddingBottom="4dp"
             android:text="orderId"
@@ -31,6 +33,7 @@
             android:id="@+id/total"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@drawable/shape"
             android:text="Total €"
             android:textSize="28sp"
             app:layout_constraintBottom_toBottomOf="@+id/orderID"
@@ -43,6 +46,7 @@
             android:id="@+id/cobrado"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@drawable/shape"
             android:checked="false"
             android:clickable="false"
             android:showText="true"
@@ -56,18 +60,21 @@
             app:layout_constraintStart_toEndOf="@+id/total"
             app:layout_constraintTop_toTopOf="@+id/total" />
 
-        <LinearLayout
-            android:id="@+id/items"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:orientation="vertical"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.6"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/orderID"></LinearLayout>
+    <LinearLayout
+        android:id="@+id/items"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/shape"
+        android:orientation="vertical"
+        android:paddingStart="10dp"
+        android:paddingTop="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.6"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/orderID"></LinearLayout>
 
         <!--<TextView
             android:id="@+id/item"

@@ -57,7 +57,6 @@ public class ReasignarActivity  extends AppCompatActivity {
     private Order order;
     private Context context;
     private HashMap<String, Object> body = new HashMap<>();
-    //private ArrayList<Integer> orderItemsDelete = new ArrayList<>();
     private ArrayList<OrderItem>  orderItemsDelete = new ArrayList<>();
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +82,7 @@ public class ReasignarActivity  extends AppCompatActivity {
         this.cobrado.setClickable(true);
         AlertDialog.Builder builder = new AlertDialog.Builder(ReasignarActivity.this);
         final EditText input = new EditText(ReasignarActivity.this);
+        input.setInputType(InputType.TYPE_CLASS_NUMBER);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
@@ -144,10 +144,12 @@ public class ReasignarActivity  extends AppCompatActivity {
                         itemLayout.setMinimumHeight(200);
                         TextView item = new TextView(context);
                         item.setWidth(itemWidth.intValue());
+                        item.setTextAppearance(R.style.MyCustomTextView);
                         EditText quantity = new EditText(context);
                         quantity.setMaxWidth(quantityWidth.intValue());
                         quantity.setMinWidth(80);
                         quantity.setInputType(InputType.TYPE_CLASS_NUMBER);
+                        quantity.setTextAppearance(R.style.MyCustomEditText);
                         StringBuilder string = new StringBuilder();
                         OrderItem orderitem = order.getOrderItems().get(j);
                         try {
@@ -207,6 +209,7 @@ public class ReasignarActivity  extends AppCompatActivity {
                         btEliminar.setText("Borrar");
                         btEliminar.setTextOn("Borrado");
                         btEliminar.setTextOff("Borrar");
+                        btEliminar.setBackgroundDrawable(getDrawable(R.drawable.button));
                         /*btEliminar.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
