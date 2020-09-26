@@ -25,6 +25,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 import android.os.Bundle;
+import android.print.PrintAttributes;
+import android.print.PrintDocumentAdapter;
+import android.print.PrintJob;
+import android.print.PrintManager;
 import android.provider.CalendarContract;
 import android.text.Spannable;
 import android.text.style.ForegroundColorSpan;
@@ -35,33 +39,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
+import android.webkit.WebView;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.gms.cast.framework.CastButtonFactory;
-import com.google.android.gms.cast.framework.CastContext;
-import com.google.android.gms.cast.framework.CastOptions;
-import com.google.android.gms.cast.framework.CastSession;
-import com.google.android.gms.cast.framework.OptionsProvider;
-import com.google.android.gms.cast.framework.SessionManager;
-import com.google.android.gms.cast.framework.SessionProvider;
-import com.google.android.gms.cast.framework.media.RemoteMediaClient;
-
-import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
 import static android.view.View.GONE;
 import static java.lang.Boolean.TRUE;
 
@@ -82,6 +72,7 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
     private TextView totalPedidos, store;
     private String store_id;
     private SearchView searchView;
+    private Context context;
     private int itemSelected;
 
     @Override
@@ -110,6 +101,7 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
         totalPedidos = findViewById(R.id.totalpedidos);
         store = findViewById(R.id.store);
+        this.context = this;
     }
 
     @Override
@@ -257,6 +249,15 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
         return super.onPrepareOptionsMenu(menu);
     }
 
+    private void imprimir() {
+        PrintManager printManager = (PrintManager) context.getSystemService(Context.PRINT_SERVICE);
+        String jobName = body.get("id") + " order";
+        PrintDocumentAdapter printAdapter;
+        WebView webView = new WebView(context);
+        printAdapter = webView.createPrintDocumentAdapter(jobName);
+        PrintJob printJob = printManager.print(jobName, printAdapter,
+                new PrintAttributes.Builder().build());
+    }
 
     Callback<ArrayList<Order>> Orderscallback = new Callback<ArrayList<Order>>() {
         @Override
@@ -315,6 +316,7 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
                 orders.remove(position); //Lo elimino porque orders son los pedidos sin cobrar.
                 body.remove("position");
                 Toast.makeText(getApplicationContext(), "Pedido cobrado.", Toast.LENGTH_LONG).show();
+                imprimir();
                 adaptador.notifyDataSetChanged();
                 //cambiarAdaptador();
             }else{

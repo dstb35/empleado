@@ -67,9 +67,9 @@ public class MainAdaptador extends RecyclerView.Adapter<MainAdaptador.ViewHolder
         StringBuilder items = new StringBuilder();
             for (OrderItem orderitem : orderItems) {
                 try {
-                    items.append("Producto :" + catalog.getNodeById(orderitem.getProductID()).getTitle() + " Cantidad: " + orderitem.getQuantity());
+                    items.append("Producto: " + catalog.getNodeById(orderitem.getProductID()).getTitle() + " Cantidad: " + orderitem.getQuantity());
                 } catch (Exception e) {
-                    items.append("Producto :"+e.getLocalizedMessage());
+                    items.append("Producto: "+e.getLocalizedMessage());
                 }
                 if (orderitem.getSelecciones() != null) {
                     items.append("   ->Seleccion menú :");
