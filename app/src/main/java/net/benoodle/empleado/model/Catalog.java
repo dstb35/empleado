@@ -81,4 +81,8 @@ public class Catalog {
         }
         return price;
     }
+
+    public String getIdByPosition(int pos){
+        return this.catalog.get(pos).getProductID();
+    }
 }

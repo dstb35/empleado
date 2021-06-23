@@ -10,4 +10,8 @@
     <color name="button">#FAB612</color>
     <color name="scrollbar">#E67E22</color>
     <color name="menu_item_selected">#E67E22</color>
+    <color name="switch_on">#FF8315</color>
+    <color name="switch_off">#FFE7D1</color>
+    <color name="track_on">#FDD0A8</color>
+    <color name="track_off">#FFF1E5</color>
 </resources>

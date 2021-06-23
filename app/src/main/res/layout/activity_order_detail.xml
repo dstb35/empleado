@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollView3"
+    style="@style/Theme.AppCompat"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    style="@style/Theme.AppCompat">
+    android:fillViewport="true">
 
-<androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/linearLayout5"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -16,16 +16,14 @@
             android:id="@+id/orderID"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:autoSizeMaxTextSize="34sp"
             android:autoSizeTextType="uniform"
             android:background="@drawable/shape"
             android:paddingTop="4dp"
             android:paddingBottom="4dp"
-            android:text="orderId"
             android:textSize="28sp"
-            app:layout_constraintEnd_toStartOf="@+id/total"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -33,20 +31,19 @@
             android:id="@+id/total"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:background="@drawable/shape"
             android:text="Total €"
             android:textSize="28sp"
-            app:layout_constraintBottom_toBottomOf="@+id/orderID"
-            app:layout_constraintEnd_toStartOf="@+id/cobrado"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/orderID"
-            app:layout_constraintTop_toTopOf="@+id/orderID" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/orderID" />
 
-        <Switch
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/cobrado"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/shape"
+            android:layout_marginTop="8dp"
             android:checked="false"
             android:clickable="false"
             android:showText="true"
@@ -54,14 +51,37 @@
             android:textOff="No"
             android:textOn="Si"
             android:textSize="28sp"
-            app:layout_constraintBottom_toBottomOf="@+id/total"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/total"
-            app:layout_constraintTop_toTopOf="@+id/total" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/total" />
 
-    <LinearLayout
-        android:id="@+id/items"
+        <TextView
+            android:id="@+id/estado"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cobrado" />
+
+        <LinearLayout
+            android:id="@+id/items"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/shape"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/estado" />
+
+        <!--<LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -74,7 +94,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.6"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/orderID"></LinearLayout>
+        app:layout_constraintTop_toBottomOf="@+id/orderID"></LinearLayout>-->
 
         <!--<TextView
             android:id="@+id/item"
@@ -91,11 +111,24 @@
             app:layout_constraintTop_toBottomOf="@+id/orderID" />-->
 
         <Button
-            android:id="@+id/btFinalizar"
+            android:id="@+id/btCompletarAct"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Finalizar"
+            android:layout_marginBottom="8dp"
+            android:text="Completar"
+            app:layout_constraintBottom_toTopOf="@+id/btEntregarAct"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/items"
+            app:layout_constraintVertical_bias="0.95" />
+
+        <Button
+            android:id="@+id/btEntregarAct"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Completar y entregar"
+            app:layout_constraintBottom_toTopOf="@+id/btCancel"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/items" />
@@ -105,12 +138,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
             android:onClick="Cancelar"
-            android:text="Cancelar"
+            android:text="Salir"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <ProgressBar
+            android:id="@+id/login_progress"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:indeterminateTint="@color/scrollbar"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/btFinalizar" />
-
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-</ScrollView>
+</androidx.core.widget.NestedScrollView>

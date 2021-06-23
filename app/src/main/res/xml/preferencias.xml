@@ -14,10 +14,18 @@
         android:title="Tienda"
         android:inputType="number"
         android:defaultValue="01"/>
-    <SwitchPreference
-        android:key="modus"
-        android:title="Los pedidos deben pagarse antes de asignarlos."
-        android:defaultValue="true"
-        android:switchTextOn="Si"
-        android:switchTextOff="No"/>
+    <EditTextPreference
+        android:key="copies"
+        android:title="Número de copias de tickets a imprimir"
+        android:inputType="number"
+        android:defaultValue="1"/>
+    <CheckBoxPreference
+        android:key="autoassign"
+        android:title="¿Aignación automática de pedidos?"
+        android:defaultValue="false" />
+    <PreferenceScreen
+        android:title="Version"
+        android:key="version"
+        android:summary="">
+    </PreferenceScreen>
 </androidx.preference.PreferenceScreen>

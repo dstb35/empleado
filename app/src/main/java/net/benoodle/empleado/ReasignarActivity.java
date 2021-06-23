@@ -3,6 +3,7 @@ package net.benoodle.empleado;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Paint;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
@@ -15,42 +16,31 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.widget.TextViewCompat;
+import androidx.appcompat.widget.SwitchCompat;
 
-import net.benoodle.empleado.model.Node;
 import net.benoodle.empleado.model.Order;
 import net.benoodle.empleado.model.OrderItem;
 import net.benoodle.empleado.retrofit.ApiService;
 import net.benoodle.empleado.retrofit.SharedPrefManager;
 import net.benoodle.empleado.retrofit.UtilsApi;
-
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
 import static net.benoodle.empleado.MainActivity.catalog;
-import static net.benoodle.empleado.MainActivity.orders;
 
 public class ReasignarActivity  extends AppCompatActivity {
-    private TextView orderID, total;
-    private Button btModificar;
-    private Switch cobrado;
+    private TextView orderID, total, estado;
+    private Button btModificar, btAsignar;
+    private SwitchCompat cobrado;
     private ApiService mApiService;
     private SharedPrefManager sharedPrefManager;
     private String id, store_id;
@@ -58,6 +48,7 @@ public class ReasignarActivity  extends AppCompatActivity {
     private Context context;
     private HashMap<String, Object> body = new HashMap<>();
     private ArrayList<OrderItem>  orderItemsDelete = new ArrayList<>();
+    private View mProgressView;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,10 +67,21 @@ public class ReasignarActivity  extends AppCompatActivity {
         this.context = getApplicationContext();
         this.store_id = sharedPrefManager.getSPStore();
         this.orderID = findViewById(R.id.orderID);
+        //this.customer = findViewById(R.id.customer);
         this.total = findViewById(R.id.total);
-        this.btModificar = findViewById(R.id.btFinalizar);
+        this.estado = findViewById(R.id.estado);
+        this.btModificar = findViewById(R.id.btCompletarAct);
+        this.btModificar.setText("Modificar");
+        this.btAsignar = findViewById(R.id.btEntregarAct);
+        this.btAsignar.setText("Asignarme pedido");
         this.cobrado = findViewById(R.id.cobrado);
         this.cobrado.setClickable(true);
+        this.order = new Order();
+        this.mProgressView = findViewById(R.id.login_progress);
+        askPedido();
+    }
+
+    public void askPedido(){
         AlertDialog.Builder builder = new AlertDialog.Builder(ReasignarActivity.this);
         final EditText input = new EditText(ReasignarActivity.this);
         input.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -88,14 +90,19 @@ public class ReasignarActivity  extends AppCompatActivity {
                 LinearLayout.LayoutParams.MATCH_PARENT);
         input.setLayoutParams(lp);
         builder.setView(input);
-        builder.setTitle("Introduce  el número de pedido que quieras modificar : ");
+        builder.setMessage("Introduce  el número de pedido que quieras modificar.");
         builder.setCancelable(true);
         builder.setPositiveButton("Aceptar",
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         id = input.getText().toString();
-                        reasignar();
+                        if (id.isEmpty()) {
+                            Toast.makeText(getApplicationContext(), "El número de pedido no puede estar vacío", Toast.LENGTH_SHORT).show();
+                            askPedido();
+                        }else{
+                            mApiService.getOrders(id, sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Ordercallback);
+                        }
                     }
                 });
         builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -108,17 +115,20 @@ public class ReasignarActivity  extends AppCompatActivity {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
-
     public void reasignar (){
-        mApiService.reasignar(id, store_id, sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Ordercallback);
+        mProgressView.setVisibility(View.VISIBLE);
+        mApiService.reasignar(id, store_id, sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Reasignarcallback);
     }
 
-    Callback<Order> Ordercallback = new Callback<Order>() {
+    Callback<ArrayList<Order>> Ordercallback = new Callback<ArrayList<Order>>() {
         @Override
-        public void onResponse(Call<Order> call, Response<Order> response) {
+        public void onResponse(Call<ArrayList<Order>> call, Response<ArrayList<Order>> response) {
+            mProgressView.setVisibility(View.GONE);
             try {
                 if (response.isSuccessful()) {
-                    order = response.body();
+                    //Toast.makeText(context, "Pedido asignado", Toast.LENGTH_SHORT).show();
+                    ArrayList<Order> orders = response.body();
+                    order = orders.get(0);
                     LinearLayout items = findViewById(R.id.items);
                     items.removeAllViews();
                     LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
@@ -128,14 +138,20 @@ public class ReasignarActivity  extends AppCompatActivity {
                     Float width = new Float(items.getWidth());
                     Double itemWidth = width*0.75;
                     Double quantityWidth = width*0.25;
-                    orderID.setText("Número de pedido: "+order.getOrderId());
+                    orderID.setText("Pedido: "+order.getOrderId());
+                    //customer.setText(order.getCustomer());
+                    estado.setText("Estado: "+order.getState()+". Empleado: "+order.getEmpleado()+". Tienda: "+order.getStore()+" . Cliente: "+order.getCustomer());
                     total.setText("Total: "+order.getTotal()+" €");
                     cobrado.setChecked(order.getPagado());
-                    cobrado.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                        public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                            order.setPagado(compoundButton.isChecked());
-                        }
-                    });
+                    if (sharedPrefManager.getSPEncargado()){
+                        cobrado.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                                order.setPagado(compoundButton.isChecked());
+                            }
+                        });
+                    }else{
+                        cobrado.setClickable(false);
+                    }
                     for (int j=0; j<order.getOrderItems().size(); j++){
                         final int pos = j;
                         LinearLayout itemLayout = new LinearLayout(context);
@@ -144,21 +160,23 @@ public class ReasignarActivity  extends AppCompatActivity {
                         itemLayout.setMinimumHeight(200);
                         TextView item = new TextView(context);
                         item.setWidth(itemWidth.intValue());
-                        item.setTextAppearance(R.style.MyCustomTextView);
                         EditText quantity = new EditText(context);
                         quantity.setMaxWidth(quantityWidth.intValue());
                         quantity.setMinWidth(80);
                         quantity.setInputType(InputType.TYPE_CLASS_NUMBER);
-                        quantity.setTextAppearance(R.style.MyCustomEditText);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            quantity.setTextAppearance(R.style.MyCustomEditText);
+                            item.setTextAppearance(R.style.MyCustomTextView);
+                        }
                         StringBuilder string = new StringBuilder();
                         OrderItem orderitem = order.getOrderItems().get(j);
                         try {
-                            string.append(j+1+". Producto :" + catalog.getNodeById(orderitem.getProductID()).getTitle() + " Cantidad: " + orderitem.getQuantity() + System.getProperty("line.separator"));
+                            string.append(j+1+". Producto: " + catalog.getNodeById(orderitem.getProductID()).getTitle() + " Cantidad: " + orderitem.getQuantity() + System.getProperty("line.separator"));
                         } catch (Exception e) {
-                            string.append(j+1+". Producto :" + e.getLocalizedMessage() + System.getProperty("line.separator"));
+                            string.append(j+1+". Producto: " + e.getLocalizedMessage() + System.getProperty("line.separator"));
                         }
                         if (orderitem.getSelecciones() != null) {
-                            string.append("Seleccion menú :");
+                            string.append("Seleccion menú: ");
                             for (String seleccion : orderitem.getSelecciones()) {
                                 try {
                                     string.append(catalog.getNodeById(seleccion).getTitle() + ". ");
@@ -178,9 +196,9 @@ public class ReasignarActivity  extends AppCompatActivity {
                             @Override
                             public void onTextChanged(CharSequence charSequence, int start, int count, int after) {
                                 int newQuantity;
-                                Float price = catalog.getPriceById(orderitem.getProductID());
+                                float price = catalog.getPriceById(orderitem.getProductID());
                                 try {
-                                    newQuantity = Integer.valueOf(charSequence.toString());
+                                    newQuantity = Integer.parseInt(charSequence.toString());
                                 } catch (NumberFormatException e) {
                                     newQuantity = 0;
                                 }
@@ -195,7 +213,9 @@ public class ReasignarActivity  extends AppCompatActivity {
                             }
                         });
                         item.setText(string.toString());
-                        item.setAutoSizeTextTypeUniformWithConfiguration(20, 100, 2, TypedValue.COMPLEX_UNIT_DIP);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            item.setAutoSizeTextTypeUniformWithConfiguration(20, 100, 2, TypedValue.COMPLEX_UNIT_DIP);
+                        }
                         itemLayout.addView(item);
                         itemLayout.addView(quantity);
                         ToggleButton btEliminar = new ToggleButton(context);
@@ -210,20 +230,12 @@ public class ReasignarActivity  extends AppCompatActivity {
                         btEliminar.setTextOn("Borrado");
                         btEliminar.setTextOff("Borrar");
                         btEliminar.setBackgroundDrawable(getDrawable(R.drawable.button));
-                        /*btEliminar.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                //order.removeOrderItem(pos);
-                                btEliminar.setChecked(true);
-                                //ActualizarTotal();
-                            }
-                        });*/
                         btEliminar.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                             @Override
                             public void onCheckedChanged(CompoundButton group, boolean isChecked) {
-                                Float sum = new Float(0);
+                                float sum = (float) 0;
                                 try{
-                                    Float price = catalog.getPriceById(orderitem.getProductID());
+                                    float price = catalog.getPriceById(orderitem.getProductID());
                                     sum = price * orderitem.getQuantity();
                                 } catch (Exception e){
                                     e.getLocalizedMessage();
@@ -231,8 +243,6 @@ public class ReasignarActivity  extends AppCompatActivity {
                                 if (isChecked){
                                     orderItemsDelete.add(orderitem);
                                     item.setPaintFlags(item.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                                    //quantity.setClickable(false);
-                                    //quantity.setFocusable(false);
                                     quantity.setVisibility(View.INVISIBLE);
                                     ActualizarTotal(sum, false);
                                 } else{
@@ -247,27 +257,35 @@ public class ReasignarActivity  extends AppCompatActivity {
                         itemLayout.addView(btLayout);
                         items.addView(itemLayout);
                     }
-                    btModificar.setText("Modificar");
+
                     btModificar.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                            ConfirmarCambios();
                         }
                     });
+                    btAsignar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            reasignar();
+                        }
+                    });
                 }else {
                     JSONObject jObjError = new JSONObject(response.errorBody().string());
                     Toast.makeText(getApplicationContext(), jObjError.get("message").toString(), Toast.LENGTH_LONG).show();
-                    finish();
+                    askPedido();
                 }
             } catch (Exception e) {
                 Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-                finish();
+                askPedido();
             }
         }
 
         @Override
-        public void onFailure(Call<Order> call, Throwable t) {
-            Toast.makeText(ReasignarActivity.this, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+        public void onFailure(Call<ArrayList<Order>> call, Throwable t) {
+            mProgressView.setVisibility(View.GONE);
+            Toast.makeText(ReasignarActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+            askPedido();
         }
     };
 
@@ -275,18 +293,9 @@ public class ReasignarActivity  extends AppCompatActivity {
         order.removeOrderItem(orderItemsDelete);
         order.removeOrderItemsOnZero();
         body.put("order", order);
+        mProgressView.setVisibility(View.VISIBLE);
         mApiService.modificar(sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken(), body).enqueue(Completarcallback);
     }
-
-    /*public void ActualizarTotal(){
-        try {
-            order.recalculateTotal();
-            total.setText("");
-            total.setText(String.format("%s%s €", "Total: ", order.getTotal()));
-        }catch (Exception e) {
-            total.setText(e.getLocalizedMessage());
-        }
-    }*/
 
     /*Float sum es la cantidad a sumar o restar, signo es true para sumar y false para restar*/
     public void ActualizarTotal(float sum, boolean signo){
@@ -302,12 +311,14 @@ public class ReasignarActivity  extends AppCompatActivity {
         finish();
     }
 
-    Callback<ResponseBody> Completarcallback = new Callback<ResponseBody>() {
+    Callback<Order> Reasignarcallback = new Callback<Order>() {
         @Override
-        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+        public void onResponse(Call<Order> call, Response<Order> response) {
+            mProgressView.setVisibility(View.GONE);
             if (response.isSuccessful()) {
-                Toast.makeText(getApplicationContext(), "Orden completada", Toast.LENGTH_LONG).show();
-                finish();
+                Order newOrder = response.body();
+                estado.setText("Estado: "+newOrder.getState()+". Empleado: "+newOrder.getEmpleado()+". Tienda: "+newOrder.getStore());
+                Toast.makeText(getApplicationContext(), "Pedido asignado", Toast.LENGTH_LONG).show();
             } else {
                 try {
                     JSONObject jObjError = new JSONObject(response.errorBody().string());
@@ -318,7 +329,32 @@ public class ReasignarActivity  extends AppCompatActivity {
             }
         }
         @Override
-        public void onFailure(Call<ResponseBody> call, Throwable t) {
+        public void onFailure(Call<Order> call, Throwable t) {
+            mProgressView.setVisibility(View.GONE);
+            Toast.makeText(ReasignarActivity.this, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+        }
+    };
+
+    Callback<Order> Completarcallback = new Callback<Order>() {
+        @Override
+        public void onResponse(Call<Order> call, Response<Order> response) {
+            mProgressView.setVisibility(View.GONE);
+            if (response.isSuccessful()) {
+                Order newOrder = response.body();
+                estado.setText("Estado: "+newOrder.getState()+". Empleado: "+newOrder.getEmpleado()+". Tienda: "+newOrder.getStore());
+                Toast.makeText(getApplicationContext(), "Pedido modificado", Toast.LENGTH_LONG).show();
+            } else {
+                try {
+                    JSONObject jObjError = new JSONObject(response.errorBody().string());
+                    Toast.makeText(getApplicationContext(), jObjError.get("message").toString(), Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+        @Override
+        public void onFailure(Call<Order> call, Throwable t) {
+            mProgressView.setVisibility(View.GONE);
             Toast.makeText(ReasignarActivity.this, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
         }
     };

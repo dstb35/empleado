@@ -12,6 +12,7 @@
         <item name="android:horizontalScrollViewStyle">@style/MyCustomHorizontalScrollBar</item>
         <item name="recyclerViewStyle">@style/MyCustomVerticalScrollBar</item>
         <item name="alertDialogTheme">@style/MyCustomAlertBox</item>
+        <item name="android:switchStyle">@style/MyCustomSwitch</item>
         <!--<item name="toolbarStyle">@style/MyCustomToolbar</item>-->
     </style>
     <style name="MyCustomButton" parent="Widget.AppCompat.Button">
@@ -20,6 +21,11 @@
         <item name="android:textStyle">bold</item>
         <item name="android:paddingLeft">16dp</item>
         <item name="android:paddingRight">16dp</item>
+    </style>
+    <style name="MyCustomSwitch" parent="Widget.AppCompat.CompoundButton.Switch">
+        <item name="android:background">@drawable/shape</item>
+        <item name="android:thumb">@drawable/thumb_selector</item>
+        <item name="android:track">@drawable/track_selector</item>
     </style>
     <style name="MyCustomTextView" parent="Widget.AppCompat.TextView">
         <item name="android:textColor">@color/text</item>

@@ -12,6 +12,13 @@
 
     <include layout="@layout/toolbar_layout" />
 
+    <ProgressBar
+        android:id="@+id/login_progress"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:indeterminateTint="@color/scrollbar"
+        android:visibility="gone" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
@@ -32,9 +39,7 @@
             app:layout_constraintEnd_toStartOf="@+id/totalpedidos"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:layout_conversion_absoluteHeight="19dp"
-            tools:layout_conversion_absoluteWidth="43dp" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/totalpedidos"
@@ -46,23 +51,36 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/store"
-            app:layout_constraintTop_toTopOf="@+id/store"
-            tools:layout_conversion_absoluteHeight="19dp"
-            tools:layout_conversion_absoluteWidth="121dp" />
+            app:layout_constraintTop_toTopOf="@+id/store" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/swPause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:autoSizeTextType="uniform"
+            android:showText="true"
+            android:text="Autoasignación"
+            android:textOff="No"
+            android:textOn="Si"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/store" />
 
         <SearchView
             android:id="@+id/searchView"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:inputType="numberSigned"
             android:minWidth="140sp"
             app:defaultQueryHint="Introduce nº de pedido"
-            app:layout_constraintBottom_toBottomOf="@+id/totalpedidos"
+            app:layout_constraintBottom_toBottomOf="@+id/swPause"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/totalpedidos"
-            app:layout_constraintTop_toTopOf="@+id/totalpedidos"
-            tools:layout_conversion_absoluteHeight="19dp"
-            tools:layout_conversion_absoluteWidth="140dp" />
+            app:layout_constraintStart_toEndOf="@+id/swPause"
+            app:layout_constraintTop_toTopOf="@+id/swPause" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -70,6 +88,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:background="@drawable/shape"></androidx.recyclerview.widget.RecyclerView>
-
+        tools:listitem="@layout/order">
+    </androidx.recyclerview.widget.RecyclerView>
 </LinearLayout>

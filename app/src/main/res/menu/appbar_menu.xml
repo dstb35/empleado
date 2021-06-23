@@ -7,7 +7,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:title="Cobrar"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/getOrders"
         android:layout_width="wrap_content"
@@ -31,14 +31,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:title="Completos"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/Preferencias"
-        android:title="Preferencias"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:icon="@drawable/ic_settings"
-        app:showAsAction="ifRoom|collapseActionView"/>
+        android:title="Preferencias"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/Stock"
         android:title="Stock"
@@ -48,6 +48,36 @@
     <item
         android:id="@+id/Reasignar"
         android:title="Modificar pedidos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:showAsAction="ifRoom|collapseActionView"/>
+    <item
+        android:id="@+id/Borrar"
+        android:title="Borrar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:showAsAction="ifRoom|collapseActionView"/>
+    <item
+        android:id="@+id/Tracing"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="Seguimiento"
+        app:showAsAction="ifRoom|withText" />
+    <item
+        android:id="@+id/Tickets"
+        android:title="Tickets"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:showAsAction="ifRoom|collapseActionView"/>
+    <item
+        android:id="@+id/Store"
+        android:title="Tienda"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:showAsAction="ifRoom|collapseActionView"/>
+    <item
+        android:id="@+id/Cuppon"
+        android:title="Cupones"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:showAsAction="ifRoom|collapseActionView"/>

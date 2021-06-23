@@ -24,6 +24,9 @@ public class SharedPrefManager {
     public static final String COOKIE_EXPIRES = "spCookieExpires";
     public static final String STORE = "store";
     public static final String MODUS = "modus";
+    public static final String AUTOASSIGN = "autoassign";
+    public static final String ENCARGADO = "encargado";
+    public static final String COPIES = "copies";
     private SharedPreferences sp;
     private SharedPreferences.Editor spEditor;
 
@@ -31,21 +34,6 @@ public class SharedPrefManager {
         sp = PreferenceManager.getDefaultSharedPreferences(context);
         spEditor = sp.edit();
     }
-
-    /*public SharedPrefManager(OptionsMenuActivity context) {
-        sp = context.getSharedPreferences(SP_HUBBING_APP, Context.MODE_PRIVATE);
-        spEditor = sp.edit();
-    }
-
-    public SharedPrefManager(OrderDetailActivity context) {
-        sp = context.getSharedPreferences(SP_HUBBING_APP, Context.MODE_PRIVATE);
-        spEditor = sp.edit();
-    }
-
-    public SharedPrefManager(LoginActivity context) {
-        sp = context.getSharedPreferences(SP_HUBBING_APP, Context.MODE_PRIVATE);
-        spEditor = sp.edit();
-    }*/
 
     public void saveSPString(String keySP, String value) {
         spEditor.putString(keySP, value);
@@ -71,8 +59,12 @@ public class SharedPrefManager {
     }
 
     public String getURL() {
-        String string = sp.getString("URL", "");
-        return string;
+        return sp.getString("URL", "https://benoodle.net");
+    }
+
+    public void logout() {
+        spEditor.clear();
+        spEditor.apply();
     }
 
     public Boolean getSPIsLoggedIn() {
@@ -98,5 +90,7 @@ public class SharedPrefManager {
     }
     public String getSPCookieExpires() { return sp.getString(COOKIE_EXPIRES, ""); }
     public Boolean getSPModus() { return sp.getBoolean(MODUS, false); }
-
+    public Boolean getSPAutoassign() { return sp.getBoolean(AUTOASSIGN, true); }
+    public Boolean getSPEncargado() { return sp.getBoolean(ENCARGADO, false); }
+    public int getSPCopies() {return Integer.parseInt(sp.getString(COPIES, "1")); }
 }

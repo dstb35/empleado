@@ -4,7 +4,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import androidx.appcompat.app.AppCompatActivity;
 
-
 public class OptionsMenuActivity extends AppCompatActivity {
 
     @Override

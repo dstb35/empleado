@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:bottom="12dp"
+        android:end="12dp"
+        android:gravity="center|fill_horizontal"
+        android:start="12dp"
+        android:top="12dp">
+        <shape>
+            <solid android:color="@color/track_on"></solid>
+            <corners android:radius="24dp" />
+            <size android:height="10dp" />
+        </shape>
+    </item>
+</layer-list>
