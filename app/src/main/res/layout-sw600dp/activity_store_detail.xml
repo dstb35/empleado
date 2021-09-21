@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/scrollView3"
@@ -9,168 +8,177 @@
     android:layout_height="match_parent"
     android:fillViewport="true">
 
-        <TextView
-            android:id="@+id/TxtStore"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="48dp"
-            android:layout_marginTop="24dp"
-            android:autoSizeMaxTextSize="34sp"
-            android:autoSizeTextType="uniform"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:text=""
-            android:textSize="28sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:id="@+id/totals"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/Txtname"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="48dp"
-            android:layout_marginTop="8dp"
-            android:autoSizeMaxTextSize="34sp"
-            android:autoSizeTextType="uniform"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:text="Nombre: "
-            android:textSize="28sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/TxtStore" />
+    <TextView
+        android:id="@+id/TxtStore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="24dp"
+        android:autoSizeMaxTextSize="34sp"
+        android:autoSizeTextType="uniform"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:text=""
+        android:textSize="28sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/totals" />
 
-        <EditText
-            android:id="@+id/name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:autoSizeMaxTextSize="34sp"
-            android:autoSizeTextType="uniform"
-            android:inputType="text"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:singleLine="true"
-            android:textSize="28sp"
-            app:layout_constraintBottom_toBottomOf="@id/Txtname"
-            app:layout_constraintStart_toEndOf="@id/Txtname"
-            app:layout_constraintTop_toTopOf="@id/Txtname" />
+    <TextView
+        android:id="@+id/Txtname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="8dp"
+        android:autoSizeMaxTextSize="34sp"
+        android:autoSizeTextType="uniform"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:text="Nombre: "
+        android:textSize="28sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/TxtStore" />
 
-        <TextView
-            android:id="@+id/Txtzipcode"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="48dp"
-            android:layout_marginTop="8dp"
-            android:autoSizeMaxTextSize="34sp"
-            android:autoSizeTextType="uniform"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:text="Código postal: "
-            android:textSize="28sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/Txtname" />
+    <EditText
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:autoSizeMaxTextSize="34sp"
+        android:autoSizeTextType="uniform"
+        android:inputType="text"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:singleLine="true"
+        android:textSize="28sp"
+        app:layout_constraintBottom_toBottomOf="@id/Txtname"
+        app:layout_constraintStart_toEndOf="@id/Txtname"
+        app:layout_constraintTop_toTopOf="@id/Txtname" />
 
-        <EditText
-            android:id="@+id/zipcode"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:autoSizeMaxTextSize="34sp"
-            android:autoSizeTextType="uniform"
-            android:inputType="number"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:textSize="28sp"
-            app:layout_constraintBottom_toBottomOf="@id/Txtzipcode"
-            app:layout_constraintStart_toEndOf="@id/Txtzipcode"
-            app:layout_constraintTop_toTopOf="@id/Txtzipcode" />
+    <TextView
+        android:id="@+id/Txtzipcode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="8dp"
+        android:autoSizeMaxTextSize="34sp"
+        android:autoSizeTextType="uniform"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:text="Código postal: "
+        android:textSize="28sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/Txtname" />
 
-        <TextView
-            android:id="@+id/TxtCountry"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="48dp"
-            android:layout_marginTop="8dp"
-            android:autoSizeMaxTextSize="34sp"
-            android:autoSizeTextType="uniform"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:text="Código de país: "
-            android:textSize="28sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/Txtzipcode" />
+    <EditText
+        android:id="@+id/zipcode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:autoSizeMaxTextSize="34sp"
+        android:autoSizeTextType="uniform"
+        android:inputType="number"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:textSize="28sp"
+        app:layout_constraintBottom_toBottomOf="@id/Txtzipcode"
+        app:layout_constraintStart_toEndOf="@id/Txtzipcode"
+        app:layout_constraintTop_toTopOf="@id/Txtzipcode" />
 
-        <EditText
-            android:id="@+id/country"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:autoSizeMaxTextSize="34sp"
-            android:autoSizeTextType="uniform"
-            android:inputType="textAutoComplete"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:textSize="28sp"
-            app:layout_constraintBottom_toBottomOf="@id/TxtCountry"
-            app:layout_constraintStart_toEndOf="@id/TxtCountry"
-            app:layout_constraintTop_toTopOf="@id/TxtCountry" />
+    <TextView
+        android:id="@+id/TxtCountry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="8dp"
+        android:autoSizeMaxTextSize="34sp"
+        android:autoSizeTextType="uniform"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:text="Código de país: "
+        android:textSize="28sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/Txtzipcode" />
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/swactive"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="48dp"
-            android:layout_marginTop="8dp"
-            android:clickable="true"
-            android:showText="true"
-            android:text="Abrir tienda"
-            android:textOff="No"
-            android:textOn="Si"
-            android:textSize="28sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/country" />
+    <EditText
+        android:id="@+id/country"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:autoSizeMaxTextSize="34sp"
+        android:autoSizeTextType="uniform"
+        android:inputType="textAutoComplete"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:textSize="28sp"
+        app:layout_constraintBottom_toBottomOf="@id/TxtCountry"
+        app:layout_constraintStart_toEndOf="@id/TxtCountry"
+        app:layout_constraintTop_toTopOf="@id/TxtCountry" />
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/swmodus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="48dp"
-            android:layout_marginTop="8dp"
-            android:clickable="true"
-            android:showText="true"
-            android:text="Cobrar primero"
-            android:textOff="No"
-            android:textOn="Si"
-            android:textSize="28sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/swactive" />
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/swactive"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="8dp"
+        android:clickable="true"
+        android:showText="true"
+        android:text="Abrir tienda"
+        android:textOff="No"
+        android:textOn="Si"
+        android:textSize="28sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/country" />
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/swubi"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="48dp"
-            android:layout_marginTop="8dp"
-            android:clickable="true"
-            android:showText="true"
-            android:text="Mostrar en cualquier ubicación"
-            android:textOff="No"
-            android:textOn="Si"
-            android:textSize="28sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/swmodus" />
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/swmodus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="8dp"
+        android:clickable="true"
+        android:showText="true"
+        android:text="Cobrar primero"
+        android:textOff="No"
+        android:textOn="Si"
+        android:textSize="28sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/swactive" />
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/swprice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="48dp"
-            android:layout_marginTop="8dp"
-            android:clickable="true"
-            android:showText="true"
-            android:text="Precios alternativos"
-            android:textOff="No"
-            android:textOn="Si"
-            android:textSize="28sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/swubi" />
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/swubi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="8dp"
+        android:clickable="true"
+        android:showText="true"
+        android:text="Mostrar en cualquier ubicación"
+        android:textOff="No"
+        android:textOn="Si"
+        android:textSize="28sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/swmodus" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/swprice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="8dp"
+        android:clickable="true"
+        android:showText="true"
+        android:text="Precios alternativos"
+        android:textOff="No"
+        android:textOn="Si"
+        android:textSize="28sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/swubi" />
 
     <Button
         android:id="@+id/btSave"
@@ -184,25 +192,25 @@
         app:layout_constraintTop_toBottomOf="@+id/swprice"
         app:layout_constraintVertical_bias="0.9" />
 
-        <Button
-            android:id="@+id/btCancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:onClick="Cancelar"
-            android:text="Cancelar"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/btSave" />
+    <Button
+        android:id="@+id/btCancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:onClick="Cancelar"
+        android:text="Cancelar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btSave" />
 
-        <ProgressBar
-            android:id="@+id/login_progress"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:indeterminateTint="@color/scrollbar"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <ProgressBar
+        android:id="@+id/login_progress"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:indeterminateTint="@color/scrollbar"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

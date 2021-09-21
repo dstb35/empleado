@@ -29,6 +29,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.gson.JsonObject;
 
 import net.benoodle.empleado.model.Catalog;
+import net.benoodle.empleado.model.Cuppon;
 import net.benoodle.empleado.model.Node;
 import net.benoodle.empleado.model.User;
 import net.benoodle.empleado.retrofit.ApiService;
@@ -138,36 +139,38 @@ public class CupponActivity extends AppCompatActivity {
         } else {
             user = txtuser.getText().toString();
         }
-        String cuppon = txtcuppon.getText().toString();
+        String txt = txtcuppon.getText().toString();
         try {
             if (user.isEmpty() && (!chmultiuser.isChecked())) {
                 Toast.makeText(context, "El nombre de usuario no puede estar vacío o selecciona cualquier usuario", Toast.LENGTH_SHORT).show();
-            } else if (cuppon.isEmpty()) {
+            } else if (txt.isEmpty()) {
                 Toast.makeText(context, "El código de cupón no puede estar vacío", Toast.LENGTH_SHORT).show();
             } else if (!sharedPrefManager.getSPEncargado()) {
                 Toast.makeText(context, "Solo los encargados pueden modificar el stock.", Toast.LENGTH_SHORT).show();
             } else if (type.isEmpty()) {
                 Toast.makeText(context, "Elige un tipo", Toast.LENGTH_SHORT).show();
             } else {
-                body.put("user", user);
+                Cuppon cuppon = new Cuppon(txt, user, type);
+                cuppon.setOp("add");
+                /*body.put("user", user);
                 body.put("cuppon", cuppon);
-                body.put("op", "add");
+                body.put("op", "add");*/
                 if (type.compareTo("percentage") == 0) {
                     int percentage = Integer.parseInt(txtpercentage.getText().toString());
                     if ((percentage > 100) || (percentage < 1)) {
                         Toast.makeText(context, "El porcentaje de descuento ha de estar comprendido entre 1 y 100", Toast.LENGTH_SHORT).show();
                     } else {
-                        body.put("percentage", percentage);
-                        body.put("type", type);
-                        mProgressView.setVisibility(View.VISIBLE);
-                        mApiService.addCuppon(sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken(), body).enqueue(Cupponcallback);
+                        cuppon.setPercentage(percentage);
+                        //body.put("percentage", percentage);
+                        //body.put("type", type);
                     }
                 } else if (type.compareTo("product") == 0) {
-                    body.put("product", catalog.getIdByPosition(spinner.getSelectedItemPosition()));
-                    body.put("type", type);
-                    mProgressView.setVisibility(View.VISIBLE);
-                    mApiService.addCuppon(sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken(), body).enqueue(Cupponcallback);
+                    cuppon.setProduct(Integer.valueOf(catalog.getIdByPosition(spinner.getSelectedItemPosition())));
+                    /*body.put("product", catalog.getIdByPosition(spinner.getSelectedItemPosition()));
+                    body.put("type", type);*/
                 }
+                mProgressView.setVisibility(View.VISIBLE);
+                mApiService.addCuppon(sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken(), cuppon).enqueue(Cupponcallback);
             }
         } catch (NumberFormatException e) {
             Toast.makeText(context, "El porcentaje ha de ser numérico.", Toast.LENGTH_SHORT).show();
@@ -178,9 +181,9 @@ public class CupponActivity extends AppCompatActivity {
         finish();
     }
 
-    Callback<ResponseBody> Cupponcallback = new Callback<ResponseBody>() {
+    Callback<Cuppon> Cupponcallback = new Callback<Cuppon>() {
         @Override
-        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+        public void onResponse(Call<Cuppon> call, Response<Cuppon> response) {
             mProgressView.setVisibility(View.GONE);
             try {
                 if (response.isSuccessful()) {
@@ -196,7 +199,7 @@ public class CupponActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onFailure(Call<ResponseBody> call, Throwable t) {
+        public void onFailure(Call<Cuppon> call, Throwable t) {
             mProgressView.setVisibility(View.GONE);
             Toast.makeText(getApplicationContext(), t.toString(), Toast.LENGTH_LONG).show();
         }

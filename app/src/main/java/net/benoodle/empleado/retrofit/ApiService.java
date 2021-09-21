@@ -1,9 +1,11 @@
 package net.benoodle.empleado.retrofit;
 
+import net.benoodle.empleado.model.Cuppon;
 import net.benoodle.empleado.model.LoginData;
 import net.benoodle.empleado.model.Node;
 import net.benoodle.empleado.model.Order;
 import net.benoodle.empleado.model.Store;
+import net.benoodle.empleado.model.Tipo;
 import java.util.ArrayList;
 import java.util.HashMap;
 import okhttp3.ResponseBody;
@@ -81,7 +83,8 @@ public interface ApiService {
 
     @POST("/eorders/addcuppon")
     @Headers({"Content-type: application/json"})
-    Call<ResponseBody> addCuppon(@Header("Authorization") String user_auth, @Header("X-CSRF-Token") String x_csrf_token, @Body HashMap<String, Object> body);
+    //Call<ResponseBody> addCuppon(@Header("Authorization") String user_auth, @Header("X-CSRF-Token") String x_csrf_token, @Body HashMap<String, Object> body);
+    Call<Cuppon> addCuppon(@Header("Authorization") String user_auth, @Header("X-CSRF-Token") String x_csrf_token, @Body Cuppon cuppon);
 
     @POST("/eorders/modificar")
     @Headers({"Content-type: application/json"})
@@ -102,4 +105,17 @@ public interface ApiService {
     @POST("/eorders/poststore")
     @Headers({"Content-type: application/json"})
     Call<ResponseBody> postStore(@Header("Authorization") String user_auth, @Header("X-CSRF-Token") String x_csrf_token, @Body Store store);
+
+    @GET("eorders/types?_format=json")
+    @Headers({"Content-type: application/json"})
+    Call<ArrayList<Tipo>> getTypes(@Header("Authorization") String user_auth, @Query("langcode") String langcode, @Header("X-CSRF-Token") String x_csrf_token);
+
+    @POST("/eorders/create?_format=json")
+    @Headers({"Content-type: application/json"})
+    Call<ResponseBody> addOrder(@Header("Authorization") String user_auth, @Header("X-CSRF-Token") String x_csrf_token, @Body HashMap<String, Object> body);
+
+    @GET("eorders/products?_format=json")
+    @Headers({"Content-type: application/json"})
+    Call<ArrayList<Node>> getAllNodes(@Query("store_id") String store_id, @Query("langcode") String langcode, @Header("Authorization") String user_auth, @Header("X-CSRF-Token") String x_csrf_token);
+
 }

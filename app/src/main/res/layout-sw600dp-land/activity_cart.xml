@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/AppTheme"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="8dp"
+    tools:context="net.benoodle.empleado.CartActivity">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.15" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.25" />
+
+    <TextView
+        android:id="@+id/Btotal"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:autoSizeTextType="uniform"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintBottom_toTopOf="@+id/guideline1"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/swCobrado"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:text="@string/paid"
+        android:textSize="28sp"
+        app:layout_constraintBottom_toBottomOf="@+id/Btcuppon"
+        app:layout_constraintEnd_toStartOf="@+id/Btcuppon"
+        app:layout_constraintStart_toStartOf="@+id/guideline2"
+        app:layout_constraintTop_toTopOf="@+id/Btcuppon"
+        app:layout_constraintWidth_min="240dp"
+        app:switchMinWidth="70dp" />
+
+    <Button
+        android:id="@+id/Btcuppon"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginEnd="8dp"
+        android:width="160dp"
+        android:onClick="Docuppon"
+        android:text="@string/cuppon"
+        app:layout_constraintBottom_toBottomOf="@+id/Btcatalog"
+        app:layout_constraintEnd_toStartOf="@+id/Btcatalog"
+        app:layout_constraintTop_toTopOf="@+id/Btcatalog" />
+
+    <Button
+        android:id="@+id/Btcatalog"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:width="160dp"
+        android:onClick="Catalog"
+        android:text="@string/catalog"
+        app:layout_constraintEnd_toStartOf="@+id/Btcomprar"
+        app:layout_constraintTop_toTopOf="@+id/Btotal" />
+
+    <Button
+        android:id="@+id/Btcomprar"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:width="160dp"
+        android:onClick="Comprar"
+        android:text="@string/finish_order"
+        app:layout_constraintBottom_toBottomOf="@+id/Btcatalog"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/Btcatalog" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/guideline1"
+        tools:listitem="@layout/cart_node" />
+
+    <ProgressBar
+        android:id="@+id/login_progress"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="8dp"
+        android:indeterminateTint="@color/scrollbar"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

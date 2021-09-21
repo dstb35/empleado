@@ -18,48 +18,63 @@ import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.mazenrashed.printooth.Printooth;
+import com.mazenrashed.printooth.data.PairedPrinter;
 import com.mazenrashed.printooth.data.printable.ImagePrintable;
 import com.mazenrashed.printooth.data.printable.Printable;
 import com.mazenrashed.printooth.data.printable.TextPrintable;
 import com.mazenrashed.printooth.data.printer.DefaultPrinter;
+import com.mazenrashed.printooth.data.printer.Printer;
 import com.mazenrashed.printooth.ui.ScanningActivity;
+import com.mazenrashed.printooth.utilities.Bluetooth;
 import com.mazenrashed.printooth.utilities.Printing;
 import com.mazenrashed.printooth.utilities.PrintingCallback;
+
 import net.benoodle.empleado.model.Node;
 import net.benoodle.empleado.model.Order;
 import net.benoodle.empleado.model.OrderItem;
 import net.benoodle.empleado.retrofit.ApiService;
 import net.benoodle.empleado.retrofit.SharedPrefManager;
 import net.benoodle.empleado.retrofit.UtilsApi;
+
 import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
 import static net.benoodle.empleado.MainActivity.catalog;
 
 public class TicketActivity extends AppCompatActivity {
     private TextView orderID, total, estado;
-    private Button btModificar;
+    private Button btModificar, btCompletar;
     private SwitchCompat cobrado;
     private ApiService mApiService;
     private SharedPrefManager sharedPrefManager;
     private String id; //store_id;
     private Order order;
     private Context context;
+    private RecyclerView recyclerView;
+    private RecyclerView.LayoutManager layoutManager;
     //private HashMap<String, Object> body = new HashMap<>();
     //private ArrayList<OrderItem>  orderItemsDelete = new ArrayList<>();
-    private Printing printing = null;
-    PrintingCallback printingCallback = null;
+    //private Printing printing = null;
+    //PrintingCallback printingCallback = null;
+    private OrderItemAdaptador adaptador;
+    private int numCopias;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,18 +90,48 @@ public class TicketActivity extends AppCompatActivity {
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
         }
+        this.recyclerView = findViewById(R.id.recycler_view);
+        this.layoutManager = new LinearLayoutManager(this);
+        this.recyclerView.setLayoutManager(layoutManager);
+        this.adaptador = new OrderItemAdaptador(new ArrayList<OrderItem>(), "imprimir");
+        this.recyclerView.setAdapter(adaptador);
         this.context = getApplicationContext();
         //this.store_id = sharedPrefManager.getSPStore();
         this.orderID = findViewById(R.id.orderID);
         //this.customer = findViewById(R.id.customer);
         this.total = findViewById(R.id.total);
         this.btModificar = findViewById(R.id.btCompletarAct);
+        this.btModificar.setText("Imprimir");
         this.estado = findViewById(R.id.estado);
         this.cobrado = findViewById(R.id.cobrado);
         this.cobrado.setClickable(false);
+        this.btCompletar = findViewById(R.id.btEntregarAct);
+        this.btCompletar.setVisibility(View.GONE);
+        this.numCopias = sharedPrefManager.getSPCopies();
         Printooth.INSTANCE.init(this);
-        if (Printooth.INSTANCE.hasPairedPrinter()) {
-            printing = Printooth.INSTANCE.printer();
+        pedirOrder();
+        if (!Printooth.INSTANCE.hasPairedPrinter()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(TicketActivity.this);
+            builder.setTitle("¿Quieres conectar una impresora?");
+            builder.setCancelable(true);
+            builder.setPositiveButton("Si",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            startActivityForResult(new Intent(context, ScanningActivity.class), ScanningActivity.SCANNING_FOR_PRINTER);
+                        }
+                    });
+            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    finish();
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        }
+        /*if (Printooth.INSTANCE.hasPairedPrinter()) {
+            printer = Printooth.INSTANCE.getPairedPrinter();
             this.initListeners();
             pedirOrder();
         }else{
@@ -108,11 +153,11 @@ public class TicketActivity extends AppCompatActivity {
             });
             AlertDialog dialog = builder.create();
             dialog.show();
-        }
+        }*/
 
     }
 
-    private void pedirOrder(){
+    private void pedirOrder() {
         AlertDialog.Builder builder = new AlertDialog.Builder(TicketActivity.this);
         final EditText input = new EditText(TicketActivity.this);
         input.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -142,7 +187,7 @@ public class TicketActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void initListeners () {
+    /*private void initListeners () {
         if (printing != null && printingCallback == null) {
             this.printingCallback = new PrintingCallback() {
                 public void connectingWithPrinter() {
@@ -167,7 +212,7 @@ public class TicketActivity extends AppCompatActivity {
             };
             Printooth.INSTANCE.printer().setPrintingCallback(printingCallback);
         }
-    }
+    }*/
 
     Callback<ArrayList<Order>> Ordercallback = new Callback<ArrayList<Order>>() {
         @Override
@@ -176,7 +221,12 @@ public class TicketActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     ArrayList<Order> orders = response.body();
                     order = orders.get(0);
-                    LinearLayout items = findViewById(R.id.items);
+                    orderID.setText(String.format("Pedido: %s", order.getOrderId()));
+                    estado.setText(String.format("Estado: %s. Empleado: %s. Tienda: %s. Cliente: %s", order.getState(), order.getEmpleado(), order.getStore(), order.getCustomer()));
+                    total.setText(String.format("Importe: %S €", order.getTotalasString()));
+                    cobrado.setChecked(order.getPagado());
+                    adaptador.updateOrderItems(order.getOrderItems());
+                    /*LinearLayout items = findViewById(R.id.items);
                     items.removeAllViews();
                     LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.MATCH_PARENT,
@@ -188,7 +238,7 @@ public class TicketActivity extends AppCompatActivity {
                     orderID.setText("Número de pedido: "+order.getOrderId());
                     estado.setText("Estado: "+order.getState()+". Empleado: "+order.getEmpleado()+". Tienda: "+order.getStore()+" . Cliente: "+order.getCustomer());
                     //customer.setText(order.getCustomer());
-                    total.setText("Total: "+order.getTotal()+" €");
+                    total.setText("Total: "+order.getTotalasString()+" €");
                     cobrado.setChecked(order.getPagado());
                     for (int j=0; j<order.getOrderItems().size(); j++){
                         LinearLayout itemLayout = new LinearLayout(context);
@@ -230,8 +280,7 @@ public class TicketActivity extends AppCompatActivity {
                         itemLayout.addView(item);
                         itemLayout.addView(quantity);
                         items.addView(itemLayout);
-                    }
-                    btModificar.setText("Imprimir");
+                    }*/
                     btModificar.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -248,16 +297,13 @@ public class TicketActivity extends AppCompatActivity {
                                         });
                                 AlertDialog dialog = builder.create();
                                 dialog.show();
-                            }else{
-                                int copies = sharedPrefManager.getSPCopies();
-                                for (int i=0; i<copies; i++){
-                                    print(order);
-                                }
-                                //print(order);
+                            } else {
+                                MainActivity.print(order, context, sharedPrefManager.getSPCopies());
+                                finish();
                             }
                         }
                     });
-                }else {
+                } else {
                     JSONObject jObjError = new JSONObject(response.errorBody().string());
                     Toast.makeText(getApplicationContext(), jObjError.get("message").toString(), Toast.LENGTH_LONG).show();
                     finish();
@@ -274,65 +320,7 @@ public class TicketActivity extends AppCompatActivity {
         }
     };
 
-    public void print(Order order){
-        if (printing != null && order.getPagado()) {
-            StringBuilder string = new StringBuilder();
-            string.append(System.getProperty("line.separator"));
-            SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
-            string.append(dateFormat.format(Calendar.getInstance().getTime()));
-            string.append(System.getProperty("line.separator"));
-            string.append("Pedido Nº: " + order.getOrderId());
-            string.append(System.getProperty("line.separator"));
-            /*string.append(" Total: " + order.getTotal() + " €");
-            string.append(System.getProperty("line.separator"));*/
-            StringBuilder products = new StringBuilder();
-            for (OrderItem orderItem : order.getOrderItems()) {
-                try {
-                    Node node = catalog.getNodeById(orderItem.getProductID());
-                    products.append(node.getTitle() + ": " + orderItem.getQuantity());
-                } catch (Exception e) {
-                    products.append("Producto no encontrado con ID" + orderItem.getProductID() + ": " + orderItem.getQuantity());
-                }
-                products.append(System.getProperty("line.separator"));
-            }
-            ArrayList<Printable> al = new ArrayList<>();
-            Bitmap image = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
-            al.add(new ImagePrintable.Builder(image).build());
-            al.add((new TextPrintable.Builder())
-                    .setText(string.toString())
-                    .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_60())
-                    .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
-                    .setEmphasizedMode(DefaultPrinter.Companion.getEMPHASIZED_MODE_NORMAL())
-                    .setUnderlined(DefaultPrinter.Companion.getUNDERLINED_MODE_ON())
-                    .setCharacterCode(DefaultPrinter.Companion.getCHARCODE_PC1252())
-                    .setNewLinesAfter(1)
-                    .build());
-            al.add((new TextPrintable.Builder())
-                    .setText(products.toString())
-                    .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                    .setAlignment(DefaultPrinter.Companion.getALIGNMENT_LEFT())
-                    .setEmphasizedMode(DefaultPrinter.Companion.getEMPHASIZED_MODE_NORMAL())
-                    .setUnderlined(DefaultPrinter.Companion.getUNDERLINED_MODE_OFF())
-                    .setCharacterCode(DefaultPrinter.Companion.getCHARCODE_PC1252())
-                    .setNewLinesAfter(1)
-                    .build());
-            al.add((new TextPrintable.Builder())
-                    .setText("Total: " + order.getTotal() + " €")
-                    .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                    .setAlignment(DefaultPrinter.Companion.getALIGNMENT_RIGHT())
-                    .setEmphasizedMode(DefaultPrinter.Companion.getEMPHASIZED_MODE_NORMAL())
-                    .setUnderlined(DefaultPrinter.Companion.getUNDERLINED_MODE_OFF())
-                    .setCharacterCode(DefaultPrinter.Companion.getCHARCODE_PC1252())
-                    .setNewLinesAfter(5)
-                    .build());
-            printing.print(al);
-        } else {
-            Toast.makeText(getApplicationContext(), "No hay impresora", Toast.LENGTH_LONG).show();
-        }
-        finish();
-    }
-
-    public void Cancelar (View v) {
+    public void Cancelar(View v) {
         finish();
     }
 
@@ -341,11 +329,9 @@ public class TicketActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == ScanningActivity.SCANNING_FOR_PRINTER && resultCode == Activity.RESULT_OK) {
             Toast.makeText(getApplicationContext(), "Impresora encontrada", Toast.LENGTH_LONG).show();
-            initListeners();
             pedirOrder();
-        }else{
+        } else {
             Toast.makeText(getApplicationContext(), "No se encontraron impresoras", Toast.LENGTH_LONG).show();
         }
     }
-
 }

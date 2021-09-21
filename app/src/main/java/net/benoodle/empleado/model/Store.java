@@ -19,6 +19,12 @@ public class Store {
     private String country;
     @SerializedName("price2")
     private String price2;
+    @SerializedName("total")
+    private String total;
+    @SerializedName("count")
+    private String count;
+    @SerializedName("day")
+    private String day;
 
     public Store(String name){
         this.name = name.toLowerCase();
@@ -82,6 +88,18 @@ public class Store {
 
     public void setPricealt(String pricealt) {
         this.price2 = pricealt;
+    }
+
+    public String getTotal() {
+        return total;
+    }
+
+    public String getCount() {
+        return count;
+    }
+
+    public String getDay() {
+        return day;
     }
 }
 

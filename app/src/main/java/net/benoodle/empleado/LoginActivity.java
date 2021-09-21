@@ -17,15 +17,18 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.Toolbar;
 import androidx.preference.PreferenceManager;
+
 import net.benoodle.empleado.model.LoginData;
 import net.benoodle.empleado.retrofit.*;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -35,9 +38,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class LoginActivity extends OptionsMenuActivity{
+public class LoginActivity extends OptionsMenuActivity {
 
-    private AutoCompleteTextView mUsernameView;
+    private AppCompatAutoCompleteTextView mUsernameView;
     private AppCompatEditText mPasswordView;
     private TextView tURL;
     private View mProgressView;
@@ -47,7 +50,7 @@ public class LoginActivity extends OptionsMenuActivity{
     private ApiService mApiService;
     private Toolbar toolbar;
     private String email, password;
-    private CheckBox checkBox;
+    //private CheckBox checkBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,9 +59,9 @@ public class LoginActivity extends OptionsMenuActivity{
         toolbar = findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
         sharedPrefManager = new SharedPrefManager(this);
-        tURL = findViewById(R.id.tURL);
-        mUsernameView = findViewById(R.id.username);
-        mUsernameView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        this.tURL = findViewById(R.id.tURL);
+        this.mUsernameView = findViewById(R.id.username);
+        this.mUsernameView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int id, KeyEvent event) {
                 if (id == EditorInfo.IME_ACTION_NEXT && v.getId() == mUsernameView.getId()) {
@@ -79,8 +82,8 @@ public class LoginActivity extends OptionsMenuActivity{
                 return true;
             }
         });
-        mProgressView = findViewById(R.id.login_progress);
-        this.checkBox = findViewById(R.id.checkBox);
+        this.mProgressView = findViewById(R.id.login_progress);
+        //this.checkBox = findViewById(R.id.checkBox);
         this.mEmailSignInButton = findViewById(R.id.email_sign_in_button);
         this.mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -90,7 +93,7 @@ public class LoginActivity extends OptionsMenuActivity{
         });
     }
 
-    protected void onStart(){
+    protected void onStart() {
         super.onStart();
         PreferenceManager.setDefaultValues(this, R.xml.preferencias, false);
         URL = sharedPrefManager.getURL();
@@ -132,18 +135,18 @@ public class LoginActivity extends OptionsMenuActivity{
                                     String logout_token = jsonRESULTS.getString("logout_token");
                                     String user_id = jsonRESULTS.getJSONObject("current_user").getString("uid");
                                     String name = jsonRESULTS.getJSONObject("current_user").getString("name");
-                                    if (jsonRESULTS.getJSONObject("current_user").has("roles")){
+                                    if (jsonRESULTS.getJSONObject("current_user").has("roles")) {
                                         JSONArray roles = jsonRESULTS.getJSONObject("current_user").getJSONArray("roles");
-                                        if (roles.toString().contains("encargado")){
+                                        if (roles.toString().contains("encargado")) {
                                             sharedPrefManager.saveSPBoolean(SharedPrefManager.ENCARGADO, true);
-                                        }else if(roles.toString().contains("empleado")){
+                                        } else if (roles.toString().contains("empleado")) {
                                             sharedPrefManager.saveSPBoolean(SharedPrefManager.ENCARGADO, false);
-                                        }else{
+                                        } else {
                                             Toast.makeText(getApplicationContext(), "No tienes permiso para utilizar esta app", Toast.LENGTH_SHORT).show();
                                             sharedPrefManager.logout();
                                             exit = true;
                                         }
-                                    }else{
+                                    } else {
                                         Toast.makeText(getApplicationContext(), "No tienes permiso para utilizar esta app", Toast.LENGTH_SHORT).show();
                                         sharedPrefManager.logout();
                                         exit = true;
@@ -156,14 +159,14 @@ public class LoginActivity extends OptionsMenuActivity{
                                     sharedPrefManager.saveSPBoolean(SharedPrefManager.SP_IS_LOGGED_IN, true);
                                     sharedPrefManager.saveSPString(SharedPrefManager.COOKIE, Cookies[0]);
                                     sharedPrefManager.saveSPString(SharedPrefManager.COOKIE_EXPIRES, Cookies[1]);
-                                    sharedPrefManager.saveSPBoolean(SharedPrefManager.AUTOASSIGN, checkBox.isChecked());
+                                    //sharedPrefManager.saveSPBoolean(SharedPrefManager.AUTOASSIGN, checkBox.isChecked());
                                     String basic_auth = name + ":" + password;
                                     byte[] bytes_basic_auth = basic_auth.getBytes();
                                     String encoded_basic_auth = android.util.Base64.encodeToString(bytes_basic_auth, android.util.Base64.DEFAULT);
                                     sharedPrefManager.saveSPString(SharedPrefManager.SP_BASIC_AUTH, "Basic " + encoded_basic_auth.trim());
-                                    if (exit){
+                                    if (exit) {
                                         finish();
-                                    }else{
+                                    } else {
                                         Intent intent = new Intent(LoginActivity.this, StoresActivity.class);
                                         startActivity(intent);
                                     }

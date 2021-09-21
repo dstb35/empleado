@@ -44,7 +44,7 @@ import retrofit2.Response;
 import static net.benoodle.empleado.MainActivity.catalog;
 
 public class StoreActivity extends AppCompatActivity {
-    private TextView TxtStore;
+    private TextView TxtStore, TxtTotals;
     private EditText zipcode, country, name;
     private Button btSave, btCancel;
     private SwitchCompat swmodus, swactive, swubi, swprice;
@@ -69,6 +69,7 @@ public class StoreActivity extends AppCompatActivity {
             Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
         }
         this.TxtStore = findViewById(R.id.TxtStore);
+        this.TxtTotals = findViewById(R.id.totals);
         this.name = findViewById(R.id.name);
         this.zipcode = findViewById(R.id.zipcode);
         this.country = findViewById(R.id.country);
@@ -101,7 +102,8 @@ public class StoreActivity extends AppCompatActivity {
             try {
                 if (response.isSuccessful()) {
                     store = response.body();
-                    TxtStore.setText("Id de tienda: "+store.getStore_id());
+                    TxtTotals.setText(String.format("%s € Facturados en %s pedidos el día %s", store.getTotal(), store.getCount(), store.getDay()));
+                    TxtStore.setText(String.format("Id de tienda: %s", store.getStore_id()));
                     name.setText(store.getName());
                     zipcode.setText(store.getZipcode());
                     country.setText(store.getCountry());

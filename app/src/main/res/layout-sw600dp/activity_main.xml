@@ -28,7 +28,7 @@
         app:layout_constraintBottom_toTopOf="@+id/searchView"
         app:layout_constraintTop_toTopOf="@+id/searchView">
 
-        <androidx.appcompat.widget.SwitchCompat
+        <!--<androidx.appcompat.widget.SwitchCompat
             android:id="@+id/swPause"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -40,7 +40,7 @@
             android:textOn="Si"
             app:layout_constraintBottom_toBottomOf="@+id/store"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/store" />
+            app:layout_constraintTop_toTopOf="@+id/store" />-->
 
         <TextView
             android:id="@+id/store"
@@ -52,7 +52,7 @@
             android:text="Tienda"
             app:layout_constraintEnd_toStartOf="@+id/totalpedidos"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/swPause"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView

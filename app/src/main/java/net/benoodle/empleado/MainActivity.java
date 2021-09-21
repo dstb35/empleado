@@ -1,10 +1,8 @@
 package net.benoodle.empleado;
 
 import androidx.annotation.NonNull;
+
 import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,7 +21,8 @@ import net.benoodle.empleado.retrofit.SharedPrefManager;
 import net.benoodle.empleado.retrofit.UtilsApi;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.SwitchCompat;
+import androidx.appcompat.view.ContextThemeWrapper;
+import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,51 +36,32 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RadioGroup;
 import android.widget.SearchView;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.JsonObject;
 import com.mazenrashed.printooth.Printooth;
-import com.mazenrashed.printooth.data.PrintingImagesHelper;
 import com.mazenrashed.printooth.data.printable.ImagePrintable;
 import com.mazenrashed.printooth.data.printable.Printable;
-import com.mazenrashed.printooth.data.printable.RawPrintable;
 import com.mazenrashed.printooth.data.printable.TextPrintable;
 import com.mazenrashed.printooth.data.printer.DefaultPrinter;
-import com.mazenrashed.printooth.data.printer.Printer;
 import com.mazenrashed.printooth.ui.ScanningActivity;
 import com.mazenrashed.printooth.utilities.Printing;
 import com.mazenrashed.printooth.utilities.PrintingCallback;
 
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Objects;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static android.bluetooth.BluetoothProfile.GATT_SERVER;
-import static android.bluetooth.BluetoothProfile.STATE_CONNECTED;
-import static android.view.View.GONE;
-import static java.lang.Boolean.TRUE;
 
 public class MainActivity extends OptionsMenuActivity implements MainAdaptador.AsignarListener {
 
@@ -102,13 +82,12 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
     private SearchView searchView;
     private Context context;
     private int itemSelected, position;
-    private Printing printing = null;
-    PrintingCallback printingCallback = null;
-    private boolean modus, autoassign;
+    //private Printing printing = null;
+    //PrintingCallback printingCallback = null;
+    private boolean modus; //autoassign;
     private View mProgressView;
     public static final int REQUEST_CODE = 1;
-    private SwitchCompat swPause;
-
+    //private SwitchCompat swPause;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,7 +103,8 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
             finish();
         }
 
-        user = new User(sharedPrefManager.getSPEmail(), sharedPrefManager.getSPName(), sharedPrefManager.getSPUserId());
+        //user = new User(sharedPrefManager.getSPEmail(), sharedPrefManager.getSPName(), sharedPrefManager.getSPUserId());
+        user = new User(sharedPrefManager.getSPEmail(), sharedPrefManager.getSPName());
         setContentView(R.layout.activity_main);
         recyclerView = findViewById(R.id.recycler_view);
         //recyclerView.setHasFixedSize(true);
@@ -137,15 +117,22 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
         totalPedidos = findViewById(R.id.totalpedidos);
         store = findViewById(R.id.store);
         mProgressView = findViewById(R.id.login_progress);
-        this.context = this;
+        this.context = getApplicationContext();
         Printooth.INSTANCE.init(context);
-        this.autoassign = sharedPrefManager.getSPAutoassign();
-        this.swPause = findViewById(R.id.swPause);
+        //this.autoassign = sharedPrefManager.getSPAutoassign();
+        //this.swPause = findViewById(R.id.swPause);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        orders.clear();
+        searchView.setQuery("", false);
+        searchView.clearFocus();
+        //adaptador = new MainAdaptador(orders, context, MainActivity.this);
+        if (adaptador != null) {
+            adaptador.notifyDataSetChanged();
+        }
         try {
             mApiService = UtilsApi.getAPIService(sharedPrefManager.getURL());
         } catch (Exception e) {
@@ -153,17 +140,42 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
         }
         store_id = sharedPrefManager.getSPStore();
         store.setText("Tienda : " + store_id);
+        /*Cargar stock y Nodecallback llama al método synchronize*/
         mApiService.getStock(store_id, sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Nodecallback);
         this.itemSelected = 0;
-        swPause.setChecked(sharedPrefManager.getSPAutoassign());
+        //swPause.setChecked(sharedPrefManager.getSPAutoassign());
         modus = sharedPrefManager.getSPModus();
-        swPause.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        /*swPause.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 sharedPrefManager.saveSPBoolean(SharedPrefManager.AUTOASSIGN, compoundButton.isChecked());
                 autoassign = compoundButton.isChecked();
             }
-        });
+        });*/
         //invalidateOptionsMenu();
+    }
+
+    /*Método para sincronizar los pedidos con el server en función del botón*/
+    public void synchronize() {
+        mProgressView.setVisibility(View.VISIBLE);
+        switch (boton) {
+            case "Cobrar":
+                mApiService.getSinCobrar(store_id, sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Orderscallback);
+                break;
+            case "Asignar":
+                mApiService.getSinAsignar(store_id, sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Orderscallback);
+                break;
+            case "Completar":
+                mApiService.getAsignados(store_id, sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Orderscallback);
+                break;
+            case "Entregar":
+                mApiService.getEntregar(store_id, sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Orderscallback);
+                break;
+            case "Completados":
+                mApiService.getComplete(store_id, sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Orderscallback);
+                break;
+            default:
+                mProgressView.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
@@ -174,27 +186,30 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
         searchView.clearFocus();
         switch (item.getItemId()) {
             case R.id.getOrdersNoPaid:
-                if (Printooth.INSTANCE.hasPairedPrinter()) {
-                    printing = Printooth.INSTANCE.printer();
-                    initListeners();
-                } else {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                    builder.setTitle("¿Quieres conectar una impresora?");
-                    builder.setCancelable(true);
-                    builder.setPositiveButton("Si",
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    startActivityForResult(new Intent(context, ScanningActivity.class), ScanningActivity.SCANNING_FOR_PRINTER);
-                                }
-                            });
-                    builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
+                /*if (Printooth.INSTANCE.hasPairedPrinter()) {
+                    //printing = Printooth.INSTANCE.printer();
+                    //initListeners();
+                } else {*/
+                if (sharedPrefManager.getSPAutoprint()) {
+                    if (!Printooth.INSTANCE.hasPairedPrinter()) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                        builder.setTitle("¿Quieres conectar una impresora?");
+                        builder.setCancelable(true);
+                        builder.setPositiveButton("Si",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        startActivityForResult(new Intent(context, ScanningActivity.class), ScanningActivity.SCANNING_FOR_PRINTER);
+                                    }
+                                });
+                        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
                 }
                 boton = "Cobrar";
                 mProgressView.setVisibility(View.VISIBLE);
@@ -203,13 +218,14 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
             case R.id.getOrders:
                 boton = "Asignar";
                 mProgressView.setVisibility(View.VISIBLE);
-                if (autoassign) {
+                /*if (autoassign) {
                     body.put("id", "0");
                     body.put("store_id", store_id);
                     mApiService.asignar(sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken(), body).enqueue(Autoaignarcallback);
                 } else {
                     mApiService.getSinAsignar(store_id, sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Orderscallback);
-                }
+                }*/
+                mApiService.getSinAsignar(store_id, sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Orderscallback);
                 return true;
             case R.id.MyOrders:
                 boton = "Completar";
@@ -220,6 +236,9 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
                 boton = "Entregar";
                 mProgressView.setVisibility(View.VISIBLE);
                 mApiService.getEntregar(store_id, sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Orderscallback);
+                return true;
+            case R.id.ShopMode:
+                lanzarVenta();
                 return true;
             case R.id.CompleteOrders:
                 boton = "Completados";
@@ -240,9 +259,9 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
                 return true;
             case R.id.Borrar:
                 //boton = "";
-                if (sharedPrefManager.getSPEncargado()){
+                if (sharedPrefManager.getSPEncargado()) {
                     Borrar();
-                }else{
+                } else {
                     Toast.makeText(context, "Solo los encargados pueden borrar pedidos", Toast.LENGTH_SHORT).show();
                 }
                 return true;
@@ -267,7 +286,7 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
         }
     }
 
-    private void initListeners() {
+    /*private void initListeners() {
         if (printing != null && printingCallback == null) {
             this.printingCallback = new PrintingCallback() {
                 public void connectingWithPrinter() {
@@ -292,7 +311,7 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
             };
             Printooth.INSTANCE.printer().setPrintingCallback(printingCallback);
         }
-    }
+    }*/
 
     public void cambiarAdaptador() {
         if (boton.compareTo("") == 0) {
@@ -341,20 +360,25 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
         this.startActivity(intent);
     }
 
+    public void lanzarVenta() {
+        Intent intent = new Intent(this, ShopActivity.class);
+        this.startActivity(intent);
+    }
+
     public void lanzarStore() {
-        if (sharedPrefManager.getSPEncargado()){
+        if (sharedPrefManager.getSPEncargado()) {
             Intent intent = new Intent(this, StoreActivity.class);
             this.startActivity(intent);
-        }else{
+        } else {
             Toast.makeText(context, "Solo los encargados pueden modificar tiendas", Toast.LENGTH_SHORT).show();
         }
     }
 
     public void lanzarCupones() {
-        if (sharedPrefManager.getSPEncargado()){
+        if (sharedPrefManager.getSPEncargado()) {
             Intent intent = new Intent(this, CupponActivity.class);
             this.startActivity(intent);
-        }else{
+        } else {
             Toast.makeText(context, "Solo los encargados pueden crear cupones", Toast.LENGTH_SHORT).show();
         }
     }
@@ -379,12 +403,12 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
     /*Método para cobrar un pedido*/
     @Override
     public void Cobrar(int i) {
-        if (sharedPrefManager.getSPEncargado()){
+        if (sharedPrefManager.getSPEncargado()) {
             body.put("id", orders.get(i).getOrderId());
             position = i;
             mProgressView.setVisibility(View.VISIBLE);
             mApiService.cobrar(sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken(), body).enqueue(Cobrarcallback);
-        }else{
+        } else {
             Toast.makeText(context, "Solo los encargados pueden cobrar pedidos", Toast.LENGTH_SHORT).show();
         }
     }
@@ -404,14 +428,15 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
     }
 
     /*Método para borrar pedidos*/
-    public void Borrar(){
+    public void Borrar() {
         body.clear();
         askPedido();
     }
 
-    public void askPedido(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        final EditText input = new EditText(context);
+    public void askPedido() {
+        ContextThemeWrapper ctx = new ContextThemeWrapper(this, R.style.AppTheme);
+        AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+        AppCompatEditText input = new AppCompatEditText(ctx);
         input.setInputType(InputType.TYPE_CLASS_NUMBER);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -430,17 +455,17 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
                         if (!id.isEmpty()) {
                             body.put(id, id);
                         }
-                        if (body.isEmpty()){
+                        if (body.isEmpty()) {
                             Toast.makeText(context, "La lista está vacía, no se borraron pedidos", Toast.LENGTH_SHORT).show();
-                        }else{
+                        } else {
                             mApiService.borrar(sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken(), body)
                                     .enqueue(new Callback<ResponseBody>() {
                                         @Override
                                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                                             if (response.isSuccessful()) {
-                                                for (String id : body.values() ) {
-                                                    for (Order order : orders){
-                                                        if (order.getOrderId().compareTo(id) == 0){
+                                                for (String id : body.values()) {
+                                                    for (Order order : orders) {
+                                                        if (order.getOrderId().compareTo(id) == 0) {
                                                             orders.remove(order);
                                                             break;
                                                         }
@@ -470,7 +495,7 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
 
                                         @Override
                                         public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                            Toast.makeText(getApplicationContext(), "Error: "+t.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                                            Toast.makeText(getApplicationContext(), "Error: " + t.getLocalizedMessage(), Toast.LENGTH_LONG).show();
                                         }
                                     });
                         }
@@ -523,62 +548,84 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
     public void lanzarOrderDetailActivity() {
         Intent intent = new Intent(this, OrderDetailActivity.class);
         intent.putExtra("i", position);
-        startActivityForResult(intent, REQUEST_CODE);
-//        this.startActivity(intent);
+        //startActivityForResult(intent, REQUEST_CODE);
+        startActivity(intent);
     }
 
-    public void print(Order order) {
-        if (printing != null) {
-            StringBuilder string = new StringBuilder();
-            string.append(System.getProperty("line.separator"));
-            SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
-            string.append(dateFormat.format(Calendar.getInstance().getTime()));
-            string.append(System.getProperty("line.separator"));
-            string.append("Pedido Nº: " + order.getOrderId());
-            string.append(System.getProperty("line.separator"));
-            StringBuilder products = new StringBuilder();
-            for (OrderItem orderItem : order.getOrderItems()) {
-                try {
-                    Node node = catalog.getNodeById(orderItem.getProductID());
-                    products.append(node.getTitle() + ": " + orderItem.getQuantity());
-                } catch (Exception e) {
-                    products.append("Producto no encontrado con ID" + orderItem.getProductID() + ": " + orderItem.getQuantity());
+    public static void print(Order order, Context context, int numCopias) {
+        //if (printing != null) {
+        if (Printooth.INSTANCE.hasPairedPrinter() && order.getPagado()) {
+            try {
+                StringBuilder string = new StringBuilder();
+                string.append(System.getProperty("line.separator"));
+                SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
+                string.append(dateFormat.format(Calendar.getInstance().getTime()));
+                string.append(System.getProperty("line.separator"));
+                string.append("Pedido Nº: " + order.getOrderId());
+                string.append(System.getProperty("line.separator"));
+                StringBuilder products = new StringBuilder();
+                for (OrderItem orderItem : order.getOrderItems()) {
+                    try {
+                        Node node = catalog.getNodeById(orderItem.getProductID());
+                        products.append(node.getTitle() + ". Unidades: " + orderItem.getQuantity());
+                        products.append(System.getProperty("line.separator"));
+                        if (orderItem.getSelecciones() != null) {
+                            products.append("Selección menú:");
+                            products.append(System.getProperty("line.separator"));
+                            for (String seleccion : orderItem.getSelecciones()) {
+                                try {
+                                    products.append(catalog.getNodeById(seleccion).getTitle() + ", ");
+                                    products.append(System.getProperty("line.separator"));
+                                } catch (Exception e) {
+                                    Log.e("sele_menu", e.getLocalizedMessage());
+                                }
+                            }
+                        }
+                        products.append(System.getProperty("line.separator"));
+                    } catch (Exception e) {
+                        products.append("Producto no encontrado con ID" + orderItem.getProductID() + ": " + orderItem.getQuantity());
+                    }
                 }
-                products.append(System.getProperty("line.separator"));
+                ArrayList<Printable> al = new ArrayList<>();
+                Bitmap image = BitmapFactory.decodeResource(context.getResources(), R.drawable.logo);
+                for (int i = 0; i < numCopias; i++) {
+                    al.add(new ImagePrintable.Builder(image).build());
+                    al.add((new TextPrintable.Builder())
+                            .setText(string.toString())
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_60())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                            .setEmphasizedMode(DefaultPrinter.Companion.getEMPHASIZED_MODE_NORMAL())
+                            .setUnderlined(DefaultPrinter.Companion.getUNDERLINED_MODE_ON())
+                            .setCharacterCode(DefaultPrinter.Companion.getCHARCODE_PC1252())
+                            .setNewLinesAfter(1)
+                            .build());
+                    al.add((new TextPrintable.Builder())
+                            .setText(products.toString())
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_LEFT())
+                            .setEmphasizedMode(DefaultPrinter.Companion.getEMPHASIZED_MODE_NORMAL())
+                            .setUnderlined(DefaultPrinter.Companion.getUNDERLINED_MODE_OFF())
+                            .setCharacterCode(DefaultPrinter.Companion.getCHARCODE_PC1252())
+                            .setNewLinesAfter(1)
+                            .build());
+                    al.add((new TextPrintable.Builder())
+                            .setText("Total: " + order.getTotal() + " €")
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_RIGHT())
+                            .setEmphasizedMode(DefaultPrinter.Companion.getEMPHASIZED_MODE_NORMAL())
+                            .setUnderlined(DefaultPrinter.Companion.getUNDERLINED_MODE_OFF())
+                            .setCharacterCode(DefaultPrinter.Companion.getCHARCODE_PC1252())
+                            .setNewLinesAfter(5)
+                            .build());
+                }
+                Printooth.INSTANCE.printer().print(al);
+            } catch (Exception e) {
+                Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
             }
-            ArrayList<Printable> al = new ArrayList<>();
-            Bitmap image = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
-            al.add(new ImagePrintable.Builder(image).build());
-            al.add((new TextPrintable.Builder())
-                    .setText(string.toString())
-                    .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_60())
-                    .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
-                    .setEmphasizedMode(DefaultPrinter.Companion.getEMPHASIZED_MODE_NORMAL())
-                    .setUnderlined(DefaultPrinter.Companion.getUNDERLINED_MODE_ON())
-                    .setCharacterCode(DefaultPrinter.Companion.getCHARCODE_PC1252())
-                    .setNewLinesAfter(1)
-                    .build());
-            al.add((new TextPrintable.Builder())
-                    .setText(products.toString())
-                    .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                    .setAlignment(DefaultPrinter.Companion.getALIGNMENT_LEFT())
-                    .setEmphasizedMode(DefaultPrinter.Companion.getEMPHASIZED_MODE_NORMAL())
-                    .setUnderlined(DefaultPrinter.Companion.getUNDERLINED_MODE_OFF())
-                    .setCharacterCode(DefaultPrinter.Companion.getCHARCODE_PC1252())
-                    .setNewLinesAfter(1)
-                    .build());
-            al.add((new TextPrintable.Builder())
-                    .setText("Total: " + order.getTotal() + " €")
-                    .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                    .setAlignment(DefaultPrinter.Companion.getALIGNMENT_RIGHT())
-                    .setEmphasizedMode(DefaultPrinter.Companion.getEMPHASIZED_MODE_NORMAL())
-                    .setUnderlined(DefaultPrinter.Companion.getUNDERLINED_MODE_OFF())
-                    .setCharacterCode(DefaultPrinter.Companion.getCHARCODE_PC1252())
-                    .setNewLinesAfter(5)
-                    .build());
-            printing.print(al);
+        } else if (!order.getPagado()) {
+            Toast.makeText(context, "Los pedidos no cobrados no se imprimen.", Toast.LENGTH_LONG).show();
         } else {
-            Toast.makeText(getApplicationContext(), "No hay impresora", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "No hay impresora", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -600,14 +647,15 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == ScanningActivity.SCANNING_FOR_PRINTER && resultCode == Activity.RESULT_OK) {
             Toast.makeText(getApplicationContext(), "Impresora encontrada", Toast.LENGTH_LONG).show();
-            initListeners();
+            //initListeners();
         } else if (requestCode == ScanningActivity.SCANNING_FOR_PRINTER) {
             Toast.makeText(getApplicationContext(), "No se encontraron impresoras", Toast.LENGTH_LONG).show();
-        } else if (requestCode == MainActivity.REQUEST_CODE && resultCode == 0) {
+        }
+        /*} else if (requestCode == MainActivity.REQUEST_CODE && resultCode == 0) {
             autoassign = false;
         } else if (requestCode == MainActivity.REQUEST_CODE && resultCode == 1) {
             autoassign = sharedPrefManager.getSPAutoassign();
-        }
+        }*/
     }
 
     Callback<ArrayList<Order>> Orderscallback = new Callback<ArrayList<Order>>() {
@@ -641,13 +689,15 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
         public void onResponse(Call<Order> call, Response<Order> response) {
             mProgressView.setVisibility(View.GONE);
             if (response.isSuccessful()) {
+                //orders.remove(position); //Si lo elimino orderdetailavtivity no lo puede coger
                 Toast.makeText(getApplicationContext(), "Pedido asignado.", Toast.LENGTH_LONG).show();
+                //cambiarAdaptador();
                 lanzarOrderDetailActivity();
             } else {
                 try {
                     JSONObject jObjError = new JSONObject(response.errorBody().string());
                     Toast.makeText(getApplicationContext(), jObjError.get("message").toString(), Toast.LENGTH_LONG).show();
-                    adaptador.notifyDataSetChanged();
+                    synchronize();
                 } catch (Exception e) {
                     Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                 }
@@ -666,19 +716,17 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
             mProgressView.setVisibility(View.GONE);
             if (response.isSuccessful()) {
-                int copies = sharedPrefManager.getSPCopies();
-                for (int i=0; i<copies; i++){
-                    print(orders.get(position));
+                if (sharedPrefManager.getSPAutoprint()) {
+                    MainActivity.print(orders.get(position), context, sharedPrefManager.getSPCopies());
                 }
                 orders.remove(position); //Lo elimino porque orders son los pedidos sin cobrar.
                 Toast.makeText(getApplicationContext(), "Pedido cobrado.", Toast.LENGTH_LONG).show();
-                adaptador.notifyDataSetChanged();
                 cambiarAdaptador();
             } else {
                 try {
                     JSONObject jObjError = new JSONObject(response.errorBody().string());
                     Toast.makeText(getApplicationContext(), jObjError.get("message").toString(), Toast.LENGTH_LONG).show();
-                    adaptador.notifyDataSetChanged();
+                    synchronize();
                 } catch (Exception e) {
                     Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                 }
@@ -698,8 +746,7 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
             mProgressView.setVisibility(View.GONE);
             if (response.isSuccessful()) {
                 catalog = new Catalog(response.body());
-                /*Con el catálogo cargado se pasa a mostrar los pedidos sin asignar*/
-                if ((autoassign) && (boton.compareTo("Asignar") == 0)) {
+                /*if ((autoassign) && (boton.compareTo("Asignar") == 0)) {
                     body.put("id", "0");
                     body.put("store_id", store_id);
                     mProgressView.setVisibility(View.VISIBLE);
@@ -708,7 +755,7 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
                     cambiarAdaptador();
                     //boton = "Asignar";
                     //mApiService.getSinAsignar(store_id, sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Orderscallback);
-                }
+                }*/
             } else {
                 try {
                     JSONObject jObjError = new JSONObject(response.errorBody().string());
@@ -717,6 +764,8 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
                     Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }
+            /*Con el catálogo cargado se pasa a sincronizar*/
+            synchronize();
         }
 
         @Override
@@ -738,6 +787,7 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
                 try {
                     JSONObject jObjError = new JSONObject(response.errorBody().string());
                     Toast.makeText(getApplicationContext(), jObjError.get("message").toString(), Toast.LENGTH_LONG).show();
+                    synchronize();
                 } catch (Exception e) {
                     Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                 }
@@ -763,6 +813,7 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
                 try {
                     JSONObject jObjError = new JSONObject(response.errorBody().string());
                     Toast.makeText(context, jObjError.get("message").toString(), Toast.LENGTH_LONG).show();
+                    synchronize();
                 } catch (Exception e) {
                     Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
                 }
@@ -776,7 +827,7 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
         }
     };
 
-    Callback<Order> Autoaignarcallback = new Callback<Order>() {
+    /*Callback<Order> Autoaignarcallback = new Callback<Order>() {
         @Override
         public void onResponse(Call<Order> call, Response<Order> response) {
             mProgressView.setVisibility(View.GONE);
@@ -805,5 +856,5 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
             cambiarAdaptador();
             Toast.makeText(MainActivity.this, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
         }
-    };
+    };*/
 }

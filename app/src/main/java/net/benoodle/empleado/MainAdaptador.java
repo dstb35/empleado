@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -73,12 +74,16 @@ public class MainAdaptador extends RecyclerView.Adapter<MainAdaptador.ViewHolder
         holder.updated.setText("Actualizado " + order.getUpdated());
         ArrayList<OrderItem> orderItems = order.getOrderItems();
         if (boton.compareTo("Asignar") != 0) {
-            holder.total.setText("Importe: " + order.getTotal() + " €");
+            try {
+                holder.total.setText("Importe: " + order.getTotalasString() + " €");
+            }catch (Exception e){
+                Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+            }
             holder.empleado.setText("Empleado: " + order.getEmpleado());
             StringBuilder items = new StringBuilder();
             for (OrderItem orderitem : orderItems) {
                 try {
-                    items.append("Producto: " + catalog.getNodeById(orderitem.getProductID()).getTitle() + " Cantidad: " + orderitem.getQuantity());
+                    items.append(catalog.getNodeById(orderitem.getProductID()).getTitle() + ". \t Unidades: " + orderitem.getQuantity());
                 } catch (Exception e) {
                     items.append("Producto: " + e.getLocalizedMessage());
                 }

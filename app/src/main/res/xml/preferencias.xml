@@ -19,10 +19,14 @@
         android:title="Número de copias de tickets a imprimir"
         android:inputType="number"
         android:defaultValue="1"/>
-    <CheckBoxPreference
+    <!--<CheckBoxPreference
         android:key="autoassign"
         android:title="¿Aignación automática de pedidos?"
-        android:defaultValue="false" />
+        android:defaultValue="false" />-->
+    <CheckBoxPreference
+        android:key="autoprint"
+        android:title="¿Imprimir pedidos creados al finalizar la compra y cobrar pedidos?"
+        android:defaultValue="true" />
     <PreferenceScreen
         android:title="Version"
         android:key="version"

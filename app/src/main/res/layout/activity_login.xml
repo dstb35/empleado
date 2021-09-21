@@ -11,20 +11,7 @@
         android:id="@+id/include"
         layout="@layout/toolbar_layout" />
 
-    <!-- Login progress -->
-
-    <ProgressBar
-        android:id="@+id/login_progress"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:indeterminateTint="@color/scrollbar"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/include" />
-
-    <AutoCompleteTextView
+    <androidx.appcompat.widget.AppCompatAutoCompleteTextView
         android:id="@+id/username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -33,6 +20,7 @@
         android:inputType="textEmailAddress"
         android:maxLines="1"
         android:minWidth="300dp"
+        android:minHeight="48dp"
         android:singleLine="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -75,11 +63,12 @@
             android:focusable="true"
             android:inputType="textPassword"
             android:maxLength="10"
-            android:maxLines="1" />
+            android:maxLines="1"
+            tools:ignore="SpeakableTextPresentCheck" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <CheckBox
+    <!--<CheckBox
         android:id="@+id/checkBox"
         android:layout_width="360dp"
         android:layout_height="60dp"
@@ -91,16 +80,16 @@
         android:text="Marcar para asignar pedidos automáticamente. Se puede cambiar en preferencias de la app."
         app:layout_constraintEnd_toEndOf="@+id/textInputLayout"
         app:layout_constraintStart_toStartOf="@+id/textInputLayout"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />-->
 
     <TextView
         android:id="@+id/tURL"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        app:layout_constraintEnd_toEndOf="@+id/checkBox"
-        app:layout_constraintStart_toStartOf="@+id/checkBox"
-        app:layout_constraintTop_toBottomOf="@+id/checkBox" />
+        app:layout_constraintEnd_toEndOf="@+id/textInputLayout"
+        app:layout_constraintStart_toStartOf="@+id/textInputLayout"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
 
     <!--<Switch
                 android:id="@+id/modus"
@@ -121,9 +110,19 @@
         android:layout_marginTop="24dp"
         android:text="@string/action_sign_in"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/checkBox"
-        app:layout_constraintStart_toStartOf="@+id/checkBox"
+        app:layout_constraintEnd_toEndOf="@+id/textInputLayout"
+        app:layout_constraintStart_toStartOf="@+id/textInputLayout"
         app:layout_constraintTop_toBottomOf="@+id/tURL" />
 
+    <ProgressBar
+        android:id="@+id/login_progress"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:indeterminateTint="@color/scrollbar"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/include" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

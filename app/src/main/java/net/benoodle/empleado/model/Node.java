@@ -7,18 +7,28 @@ import com.google.gson.annotations.SerializedName;
 
 import static java.lang.Boolean.FALSE;
 
+import java.util.ArrayList;
+
 
 public class Node implements Parcelable {
 
     @SerializedName("variation_id")
     private String productID;
     private String title;
+    private String type;
     @SerializedName("status")
     private Boolean status;
     @SerializedName("stock")
-    private String stock;
+    private Integer stock;
     @SerializedName("price")
     private String price;
+    @SerializedName("productos")
+    private ArrayList<String> productos;
+    @SerializedName("extras")
+    private ArrayList<String> extras;
+    @SerializedName("url")
+    private String url;
+    private String body;
     private String id;
     private String name;
     private String grade;
@@ -42,6 +52,14 @@ public class Node implements Parcelable {
 
     public String getPrice() {
         return price;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getBody() {
+        return body;
     }
 
     public void setPrice(String price) {
@@ -72,11 +90,19 @@ public class Node implements Parcelable {
         this.status = status;
     }
 
-    public String getStock() {
-        return stock;
+    public Integer getStock() {
+        if (stock != null ){
+            return stock;
+        }else{
+            return -1;
+        }
     }
 
-    public void setStock(String stock) {
+    public ArrayList<String> getProductos() {
+        return productos;
+    }
+
+    public void setStock(Integer stock) {
         this.stock = stock;
     }
 
@@ -110,4 +136,24 @@ public class Node implements Parcelable {
             return new Node[size];
         }
     };
+
+    //Actuliza el stock del producto
+    public void updateStock(Integer quantity)
+            throws Exception{
+        if (this.stock != -1){
+            if (quantity > this.stock){
+                throw new Exception();
+            }
+            this.stock = this.stock - quantity;
+        }
+    }
+
+    public ArrayList<String> getExtras() {
+        return extras;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
 }

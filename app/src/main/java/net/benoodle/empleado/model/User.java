@@ -11,18 +11,23 @@ public class User {
     @SerializedName("name")
     private String name;
 
-    @SerializedName("uid")
-    private String uid;
+    //@SerializedName("uid")
+    //private String uid;
 
     private String empleado;
 
     @SerializedName("roles")
     private ArrayList<String> roles = new ArrayList<>();
 
-    public User(String mail, String name, String uid){
+    /*public User(String mail, String name, String uid){
         this.mail = mail;
         this.name = name;
         this.uid = uid;
+    }*/
+
+    public User(String mail, String name){
+        this.mail = mail;
+        this.name = name;
     }
 
     public String getEmpleado() {
@@ -49,13 +54,13 @@ public class User {
         this.name = name;
     }
 
-    public String getUid() {
+    /*public String getUid() {
         return uid;
     }
 
     public void setUid(String uid) {
         this.uid = uid;
-    }
+    }*/
 
     public boolean isEncargado() {
         return roles.contains("encargado");
