@@ -2,7 +2,7 @@ package net.benoodle.empleado;
 
 import static net.benoodle.empleado.MainActivity.MENU;
 import static net.benoodle.empleado.MainActivity.catalog;
-import static net.benoodle.empleado.ShopActivity.order;
+import static net.benoodle.empleado.MainActivity.order;
 
 import android.content.Context;
 import android.view.LayoutInflater;

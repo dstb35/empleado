@@ -35,6 +35,8 @@ public class Order {
     private String total;
     @SerializedName("empleado")
     private String empleado = "0";
+    @SerializedName("field_voluntario")
+    private String voluntario;
     @SerializedName("pagado")
     private Boolean pagado;
     /*@SerializedName("cuppons")
@@ -69,6 +71,14 @@ public class Order {
 
     public void setState(String state) {
         this.state = state;
+    }
+
+    public String getVoluntario() {
+        return voluntario;
+    }
+
+    public void setVoluntario(String voluntario) {
+        this.voluntario = voluntario;
     }
 
     public ArrayList<OrderItem> getOrderItems() {

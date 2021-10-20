@@ -69,6 +69,7 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
     private SharedPrefManager sharedPrefManager;
     public static final String MENU = "menu";
     public static ArrayList<Order> orders = new ArrayList<>();
+    public static Order order;
     public User user;
     public static Catalog catalog;
     private HashMap<String, String> body = new HashMap<>();
@@ -569,7 +570,7 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
                         Node node = catalog.getNodeById(orderItem.getProductID());
                         products.append(node.getTitle() + ". Unidades: " + orderItem.getQuantity());
                         products.append(System.getProperty("line.separator"));
-                        if (orderItem.getSelecciones() != null) {
+                        if (orderItem.getSelecciones() != null && orderItem.getSelecciones().size() > 0) {
                             products.append("Selección menú:");
                             products.append(System.getProperty("line.separator"));
                             for (String seleccion : orderItem.getSelecciones()) {
@@ -587,7 +588,7 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
                     }
                 }
                 ArrayList<Printable> al = new ArrayList<>();
-                Bitmap image = BitmapFactory.decodeResource(context.getResources(), R.drawable.logo);
+                Bitmap image = BitmapFactory.decodeResource(context.getResources(), R.drawable.benoodle_logo);
                 for (int i = 0; i < numCopias; i++) {
                     al.add(new ImagePrintable.Builder(image).build());
                     al.add((new TextPrintable.Builder())

@@ -2,7 +2,8 @@ package net.benoodle.empleado;
 
 import static android.view.View.GONE;
 import static net.benoodle.empleado.MainActivity.catalog;
-import static net.benoodle.empleado.ShopActivity.order;
+import static net.benoodle.empleado.MainActivity.order;
+import static net.benoodle.empleado.ShopActivity.lastOrder;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
@@ -20,7 +21,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
@@ -31,9 +31,6 @@ import com.mazenrashed.printooth.Printooth;
 import com.mazenrashed.printooth.ui.ScanningActivity;
 
 import net.benoodle.empleado.model.Cuppon;
-import net.benoodle.empleado.model.Node;
-import net.benoodle.empleado.model.Order;
-import net.benoodle.empleado.model.OrderItem;
 import net.benoodle.empleado.model.User;
 import net.benoodle.empleado.retrofit.ApiService;
 import net.benoodle.empleado.retrofit.SharedPrefManager;
@@ -44,9 +41,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -55,15 +49,6 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import com.mazenrashed.printooth.Printooth;
-import com.mazenrashed.printooth.data.printable.ImagePrintable;
-import com.mazenrashed.printooth.data.printable.Printable;
-import com.mazenrashed.printooth.data.printable.TextPrintable;
-import com.mazenrashed.printooth.data.printer.DefaultPrinter;
-import com.mazenrashed.printooth.ui.ScanningActivity;
-import com.mazenrashed.printooth.utilities.Printing;
-import com.mazenrashed.printooth.utilities.PrintingCallback;
 
 
 public class CartActivity extends AppCompatActivity implements CartAdapter.EliminarListener {
@@ -105,7 +90,7 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.Elimi
                     order.setPagado(isChecked);
                 }
             });
-        }else{
+        } else {
             swcobrado.setClickable(false);
         }
         mApiService = UtilsApi.getAPIService(sharedPrefManager.getURL());
@@ -255,40 +240,98 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.Elimi
         }
     };
 
-    Callback<ResponseBody> Ordercallback = new Callback<ResponseBody>() {
+    final Callback<ResponseBody> Ordercallback = new Callback<ResponseBody>() {
         @Override
         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
             String id = "";
-            mProgressView.setVisibility(View.GONE);
+            mProgressView.setVisibility(GONE);
             semaforo = TRUE;
             if (response.isSuccessful()) {
                 try {
                     JSONObject jsonRESULTS = new JSONObject(response.body().string());
                     id = jsonRESULTS.getJSONArray("order_id").getJSONObject(0).getString("value");
                     order.setOrderId(id);
-                    if (sharedPrefManager.getSPAutoprint()){
+                    if (sharedPrefManager.getSPAutoprint()) {
                         MainActivity.print(order, context, sharedPrefManager.getSPCopies());
                     }
-                    order = new Order(sharedPrefManager.getSPStore());
+                    lastOrder = order;
+                    //order = new Order(sharedPrefManager.getSPStore());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 AlertDialog.Builder builder = new AlertDialog.Builder(CartActivity.this);
-                if (sharedPrefManager.getSPModus()) {
+                /*if (sharedPrefManager.getSPModus()) {
                     builder.setTitle(String.format("%s%s", getResources().getString(R.string.ordermoduson), id));
                 } else {
                     builder.setTitle(String.format("%s%s", getResources().getString(R.string.ordermodusoff), id));
-                }
+                }*/
+                builder.setTitle(String.format("Pedido nº: %s", id));
                 builder.setCancelable(false);
-                builder.setPositiveButton(R.string.gotIt, new DialogInterface.OnClickListener() {
+                builder.setPositiveButton("Ok",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                setResult(RESULT_OK);
+                                finish();
+                            }
+                        });
+                builder.setNeutralButton("Calcular cambio",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(CartActivity.this);
+                                builder.setTitle("Introduce importe recibido");
+                                final EditText input = new EditText(CartActivity.this);
+                                input.setInputType(InputType.TYPE_CLASS_NUMBER);
+                                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                                        LinearLayout.LayoutParams.MATCH_PARENT,
+                                        LinearLayout.LayoutParams.MATCH_PARENT);
+                                input.setLayoutParams(lp);
+                                builder.setView(input);
+                                builder.setCancelable(true);
+                                builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                    @Override
+                                    public void onCancel(DialogInterface dialogInterface) {
+                                        setResult(RESULT_OK);
+                                        finish();
+                                    }
+                                });
+                                builder.setPositiveButton("Calcular",
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                float amount = Float.parseFloat(input.getText().toString());
+                                                AlertDialog.Builder builder = new AlertDialog.Builder(CartActivity.this);
+                                                try {
+                                                    amount -= order.getTotal();
+                                                } catch (Exception e) {
+                                                }
+                                                builder.setTitle(String.format("El cambio es %.2f ", amount));
+                                                builder.setPositiveButton("Aceptar",
+                                                        new DialogInterface.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(DialogInterface dialog, int which) {
+                                                                setResult(RESULT_OK);
+                                                                finish();
+                                                            }
+                                                        });
+                                                AlertDialog dialog2 = builder.create();
+                                                dialog2.show();
+                                            }
+                                        });
+                                AlertDialog dialog1 = builder.create();
+                                dialog1.show();
+                            }
+                        });
+                /*builder.setPositiveButton(R.string.gotIt, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                         setResult(RESULT_OK);
                         finish();
                     }
-                });
+                });*/
                 AlertDialog dialog = builder.create();
                 dialog.show();
             } else if (response.code() == 409) {
@@ -338,7 +381,7 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.Elimi
         @Override
         public void onFailure(Call<ResponseBody> call, Throwable t) {
             Toast.makeText(context, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-            mProgressView.setVisibility(View.GONE);
+            mProgressView.setVisibility(GONE);
             semaforo = TRUE;
         }
     };

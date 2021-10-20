@@ -1,14 +1,17 @@
 package net.benoodle.empleado;
 
 import static net.benoodle.empleado.MainActivity.catalog;
+import static net.benoodle.empleado.MainActivity.order;
 //import static net.benoodle.eorder.TypesActivity.order;
 //import static net.benoodle.eorder.TypesActivity.tipos;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.text.InputType;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -17,11 +20,13 @@ import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.TextViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -48,19 +53,19 @@ import retrofit2.Response;
 public class ShopActivity extends AppCompatActivity implements ShopAdaptador.ComprarListener {
 
     public static final int REQUEST_CODE = 1;
-    public static Order order;
     public static String MENU = "menu";
+    public static Order lastOrder;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private ShopAdaptador adaptador;
     private SharedPrefManager sharedPrefManager;
     private Context context;
-    private String type;
+    //private String type;
     private ApiService mApiService;
     private LinearLayout typesLayout, resumenLayout;
     private TextView total;
     private ArrayList<String> typesAvaliable;
-    private CountDownTimer countDownTimer;
+    //private CountDownTimer countDownTimer;
     private ArrayList<Tipo> tipos = new ArrayList<>();
 
     @Override
@@ -86,9 +91,42 @@ public class ShopActivity extends AppCompatActivity implements ShopAdaptador.Com
         //this.type = getIntent().getStringExtra("type");
         this.resumenLayout = findViewById(R.id.resumen);
         this.total = findViewById(R.id.total);
-        this.order = new Order(sharedPrefManager.getSPStore());
-
+        if (order == null) {
+            order = new Order(sharedPrefManager.getSPStore());
+        }
         typesLayout = findViewById(R.id.main_types_layout);
+        if (sharedPrefManager.getSPVoluntarios()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(ShopActivity.this);
+            final EditText input = new EditText(ShopActivity.this);
+            input.setInputType(InputType.TYPE_CLASS_TEXT);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT);
+            input.setLayoutParams(lp);
+            builder.setView(input);
+            builder.setMessage("Introduce  el nombre del voluntario.");
+            builder.setCancelable(true);
+            builder.setPositiveButton("Aceptar",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            String nombre = input.getText().toString();
+                            if (nombre.isEmpty()) {
+                                Toast.makeText(getApplicationContext(), "El nombre de voluntario no puede estar vacío", Toast.LENGTH_SHORT).show();
+                            } else {
+                                order.setVoluntario(nombre);
+                            }
+                        }
+                    });
+            builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        }
+        /*Cargar todos los tipos de productos por el stock*/
+        mApiService.getAllNodes(sharedPrefManager.getSPStore(), Locale.getDefault().getLanguage(), sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Nodecallback);
         /*typesLayout.removeAllViews();
         typesLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -99,8 +137,6 @@ public class ShopActivity extends AppCompatActivity implements ShopAdaptador.Com
         });
         adaptador = new ShopAdaptador(catalog.TypeCatalog(this.type), ShopActivity.this, ShopActivity.this);
         recyclerView.setAdapter(adaptador);*/
-
-        /*Cargar todos los tipos de productos*/
         mApiService.getTypes(sharedPrefManager.getSPBasicAuth(), Locale.getDefault().getLanguage(), sharedPrefManager.getSPCsrfToken()).enqueue(Typescallback);
     }
 
@@ -110,9 +146,52 @@ public class ShopActivity extends AppCompatActivity implements ShopAdaptador.Com
         actualizarResumen();
     }
 
-    public void ShowCart(View v) {
+    /*public void ShowCart(View v) {
         Intent intent = new Intent(this, CartActivity.class);
         this.startActivity(intent);
+    }*/
+
+    public void ShowCart(View v) {
+        //Si el resultado es 1 es compra exitosa, recargar el catálogo. Así no machaca el stock del carrito en compras a medias.
+        startActivityForResult(new Intent(this, CartActivity.class), 1);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(resultCode, resultCode, data);
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+            order = new Order(sharedPrefManager.getSPStore());
+            if (sharedPrefManager.getSPVoluntarios()) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ShopActivity.this);
+                final EditText input = new EditText(ShopActivity.this);
+                input.setInputType(InputType.TYPE_CLASS_TEXT);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.MATCH_PARENT);
+                input.setLayoutParams(lp);
+                builder.setView(input);
+                builder.setMessage("Introduce  el nombre del voluntario.");
+                builder.setCancelable(true);
+                builder.setPositiveButton("Aceptar",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                String nombre = input.getText().toString();
+                                if (!nombre.isEmpty()) {
+                                    order.setVoluntario(nombre);
+                                }
+                            }
+                        });
+                builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+            /*Cargar todos los tipos de productos por el stock*/
+            mApiService.getAllNodes(sharedPrefManager.getSPStore(), Locale.getDefault().getLanguage(), sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Nodecallback);
+        }
     }
 
     public void cargarTypes() {
@@ -210,6 +289,14 @@ public class ShopActivity extends AppCompatActivity implements ShopAdaptador.Com
         }
     }
 
+    public void doReprint(View view) {
+        if (lastOrder != null) {
+            MainActivity.print(lastOrder, context, sharedPrefManager.getSPCopies());
+        }else{
+            Toast.makeText(context,getResources().getString(R.string.last_order_empty), Toast.LENGTH_SHORT).show();
+        }
+    }
+
     Callback<ArrayList<Node>> Nodecallback = new Callback<ArrayList<Node>>() {
         @Override
         public void onResponse(Call<ArrayList<Node>> call, Response<ArrayList<Node>> response) {
@@ -254,4 +341,6 @@ public class ShopActivity extends AppCompatActivity implements ShopAdaptador.Com
             Toast.makeText(context, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
         }
     };
+
+
 }

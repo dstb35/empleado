@@ -198,56 +198,61 @@ public class StockActivity extends AppCompatActivity {
 
                             @Override
                             public void onTextChanged(CharSequence charSequence, int start, int count, int after) {
-                                stock.setStock(node.getProductID(), Integer.valueOf(stockText.getText().toString()));
-                            }
+                                try {
+                                    stock.setStock(node.getProductID(), Integer.valueOf(stockText.getText().toString()));
+                                } catch (NumberFormatException e) {
 
-                            @Override
-                            public void afterTextChanged(Editable editable) {
+                                }
                             }
-                        });
+                                @Override
+                                public void afterTextChanged (Editable editable){
+                                }
+                            });
                         nodeLayout.addView(swStock);
                         nodeLayout.addView(stockText);
                         container.addView(nodeLayout);
+                        }
+                    }
+                } else{
+                    try {
+                        JSONObject jObjError = new JSONObject(response.errorBody().string());
+                        Toast.makeText(getApplicationContext(), jObjError.get("message").toString(), Toast.LENGTH_LONG).show();
+                    } catch (Exception e) {
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 }
-            } else {
+            }
+
+            @Override
+            public void onFailure (Call < ArrayList < Node >> call, Throwable t){
+                mProgressView.setVisibility(View.GONE);
+                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        }
+
+        ;
+
+        Callback<ResponseBody> Chstockcallback = new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                mProgressView.setVisibility(View.GONE);
                 try {
-                    JSONObject jObjError = new JSONObject(response.errorBody().string());
-                    Toast.makeText(getApplicationContext(), jObjError.get("message").toString(), Toast.LENGTH_LONG).show();
+                    if (response.isSuccessful()) {
+                        Toast.makeText(getApplicationContext(), "Stock cambiado correctamente", Toast.LENGTH_LONG).show();
+                        finish();
+                    } else {
+                        String error = response.errorBody().string();
+                        Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show();
+                    }
                 } catch (Exception e) {
                     Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }
-        }
 
-        @Override
-        public void onFailure(Call<ArrayList<Node>> call, Throwable t) {
-            mProgressView.setVisibility(View.GONE);
-            Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
-        }
-    };
-
-    Callback<ResponseBody> Chstockcallback = new Callback<ResponseBody>() {
-        @Override
-        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-            mProgressView.setVisibility(View.GONE);
-            try {
-                if (response.isSuccessful()) {
-                    Toast.makeText(getApplicationContext(), "Stock cambiado correctamente", Toast.LENGTH_LONG).show();
-                    finish();
-                } else {
-                    String error = response.errorBody().string();
-                    Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show();
-                }
-            } catch (Exception e) {
-                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                mProgressView.setVisibility(View.GONE);
+                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
             }
-        }
-
-        @Override
-        public void onFailure(Call<ResponseBody> call, Throwable t) {
-            mProgressView.setVisibility(View.GONE);
-            Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
-        }
-    };
-}
+        };
+    }

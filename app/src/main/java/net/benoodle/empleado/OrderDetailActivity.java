@@ -114,6 +114,9 @@ public class OrderDetailActivity extends AppCompatActivity  {
             order = orders.get(position);
             orderID.setText(String.format("Pedido: %s", order.getOrderId()));
             estado.setText(String.format("Estado: %s. Empleado: %s. Tienda: %s. Cliente: %s", order.getState(),order.getEmpleado(), order.getStore(), order.getCustomer()));
+            if (!order.getVoluntario().isEmpty()){
+                estado.append("   Voluntario: " + order.getVoluntario());
+            }
             total.setText(String.format("Importe: %S €", order.getTotalasString()));
             cobrado.setChecked(order.getPagado());
             adaptador.updateOrderItems(order.getOrderItems());

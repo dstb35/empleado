@@ -13,6 +13,8 @@ public class Store {
     private String activa;
     @SerializedName("saltarubi")
     private String saltarubi;
+    @SerializedName("voluntarios")
+    private String voluntarios;
     @SerializedName("zipcode")
     private String zipcode;
     @SerializedName("country")
@@ -52,6 +54,10 @@ public class Store {
 
     public String getActiva() {
         return activa;
+    }
+
+    public String getVoluntarios() {
+        return voluntarios;
     }
 
     public void setActiva(String activa) {

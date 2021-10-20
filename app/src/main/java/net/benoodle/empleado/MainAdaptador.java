@@ -68,6 +68,9 @@ public class MainAdaptador extends RecyclerView.Adapter<MainAdaptador.ViewHolder
         final Order order = orders.get(i);
         holder.orderID.setText("Nº del pedido: " + order.getOrderId());
         holder.customer.setText(order.getCustomer());
+        if (!order.getVoluntario().isEmpty()){
+            holder.customer.append("   Voluntario: " + order.getVoluntario());
+        }
         holder.state.setText("Estado del pedido: " + order.getState());
         holder.cobrado.setChecked(order.getPagado());
         holder.cuppons.setText(order.getCupponsasString());

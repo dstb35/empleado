@@ -176,6 +176,11 @@ public class StoresActivity extends AppCompatActivity implements LocationListene
                                 } else {
                                     sharedPrefManager.saveSPBoolean(SharedPrefManager.MODUS, true);
                                 }
+                                if (store.getVoluntarios().equals("0")) {
+                                    sharedPrefManager.saveSPBoolean(SharedPrefManager.VOLUNTARIOS, false);
+                                } else {
+                                    sharedPrefManager.saveSPBoolean(SharedPrefManager.VOLUNTARIOS, true);
+                                }
                                 Intent intent = new Intent(context, MainActivity.class);
                                 startActivity(intent);
                             }

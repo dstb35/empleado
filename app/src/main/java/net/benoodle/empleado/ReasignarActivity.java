@@ -155,10 +155,16 @@ public class ReasignarActivity extends AppCompatActivity implements ReasignarAda
                     Float width = new Float(items.getWidth());
                     Double itemWidth = width*0.75;
                     Double quantityWidth = width*0.25;*/
-                    orderID.setText("Pedido: " + order.getOrderId());
+                    //orderID.setText("Pedido: " + order.getOrderId());
                     //customer.setText(order.getCustomer());
-                    estado.setText("Estado: " + order.getState() + ". Empleado: " + order.getEmpleado() + ". Tienda: " + order.getStore() + " . Cliente: " + order.getCustomer());
-                    total.setText("Total: " + order.getTotalasString() + " €");
+                    //estado.setText("Estado: " + order.getState() + ". Empleado: " + order.getEmpleado() + ". Tienda: " + order.getStore() + " . Cliente: " + order.getCustomer());
+                    //total.setText("Total: " + order.getTotalasString() + " €");
+                    orderID.setText(String.format("Pedido: %s", order.getOrderId()));
+                    estado.setText(String.format("Estado: %s. Empleado: %s. Tienda: %s. Cliente: %s", order.getState(),order.getEmpleado(), order.getStore(), order.getCustomer()));
+                    if (!order.getVoluntario().isEmpty()){
+                        estado.append("   Voluntario: " + order.getVoluntario());
+                    }
+                    total.setText(String.format("Total: %s €", order.getTotalasString()));
                     cobrado.setChecked(order.getPagado());
                     if (sharedPrefManager.getSPEncargado()) {
                         cobrado.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -369,7 +375,11 @@ public class ReasignarActivity extends AppCompatActivity implements ReasignarAda
             mProgressView.setVisibility(View.GONE);
             if (response.isSuccessful()) {
                 Order newOrder = response.body();
-                estado.setText("Estado: " + newOrder.getState() + ". Empleado: " + newOrder.getEmpleado() + ". Tienda: " + newOrder.getStore());
+                //estado.setText("Estado: " + newOrder.getState() + ". Empleado: " + newOrder.getEmpleado() + ". Tienda: " + newOrder.getStore());
+                estado.setText(String.format("Estado: %s . Empleado: %s . Tienda %s . Cliente: %s .", newOrder.getState(), newOrder.getEmpleado(), newOrder.getStore(), newOrder.getCustomer()));
+                if (!order.getVoluntario().isEmpty()){
+                    estado.append("   Voluntario: " + order.getVoluntario());
+                }
                 Toast.makeText(getApplicationContext(), "Pedido asignado", Toast.LENGTH_LONG).show();
             } else {
                 try {

@@ -24,6 +24,7 @@ public class SharedPrefManager {
     public static final String COOKIE_EXPIRES = "spCookieExpires";
     public static final String STORE = "store";
     public static final String MODUS = "modus";
+    public static final String VOLUNTARIOS = "voluntarios";
     //public static final String AUTOASSIGN = "autoassign";
     public static final String ENCARGADO = "encargado";
     public static final String COPIES = "copies";
@@ -91,6 +92,7 @@ public class SharedPrefManager {
     }
     public String getSPCookieExpires() { return sp.getString(COOKIE_EXPIRES, ""); }
     public Boolean getSPModus() { return sp.getBoolean(MODUS, false); }
+    public Boolean getSPVoluntarios() { return sp.getBoolean(VOLUNTARIOS, false); }
     //public Boolean getSPAutoassign() { return sp.getBoolean(AUTOASSIGN, true); }
     public Boolean getSPAutoprint() { return sp.getBoolean(AUTOPRINT, true); }
     public Boolean getSPEncargado() { return sp.getBoolean(ENCARGADO, false); }

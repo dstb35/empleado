@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="8dp"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     tools:context="net.benoodle.empleado.ShopActivity">
 
     <androidx.constraintlayout.widget.Guideline
@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.25" />
+        app:layout_constraintGuide_percent="0.3" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline3"
@@ -36,7 +36,7 @@
         android:background="@drawable/shape"
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/guideline1"
-        app:layout_constraintEnd_toStartOf="@+id/guideline3"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -44,14 +44,25 @@
         android:id="@+id/review"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
         android:onClick="ShowCart"
         android:text="@string/review"
         android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@+id/guideline1"
+        app:layout_constraintEnd_toStartOf="@+id/reprint"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/guideline1" />
+
+    <Button
+        android:id="@+id/reprint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="doReprint"
+        android:text="@string/reprint"
+        app:layout_constraintBottom_toBottomOf="@+id/review"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@id/guideline3"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/review"
+        app:layout_constraintTop_toTopOf="@+id/guideline1" />
 
     <HorizontalScrollView
         android:id="@+id/main_types_scroll"
@@ -62,10 +73,10 @@
         android:foregroundGravity="center"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        app:layout_constraintBottom_toTopOf="@id/guideline2"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_min="80dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/guideline1">
+        app:layout_constraintTop_toBottomOf="@+id/review">
 
         <LinearLayout
             android:id="@+id/main_types_layout"
@@ -88,9 +99,9 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view"
-            android:layout_marginTop="16dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="16dp"
             tools:listitem="@layout/main_node" />
     </LinearLayout>
 
