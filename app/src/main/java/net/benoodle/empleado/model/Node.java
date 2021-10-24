@@ -33,12 +33,14 @@ public class Node implements Parcelable {
     private String name;
     private String grade;
 
-    /*public Node(String productID, String title, String stock) {
+    public Node(String productID, String title, String url, String type, Integer stock) {
         this.productID = productID;
         this.title = title;
+        this.url = url;
+        this.type = type;
         this.stock = stock;
-        this.proce
-    }*/
+        this.status = true;
+    }
 
     public Node (Parcel in){
         String[] data = new String[3];

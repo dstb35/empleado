@@ -41,6 +41,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -417,11 +418,14 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.Elimi
     public void Anadir(String productID, int quantity, Boolean menu, int i) {
         try {
             if (menu && quantity > 0) {
-                Intent intent = new Intent(this, MenuActivity.class);
+                //Ahora al añadir menus será una copia exacta, no se pedirán opciones
+                /*Intent intent = new Intent(this, MenuActivity.class);
                 intent.putExtra("id", productID);
-                this.startActivity(intent);
+                this.startActivity(intent);*/
+                ArrayList<String> selecciones = order.getOrderItem(i).getSelecciones();
+                order.addMenuItem(productID, selecciones, quantity);
             } else if (!menu) {
-                order.addOrderItem(productID, quantity);
+                order.addOrderItem(catalog.getNodeById(productID), quantity);
             } else if (menu && quantity < 0) {
                 this.Eliminar(i);
             }

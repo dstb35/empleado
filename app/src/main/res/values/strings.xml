@@ -55,5 +55,6 @@
     <string name="paid">Cobrado</string>
     <string name="reprint">Reimprimir</string>
     <string name="last_order_empty">No existe pedido anterior</string>
+    <string name="ask_kakigori">¿Quieres kakigori por 1€ más?</string>
 </resources>
 

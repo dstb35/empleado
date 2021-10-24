@@ -21,13 +21,16 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.core.widget.TextViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -45,38 +48,40 @@ import net.benoodle.empleado.retrofit.UtilsApi;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ShopActivity extends AppCompatActivity implements ShopAdaptador.ComprarListener {
+public class ShopActivity extends AppCompatActivity /*implements ShopAdaptador.ComprarListener*/ {
 
     public static final int REQUEST_CODE = 1;
     public static String MENU = "menu";
     public static Order lastOrder;
-    private RecyclerView recyclerView;
-    private RecyclerView.LayoutManager layoutManager;
-    private ShopAdaptador adaptador;
+    //private RecyclerView recyclerView;
+    //private RecyclerView.LayoutManager layoutManager;
+    //private ShopAdaptador adaptador;
     private SharedPrefManager sharedPrefManager;
     private Context context;
     //private String type;
     private ApiService mApiService;
-    private LinearLayout typesLayout, resumenLayout;
+    private LinearLayout /*typesLayout,*/ resumenLayout, productsLayout;
     private TextView total;
     private ArrayList<String> typesAvaliable;
     //private CountDownTimer countDownTimer;
     private ArrayList<Tipo> tipos = new ArrayList<>();
+    private Pattern pattern = Pattern.compile("^*kakigori.*");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shop);
         this.context = getApplicationContext();
-        recyclerView = findViewById(R.id.recycler_view);
-        recyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(ShopActivity.this);
-        recyclerView.setLayoutManager(layoutManager);
+//        recyclerView = findViewById(R.id.recycler_view);
+//        recyclerView.setHasFixedSize(true);
+//        layoutManager = new LinearLayoutManager(ShopActivity.this);
+//        recyclerView.setLayoutManager(layoutManager);
         sharedPrefManager = new SharedPrefManager(this);
         if (!sharedPrefManager.getSPIsLoggedIn()) {
             Intent intent = new Intent(context, LoginActivity.class);
@@ -91,10 +96,11 @@ public class ShopActivity extends AppCompatActivity implements ShopAdaptador.Com
         //this.type = getIntent().getStringExtra("type");
         this.resumenLayout = findViewById(R.id.resumen);
         this.total = findViewById(R.id.total);
+        this.productsLayout = findViewById(R.id.products);
         if (order == null) {
             order = new Order(sharedPrefManager.getSPStore());
         }
-        typesLayout = findViewById(R.id.main_types_layout);
+//        typesLayout = findViewById(R.id.main_types_layout);
         if (sharedPrefManager.getSPVoluntarios()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(ShopActivity.this);
             final EditText input = new EditText(ShopActivity.this);
@@ -126,7 +132,7 @@ public class ShopActivity extends AppCompatActivity implements ShopAdaptador.Com
             dialog.show();
         }
         /*Cargar todos los tipos de productos por el stock*/
-        mApiService.getAllNodes(sharedPrefManager.getSPStore(), Locale.getDefault().getLanguage(), sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Nodecallback);
+        //mApiService.getAllNodes(sharedPrefManager.getSPStore(), Locale.getDefault().getLanguage(), sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Nodecallback);
         /*typesLayout.removeAllViews();
         typesLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -194,7 +200,7 @@ public class ShopActivity extends AppCompatActivity implements ShopAdaptador.Com
         }
     }
 
-    public void cargarTypes() {
+    /*public void cargarTypes() {
         float height = (float) findViewById(R.id.main_types_scroll).getHeight();
         double imagesHeight = height * 0.60;
         double textHeight = height * 0.25;
@@ -235,30 +241,57 @@ public class ShopActivity extends AppCompatActivity implements ShopAdaptador.Com
                 }
             }
         }
-    }
+    }*/
 
     /*
     Añade al carrito el producto y la cantidad  pasadas.
     Si es un menú pide al usuario las opciones en MenuActivity
     Las opciones vienen de node.productos[] del server.
      */
-    @Override
-    public void Anadir(Node node, int quantity) {
+    //@Override
+    public void anadir(Node node, int quantity) {
         if (node.getType().equals(MENU)) {
             Intent intent = new Intent(this, MenuActivity.class);
             intent.putExtra("id", node.getProductID());
             //Con el result llamaremos a adaptador.notifyDataSetChange para que cambie el stock o no
             startActivityForResult(intent, 1);
-        } else if (!node.getType().equals(MENU)) {
+        } else if (pattern.matcher(node.getTitle().toLowerCase()).matches()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.MyCustomVerticalScrollBar));
+            builder.setTitle(getResources().getString(R.string.choose) + " " + "kakigori");
+            builder.setCancelable(false);
+            builder.setSingleChoiceItems(catalog.getKakigorisTitulos(), -1, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int position) {
+                    try {
+                        order.addOrderItem(catalog.getKakigoris().get(position), quantity);
+                        Toast.makeText(context, getResources().getString(R.string.product_added), Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                        actualizarResumen();
+                    } catch (Exception e) {
+                        Toast.makeText(context, getResources().getString(R.string.no_sell), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+            builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.menu_canceled), Toast.LENGTH_SHORT).show();
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+            dialog.getListView().setScrollbarFadingEnabled(false);
+        } else {
             try {
-                order.addOrderItem(node.getProductID(), quantity);
+                order.addOrderItem(node, quantity);
                 Toast.makeText(context, getResources().getString(R.string.product_added), Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
                 Toast.makeText(context, getResources().getString(R.string.no_sell), Toast.LENGTH_SHORT).show();
             }
         }
-        adaptador.notifyDataSetChanged();
+        //adaptador.notifyDataSetChanged();
         actualizarResumen();
+        //AlertDialog.Builder builder = new AlertDialog.Builder(MenuActivity.this);
+
     }
 
     public void actualizarResumen() {
@@ -292,8 +325,8 @@ public class ShopActivity extends AppCompatActivity implements ShopAdaptador.Com
     public void doReprint(View view) {
         if (lastOrder != null) {
             MainActivity.print(lastOrder, context, sharedPrefManager.getSPCopies());
-        }else{
-            Toast.makeText(context,getResources().getString(R.string.last_order_empty), Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(context, getResources().getString(R.string.last_order_empty), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -301,16 +334,74 @@ public class ShopActivity extends AppCompatActivity implements ShopAdaptador.Com
         @Override
         public void onResponse(Call<ArrayList<Node>> call, Response<ArrayList<Node>> response) {
             if (response.isSuccessful()) {
-                typesLayout.removeAllViews();
+//                typesLayout.removeAllViews();
+                productsLayout.removeAllViews();
                 catalog = new Catalog(response.body());
                 catalog.CrearTypes();
                 typesAvaliable = catalog.getTypes();
                 if (catalog.sincronizarStock(order)) {
                     Toast.makeText(context, getResources().getString(R.string.removed_sync), Toast.LENGTH_SHORT).show();
                 }
-                cargarTypes();
-                adaptador = new ShopAdaptador(catalog.TypeCatalog("menu"), ShopActivity.this, ShopActivity.this);
-                recyclerView.setAdapter(adaptador);
+//                cargarTypes();
+//                adaptador = new ShopAdaptador(catalog.TypeCatalog("menu"), ShopActivity.this, ShopActivity.this);
+//                recyclerView.setAdapter(adaptador);
+                typesAvaliable = catalog.getTypes();
+                LinearLayout.LayoutParams categoriesParams = new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        240
+                );
+                LinearLayout.LayoutParams titleParams = new LinearLayout.LayoutParams(
+                        120,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                );
+                titleParams.setMargins(16, 8, 16, 0);
+                for (String name : typesAvaliable) {
+                    TextView type = new TextView(context);
+                    for (Tipo tipo : tipos) {
+                        if (tipo.getId().compareTo(name) == 0) {
+                            type.setText(tipo.getName());
+                            break;
+                        }
+                    }
+//                    type.setText(name);
+                    productsLayout.addView(type);
+                    HorizontalScrollView scrollView = new HorizontalScrollView(context);
+                    scrollView.setLayoutParams(categoriesParams);
+                    LinearLayout categories = new LinearLayout(context);
+                    categories.setOrientation(LinearLayout.HORIZONTAL);
+                    for (Node node : catalog.TypeCatalog(name)) {
+                        LinearLayout titleLayout = new LinearLayout(context);
+                        titleLayout.setOrientation(LinearLayout.VERTICAL);
+                        titleLayout.setLayoutParams(titleParams);
+                        ImageView image = new ImageView(context);
+//                        double height = titleLayout.getHeight()*0.75;
+                        image.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 120));
+                        try {
+
+                            Picasso.with(context).load(node.getUrl()).resize(0, 120).into(image);
+                        } catch (Exception e) {
+                            Picasso.with(context).load(node.getUrl()).into(image);
+                        }
+
+                        image.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                anadir(node, 1);
+                            }
+                        });
+
+                        titleLayout.addView(image);
+                        TextView text = new TextView(context);
+//                        double titleHeight = titleLayout.getHeight() * 0.25;
+                        text.setLayoutParams(new LinearLayout.LayoutParams(120, 80));
+                        text.setText(node.getTitle());
+                        text.setTextSize(14);
+                        titleLayout.addView(text);
+                        categories.addView(titleLayout);
+                    }
+                    scrollView.addView(categories);
+                    productsLayout.addView(scrollView);
+                }
             } else {
                 try {
                     Toast.makeText(context, response.toString(), Toast.LENGTH_SHORT).show();
@@ -330,9 +421,9 @@ public class ShopActivity extends AppCompatActivity implements ShopAdaptador.Com
         @Override
         public void onResponse(Call<ArrayList<Tipo>> call, Response<ArrayList<Tipo>> response) {
             if (response.isSuccessful()) {
-                mApiService.getAllNodes(sharedPrefManager.getSPStore(), Locale.getDefault().getLanguage(), sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Nodecallback);
                 tipos.clear();
                 tipos = response.body();
+                mApiService.getAllNodes(sharedPrefManager.getSPStore(), Locale.getDefault().getLanguage(), sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Nodecallback);
             }
         }
 
@@ -341,6 +432,4 @@ public class ShopActivity extends AppCompatActivity implements ShopAdaptador.Com
             Toast.makeText(context, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
         }
     };
-
-
 }

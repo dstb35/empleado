@@ -3,6 +3,7 @@ package net.benoodle.empleado;
 import static net.benoodle.empleado.MainActivity.catalog;
 import static net.benoodle.empleado.MainActivity.order;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -135,10 +136,32 @@ public class MenuActivity extends AppCompatActivity {
                         //Variación de menu con kakigori es el 28
                         if (node.getProductID().compareTo("28") == 0) {
                             pedirKakigori();
-                        } else {
+                        }else if ((catalog.existsMenuKakigori()) && (catalog.getKakigoris().size() > 0)) {
+                            AlertDialog.Builder builder1 = new AlertDialog.Builder(new ContextThemeWrapper(MenuActivity.this, R.style.MyCustomVerticalScrollBar));
+                            builder1.setTitle(getResources().getString(R.string.ask_kakigori));
+                            builder1.setCancelable(false);
+                            builder1.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    try {
+                                        node = catalog.getNodeById("28");
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                    pedirKakigori();
+                                }
+                            });
+                            builder1.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog1, int which) {
+                                    añadirMenu();
+                                    dialog1.dismiss();
+                                }
+                            });
+                            AlertDialog dialog1 = builder1.create();
+                            dialog1.show();
+                        }else{
                             añadirMenu();
                         }
-                        dialog.dismiss();
                     }
                 });
                 builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -161,21 +184,21 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     public void pedirKakigori() {
-        Pattern pattern = Pattern.compile("^*kakigori.*");
+        /*Pattern pattern = Pattern.compile("^*kakigori.*");
         final ArrayList<Node> kakigoris = new ArrayList<>();
         for (Node node : catalog.getCatalog()) {
             if (pattern.matcher(node.getTitle().toLowerCase()).matches()) {
                 kakigoris.add(node);
             }
-        }
-        if (kakigoris.size() < 1){
+        }*/
+        if (catalog.getKakigoris().size() < 1){
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.no_stock_kakigori), Toast.LENGTH_SHORT).show();
             finish();
         }
-        titulos = new String[kakigoris.size()];
-        for (int i = 0; i < kakigoris.size(); i++) {
+        titulos = catalog.getKakigorisTitulos();
+        /*for (int i = 0; i < kakigoris.size(); i++) {
             titulos[i] = kakigoris.get(i).getTitle();
-        }
+        }*/
         //AlertDialog.Builder builder = new AlertDialog.Builder(MenuActivity.this);
         AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.MyCustomVerticalScrollBar));
         builder.setTitle(getResources().getString(R.string.choose) + " " + "kakigori");
@@ -183,7 +206,7 @@ public class MenuActivity extends AppCompatActivity {
         builder.setSingleChoiceItems(titulos, -1, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int position) {
                 //La posición de productos[] debería coincidir con la posición de opciones.
-                selecciones.add(kakigoris.get(position).getProductID());
+                selecciones.add(catalog.getKakigoris().get(position).getProductID());
                 añadirMenu();
                 dialog.dismiss();
             }

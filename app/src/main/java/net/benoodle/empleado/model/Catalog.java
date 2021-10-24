@@ -1,24 +1,43 @@
 package net.benoodle.empleado.model;
 
-import android.widget.Toast;
-import net.benoodle.empleado.MainActivity;
-import net.benoodle.empleado.StockActivity;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
-
-import static net.benoodle.empleado.MainActivity.catalog;
+import java.util.regex.Pattern;
 
 public class Catalog {
     private ArrayList<Node> catalog = new ArrayList<>();
     private ArrayList<String> types = new ArrayList<>();
+    private ArrayList<Node> kakigoris = new ArrayList<>();
+    private String[] kakigorisTitulos;
 
-    public Catalog (ArrayList<Node> catalog) {
+    public Catalog(ArrayList<Node> catalog) {
+        //Agrupar kakigoris para que se muestren como un producto
+        Pattern pattern = Pattern.compile("^*kakigori.*");
+        for (Node node : catalog) {
+            if (pattern.matcher(node.getTitle().toLowerCase()).matches()) {
+                kakigoris.add(node);
+            }
+        }
+        catalog.removeAll(kakigoris);
         this.catalog = catalog;
+        if (kakigoris.size() > 0) {
+            this.catalog.add(new Node("0", "Kakigori", kakigoris.get(0).getUrl(), "bebidas", -1));
+            kakigorisTitulos = new String[kakigoris.size()];
+            for (int i = 0; i < kakigoris.size(); i++) {
+                kakigorisTitulos[i] = kakigoris.get(i).getTitle();
+            }
+        }
     }
 
-    public Node getNodeById (String id) throws Exception{
-        for (Node node : catalog){
-            if (node.getProductID().compareTo(id) == 0){
+    public Node getNodeById(String id) throws Exception {
+        for (Node node : catalog) {
+            if (node.getProductID().compareTo(id) == 0) {
+                return node;
+            }
+        }
+        ArrayList<Node> kakigorisCopie = kakigoris;
+        for (Node node : kakigorisCopie) {
+            if (node.getProductID().compareTo(id) == 0) {
                 return node;
             }
         }
@@ -29,34 +48,34 @@ public class Catalog {
         return catalog.size();
     }
 
-    public Node getNodeByPos (int i){
+    public Node getNodeByPos(int i) {
         return catalog.get(i);
     }
 
-    public void switchStock(String productID, boolean status){
-        try{
+    public void switchStock(String productID, boolean status) {
+        try {
             int index = catalog.indexOf(getNodeById(productID));
             Node node = catalog.get(index);
             node.setStatus(status);
             catalog.set(index, node);
-        }catch (Exception e){
-           e.getLocalizedMessage();
+        } catch (Exception e) {
+            e.getLocalizedMessage();
         }
     }
 
-    public void setStock(String productID, Integer quantity){
-        try{
+    public void setStock(String productID, Integer quantity) {
+        try {
             int index = catalog.indexOf(getNodeById(productID));
             Node node = catalog.get(index);
             node.setStock(quantity);
             catalog.set(index, node);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.getLocalizedMessage();
         }
     }
 
     public void doActivateAll() {
-        for (int i=0; i < catalog.size(); i++){
+        for (int i = 0; i < catalog.size(); i++) {
             catalog.get(i).setStatus(true);
             catalog.get(i).setStock(-1);
         }
@@ -66,14 +85,14 @@ public class Catalog {
         return catalog;
     }
 
-    public void setCatalog(ArrayList<Node> catalog) {
+    /*public void setCatalog(ArrayList<Node> catalog) {
         this.catalog = catalog;
-    }
+    }*/
 
-    public float getPriceById(String prooductId) {
+    public float getPriceById(String productId) {
         float price = (float) 0;
         try {
-            Node node = getNodeById(prooductId);
+            Node node = getNodeById(productId);
             String formatPrice = node.getPrice();
             formatPrice = formatPrice.replaceAll("[^0-9\\.]", "");
             price = new Float(formatPrice);
@@ -83,7 +102,7 @@ public class Catalog {
         return price;
     }
 
-    public String getIdByPosition(int pos){
+    public String getIdByPosition(int pos) {
         return this.catalog.get(pos).getProductID();
     }
 
@@ -92,14 +111,13 @@ public class Catalog {
     catType es el catálogo para un tipo de producto determinado.
     Ej. Si tipo es bebidas devolverá todas los Node de tipo bebidas
      */
-    public ArrayList<Node> TypeCatalog (String tipo){
+    public ArrayList<Node> TypeCatalog(String tipo) {
         ArrayList<Node> catType = new ArrayList<>();
-        if (tipo == null){
+        if (tipo == null) {
             catType = catalog;
-        }
-        else {
-            for (Node node : catalog){
-                if (node.getType().compareTo(tipo) == 0){
+        } else {
+            for (Node node : catalog) {
+                if (node.getType().compareTo(tipo) == 0) {
                     catType.add(node);
                 }
             }
@@ -114,40 +132,40 @@ public class Catalog {
     /*
     Crea los tipos para la variable static types. Los tipos de productos son bebidas, ramen, etc...
      */
-    public void CrearTypes (){
-        for ( Node node : catalog){
-            if (!types.contains(node.getType())){
+    public void CrearTypes() {
+        for (Node node : catalog) {
+            if (!types.contains(node.getType())) {
                 types.add(node.getType());
             }
         }
     }
 
     /*
-    Devuelve el sku del título de producto pasado por parámetro
+    Devuelve el id del título de producto pasado por parámetro
      */
 
-    public Integer getPosById(String id){
-        for (int i=0; i < catalog.size(); i++){
+    public Integer getPosById(String id) {
+        for (int i = 0; i < catalog.size(); i++) {
             Node node = catalog.get(i);
-            if (node.getProductID().toLowerCase().compareTo(id.toLowerCase()) == 0){
+            if (node.getProductID().toLowerCase().compareTo(id.toLowerCase()) == 0) {
                 return i;
             }
         }
-        return null;
+        return 0;
     }
 
-    public Node getNode (Integer i){
+    public Node getNode(Integer i) {
         return catalog.get(i);
     }
 
     /* Devuelve TRUE si hay stock para el id y cantidades pasados por parámetro */
-    public Boolean isStock (String id, Integer quantity){
-        try{
+    public Boolean isStock(String id, Integer quantity) {
+        try {
             Node node = this.getNodeById(id);
-            if ( node.getStock() >= quantity || node.getStock() == -1){
+            if (node.getStock() >= quantity || node.getStock() == -1) {
                 return Boolean.TRUE;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.getLocalizedMessage();
         }
         return Boolean.FALSE;
@@ -159,27 +177,31 @@ public class Catalog {
     Ej. Si el tipo es bebidas devolverá todas las bebidas del catalog: coca-cola, fanta, etc...
      */
 
-    public ArrayList<Node> OpcionesMenu (String tipo){
+    public ArrayList<Node> OpcionesMenu(String tipo) {
         ArrayList<Node> opciones = new ArrayList<>();
-        for (Node node : catalog){
-            if  ((node.getType().toLowerCase().compareTo(tipo) == 0) && (this.isStock(node.getProductID(), 1))){
+        for (Node node : catalog) {
+            if ((node.getType().toLowerCase().compareTo(tipo) == 0) && (this.isStock(node.getProductID(), 1) && (node.getProductID().compareTo("0") != 0))) {
                 opciones.add(node);
             }
+        }
+        if (tipo.compareTo("bebidas") == 0) {
+            opciones.addAll(kakigoris);
         }
         return opciones;
     }
 
-    public void actualizarStock (String id, String stock){
+    public void actualizarStock(String id, String stock) {
         int i = this.getPosById(id);
         this.catalog.get(i).setStock(Integer.valueOf(stock));
     }
+
     /*Método que sincroniza el stock del catálogo con las línes de pedido del carrito.
     Útil por si se recarga el catalágo teniendo un carrito lleno
     Devuelve false si no hubo que modificar el carrito. True si se quitaron productos.
      */
-    public Boolean sincronizarStock(Order order){
+    public Boolean sincronizarStock(Order order) {
         Boolean result = Boolean.FALSE;
-        for (int i=0; i<order.getOrderItems().size(); i++){
+        for (int i = 0; i < order.getOrderItems().size(); i++) {
             OrderItem orderItem = order.getOrderItem(i);
             String productID = orderItem.getProductID();
             Integer quantity = orderItem.getQuantity();
@@ -212,12 +234,42 @@ public class Catalog {
                     node.setStock(seleccionStock - 1);
                     //this.setNode(pos, seleccion);
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.getLocalizedMessage();
             }
         }
         return result;
     }
 
+    public ArrayList<Node> getKakigoris() {
+        return kakigoris;
+    }
 
+    public String[] getKakigorisTitulos() {
+        return kakigorisTitulos;
+    }
+
+    public void restaurarKakigoris() {
+        Node kakigori = null;
+        for (Node node : catalog) {
+            if (node.getProductID().compareTo("0") == 0) {
+                kakigori = node;
+                break;
+            }
+        }
+        if (kakigori != null) {
+            catalog.remove(kakigori);
+        }
+
+        catalog.addAll(kakigoris);
+    }
+
+    public boolean existsMenuKakigori(){
+        for (Node node : catalog) {
+            if (node.getProductID().compareTo("28") == 0) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -282,17 +282,17 @@ public class Order {
  para actualizar la cantidad. Lanza una excepción si no hay stock.
  Con stock -1 no hay control de stock.
   */
-    public void addOrderItem(String productID, int quantity)
+    public void addOrderItem(Node node, int quantity)
             throws Exception {
-        int pos = catalog.getPosById(productID);
-        Node node = catalog.getNode(pos);
+        int pos = catalog.getPosById(node.getProductID());
+        //Node node = catalog.getNode(pos);
         Integer stock = node.getStock();
-        if (!catalog.isStock(productID, quantity)){
+        if (!catalog.isStock(node.getProductID(), quantity)){
             throw new Exception();
         }
         for (int i=0; i<orderItems.size(); i++) {
             //Comprobar si está este producto en el carrito de una compra anterior
-            if (orderItems.get(i).getProductID().compareTo(productID) == 0) {
+            if (orderItems.get(i).getProductID().compareTo(node.getProductID()) == 0) {
                 int newQuantity = quantity + orderItems.get(i).getQuantity();
                 //Si la cantidad de orderItems llega a 0 eliminamos el orderItem
                 if (newQuantity == 0){
@@ -301,7 +301,7 @@ public class Order {
                     orderItems.get(i).setQuantity(newQuantity);
                 }
                 //Actualizar el stock del product del catálogo
-                if (stock != -1){
+                if ((stock != -1) && (pos >= 0)) {
                     catalog.getNode(pos).updateStock(quantity);
                 }
                 deleteOrphanCuppons();
@@ -310,9 +310,9 @@ public class Order {
         }
         //Si no se encontraba es una compra nueva, no puede ser una cantidad negativa
         if (quantity > 0){
-            OrderItem orderItem = new OrderItem(productID, quantity);
+            OrderItem orderItem = new OrderItem(node.getProductID(), quantity);
             orderItems.add(orderItem);
-            if (stock != -1){
+            if ((stock != -1) && (pos >= 0)) {
                 try{
                     catalog.getNode(pos).updateStock(quantity);
                 }catch (Exception e){

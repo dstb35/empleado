@@ -588,7 +588,7 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
                     }
                 }
                 ArrayList<Printable> al = new ArrayList<>();
-                Bitmap image = BitmapFactory.decodeResource(context.getResources(), R.drawable.benoodle_logo);
+                Bitmap image = BitmapFactory.decodeResource(context.getResources(), R.drawable.logo);
                 for (int i = 0; i < numCopias; i++) {
                     al.add(new ImagePrintable.Builder(image).build());
                     al.add((new TextPrintable.Builder())

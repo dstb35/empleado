@@ -136,6 +136,8 @@ public class StockActivity extends AppCompatActivity {
                 stock = new Catalog(response.body());
                 stock.CrearTypes();
                 ArrayList<String> types = stock.getTypes();
+                //Quitar el kakigori genérico con id 0 y poner todos los kakigoris
+                stock.restaurarKakigoris();
                 LinearLayout container;
                 container = findViewById(R.id.container);
                 container.removeAllViews();
