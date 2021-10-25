@@ -74,6 +74,17 @@ public class Catalog {
         }
     }
 
+    public void setPrice(String productID, String price) {
+        try {
+            int index = catalog.indexOf(getNodeById(productID));
+            Node node = catalog.get(index);
+            node.setPrice(price);
+            catalog.set(index, node);
+        } catch (Exception e) {
+            e.getLocalizedMessage();
+        }
+    }
+
     public void doActivateAll() {
         for (int i = 0; i < catalog.size(); i++) {
             catalog.get(i).setStatus(true);

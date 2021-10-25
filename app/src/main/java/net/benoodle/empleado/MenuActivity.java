@@ -133,10 +133,9 @@ public class MenuActivity extends AppCompatActivity {
                 builder.setSingleChoiceItems(extrasTitulos, -1, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int position) {
                         selecciones.add(extras.get(position));
-                        //Variación de menu con kakigori es el 28
-                        if (node.getProductID().compareTo("28") == 0) {
+                        if (node.getProductID().compareTo(MainActivity.MENU_BE_NOODLE_KAKIGORI) == 0) {
                             pedirKakigori();
-                        }else if ((catalog.existsMenuKakigori()) && (catalog.getKakigoris().size() > 0)) {
+                        }else if ((node.getProductID().compareTo(MainActivity.MENU_BE_NOODLE) ==0) && (catalog.existsMenuKakigori()) && (catalog.getKakigoris().size() > 0)) {
                             AlertDialog.Builder builder1 = new AlertDialog.Builder(new ContextThemeWrapper(MenuActivity.this, R.style.MyCustomVerticalScrollBar));
                             builder1.setTitle(getResources().getString(R.string.ask_kakigori));
                             builder1.setCancelable(false);
@@ -144,7 +143,7 @@ public class MenuActivity extends AppCompatActivity {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     try {
-                                        node = catalog.getNodeById("28");
+                                        node = catalog.getNodeById(MainActivity.MENU_BE_NOODLE_KAKIGORI);
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                     }

@@ -42,7 +42,7 @@ public class Node implements Parcelable {
         this.status = true;
     }
 
-    public Node (Parcel in){
+    public Node(Parcel in) {
         String[] data = new String[3];
 
         in.readStringArray(data);
@@ -93,9 +93,9 @@ public class Node implements Parcelable {
     }
 
     public Integer getStock() {
-        if (stock != null ){
+        if (stock != null) {
             return stock;
-        }else{
+        } else {
             return -1;
         }
     }
@@ -125,10 +125,11 @@ public class Node implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeStringArray(new String[] {this.id,
+        dest.writeStringArray(new String[]{this.id,
                 this.name,
                 this.grade});
     }
+
     public static final Creator CREATOR = new Creator() {
         public Node createFromParcel(Parcel in) {
             return new Node(in);
@@ -141,9 +142,9 @@ public class Node implements Parcelable {
 
     //Actuliza el stock del producto
     public void updateStock(Integer quantity)
-            throws Exception{
-        if (this.stock != -1){
-            if (quantity > this.stock){
+            throws Exception {
+        if (this.stock != -1) {
+            if (quantity > this.stock) {
                 throw new Exception();
             }
             this.stock = this.stock - quantity;
@@ -157,5 +158,4 @@ public class Node implements Parcelable {
     public String getUrl() {
         return url;
     }
-
 }

@@ -141,13 +141,18 @@ public class StockActivity extends AppCompatActivity {
                 LinearLayout container;
                 container = findViewById(R.id.container);
                 container.removeAllViews();
-                container.setGravity(Gravity.CENTER);
+                //container.setGravity(Gravity.CENTER);
                 float width = (float) container.getWidth();
-                Double switchWidth = width * 0.75;
-                Double textWidth = width * 0.25;
+                Double switchWidth = width * 0.5;
+                Double textWidth = width * 0.1;
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT);
+                LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(
+                        textWidth.intValue(),
+                        LinearLayout.LayoutParams.MATCH_PARENT
+                );
+                textParams.setMargins(8, 0, 8,0);
                 for (String type : types) {
                     ArrayList<Node> catalogByType = stock.TypeCatalog(type);
                     TextView txtType = new TextView(context);
@@ -160,7 +165,7 @@ public class StockActivity extends AppCompatActivity {
                         LinearLayout nodeLayout = new LinearLayout(context);
                         nodeLayout.setOrientation(LinearLayout.HORIZONTAL);
                         nodeLayout.setLayoutParams(lp);
-                        nodeLayout.setGravity(Gravity.CENTER);
+                        //nodeLayout.setGravity(Gravity.CENTER);
                         Switch swStock = new Switch(context);
                         //SwitchCompat swStock = new SwitchCompat(StockActivity.this);
                         swStock.setLayoutParams(new LinearLayout.LayoutParams(
@@ -180,17 +185,38 @@ public class StockActivity extends AppCompatActivity {
                                 stock.switchStock(node.getProductID(), compoundButton.isChecked());
                             }
                         });
-                        EditText stockText = new EditText(context);
-                        stockText.setLayoutParams(new LinearLayout.LayoutParams(
-                                textWidth.intValue(), LinearLayout.LayoutParams.MATCH_PARENT));
+                        EditText price = new EditText(context);
+                        price.setText(node.getPrice());
+                        price.setLayoutParams(textParams);
+                        price.setTextSize(14);
+                        price.setInputType(EditorInfo.TYPE_NUMBER_FLAG_DECIMAL);
+                        price.addTextChangedListener(new TextWatcher() {
+                            @Override
+                            public void beforeTextChanged(CharSequence charSequence, int start, int before, int count) {
+                            }
 
-                        if (Build.VERSION.SDK_INT >= 26) {
+                            @Override
+                            public void onTextChanged(CharSequence charSequence, int start, int count, int after) {
+                                try {
+                                    stock.setPrice(node.getProductID(), price.getText().toString());
+                                } catch (NumberFormatException e) {
+
+                                }
+                            }
+                            @Override
+                            public void afterTextChanged (Editable editable){
+                            }
+                        });
+                        EditText stockText = new EditText(context);
+                        stockText.setLayoutParams(textParams);
+                        /*if (Build.VERSION.SDK_INT >= 26) {
                             stockText.setAutoSizeTextTypeUniformWithConfiguration(2, 14, 2, TypedValue.COMPLEX_UNIT_DIP);
                         } else {
                             TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(stockText, 2, 14, 2, TypedValue.COMPLEX_UNIT_DIP);
-                        }
+                        }*/
+                        stockText.setTextSize(14);
                         //stockText.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
-                        stockText.setGravity(Gravity.CENTER);
+                        //stockText.setGravity(Gravity.CENTER);
                         stockText.setInputType(EditorInfo.TYPE_NUMBER_FLAG_SIGNED);
                         stockText.setText(String.valueOf(node.getStock()));
                         stockText.addTextChangedListener(new TextWatcher() {
@@ -211,6 +237,7 @@ public class StockActivity extends AppCompatActivity {
                                 }
                             });
                         nodeLayout.addView(swStock);
+                        nodeLayout.addView(price);
                         nodeLayout.addView(stockText);
                         container.addView(nodeLayout);
                         }

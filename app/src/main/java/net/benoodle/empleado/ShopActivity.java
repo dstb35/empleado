@@ -394,8 +394,8 @@ public class ShopActivity extends AppCompatActivity /*implements ShopAdaptador.C
                         TextView text = new TextView(context);
 //                        double titleHeight = titleLayout.getHeight() * 0.25;
                         text.setLayoutParams(new LinearLayout.LayoutParams(120, 80));
-                        text.setText(node.getTitle());
-                        text.setTextSize(14);
+                        text.setText(String.format("%s %s €", node.getTitle(), node.getPrice()));
+                        text.setTextSize(12);
                         titleLayout.addView(text);
                         categories.addView(titleLayout);
                     }

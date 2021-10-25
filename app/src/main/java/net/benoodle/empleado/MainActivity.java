@@ -88,6 +88,8 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
     private boolean modus; //autoassign;
     private View mProgressView;
     public static final int REQUEST_CODE = 1;
+    public static final String MENU_BE_NOODLE_KAKIGORI = "28";
+    public static final String MENU_BE_NOODLE = "5";
     //private SwitchCompat swPause;
 
     @Override
