@@ -26,16 +26,12 @@ import static net.benoodle.empleado.MainActivity.boton;
 import static net.benoodle.empleado.MainActivity.catalog;
 
 public class OrderItemAdaptador extends RecyclerView.Adapter<OrderItemAdaptador.ViewHolder> {
-    private ArrayList<OrderItem> orderItems;
-    private boolean impresion;
+    private final ArrayList<OrderItem> orderItems;
+    private final boolean impresion;
 
     public OrderItemAdaptador(ArrayList<OrderItem> orderItems, String modus) {
         this.orderItems = orderItems;
-        if (modus.compareTo("imprimir") == 0){
-            this.impresion = true;
-        }else{
-            this.impresion = false;
-        }
+        this.impresion = modus.compareTo("imprimir") == 0;
     }
 
     @NonNull
@@ -45,9 +41,9 @@ public class OrderItemAdaptador extends RecyclerView.Adapter<OrderItemAdaptador.
         return new ViewHolder(v);
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView product;
-        private CheckBox checkBox;
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        private final TextView product;
+        private final CheckBox checkBox;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -56,11 +52,11 @@ public class OrderItemAdaptador extends RecyclerView.Adapter<OrderItemAdaptador.
         }
     }
 
-    public void onBindViewHolder(@NonNull ViewHolder holder, final int i) {
-        final OrderItem orderitem = orderItems.get(i);
+    public void onBindViewHolder(@NonNull ViewHolder holder, int i) {
+        OrderItem orderitem = orderItems.get(holder.getBindingAdapterPosition());
         String string = "";
         try {
-            string = string.concat(i+1 + ". " + catalog.getNodeById(orderitem.getProductID()).getTitle()+".\t");
+            string = string.concat(holder.getBindingAdapterPosition()+1 + ". " + catalog.getNodeById(orderitem.getProductID()).getTitle()+".\t");
         } catch (Exception e) {
             string = string.concat("Producto :" + e.getLocalizedMessage()+".\t");
         }

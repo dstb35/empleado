@@ -454,7 +454,7 @@ public class Order {
         for (String seleccion : orderItem.getSelecciones()){
             try {
                 Node node = catalog.getNodeById(seleccion);
-                titulos = titulos.concat(node.getTitle()+" ");
+                titulos = titulos.concat(node.getTitle()+". ");
             } catch (Exception e){
                 titulos.concat(e.getMessage());
             }

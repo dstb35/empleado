@@ -18,13 +18,26 @@ public class Catalog {
                 kakigoris.add(node);
             }
         }
-        catalog.removeAll(kakigoris);
         this.catalog = catalog;
         if (kakigoris.size() > 0) {
-            this.catalog.add(new Node("0", "Kakigori", kakigoris.get(0).getUrl(), "bebidas", -1));
+            catalog.removeAll(kakigoris);
+            this.catalog.add(new Node("0", "Kakigori", kakigoris.get(0).getUrl(), "bebidas", -1, kakigoris.get(0).getPrice(), kakigoris.get(0).getSku()));
             kakigorisTitulos = new String[kakigoris.size()];
             for (int i = 0; i < kakigoris.size(); i++) {
                 kakigorisTitulos[i] = kakigoris.get(i).getTitle();
+            }
+        }
+
+        // Ordenar el catalogo por SKU
+        int size = catalog.size();
+
+        for(int i = 0; i<size-1; i++) {
+            for (int j = i+1; j<size-1; j++) {
+                if(catalog.get(i).getSku().compareTo(catalog.get(j).getSku())>0) {
+                    Node aux = catalog.get(i);
+                    catalog.set(i, catalog.get(j));
+                    catalog.set(j, aux);
+                }
             }
         }
     }
@@ -42,6 +55,21 @@ public class Catalog {
             }
         }
         throw new Exception("Producto no encontrado con id: " + id);
+    }
+
+    public Node getNodeByName(String name) throws Exception {
+        for (Node node : catalog) {
+            if (node.getTitle().compareTo(name) == 0) {
+                return node;
+            }
+        }
+        ArrayList<Node> kakigorisCopie = kakigoris;
+        for (Node node : kakigorisCopie) {
+            if (node.getTitle().compareTo(name) == 0) {
+                return node;
+            }
+        }
+        throw new Exception("Producto no encontrado con nombre: " + name);
     }
 
     public int getSize() {
@@ -144,10 +172,40 @@ public class Catalog {
     Crea los tipos para la variable static types. Los tipos de productos son bebidas, ramen, etc...
      */
     public void CrearTypes() {
+        String aux= "";
+        int pos;
         for (Node node : catalog) {
             if (!types.contains(node.getType())) {
                 types.add(node.getType());
             }
+        }
+        //Ordenar primero menús, segundo ramnes, tercero tapas
+        if (types.contains("menu")){
+            pos = types.indexOf("menu");
+            aux = types.get(0);
+            types.set(0, "menu");
+            types.set(pos, aux);
+        }
+
+        if (types.contains("ramen")){
+            pos = types.indexOf("ramen");
+            aux = types.get(1);
+            types.set(1, "ramen");
+            types.set(pos, aux);
+        }
+
+        if (types.contains("tapas")){
+            pos = types.indexOf("tapas");
+            aux = types.get(2);
+            types.set(2, "tapas");
+            types.set(pos, aux);
+        }
+
+        if (types.contains("posrtes")){
+            pos = types.indexOf("postres");
+            aux = types.get(3);
+            types.set(3, "postres");
+            types.set(pos, aux);
         }
     }
 

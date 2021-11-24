@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="240dp"
+    android:layout_height="wrap_content"
     android:layout_marginTop="0dp"
     android:orientation="horizontal">
     <!-- 5 es la 1, 9 la 2, 6 la 3, 12  la 4 -->
@@ -11,15 +11,21 @@
         android:id="@+id/guideline1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.40" />
+        app:layout_constraintEnd_toStartOf="@+id/image"
+        app:layout_constraintGuide_percent="0.40"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="411dp"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.8" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.8"
+        app:layout_constraintStart_toEndOf="@+id/linearLayout3" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline3"
@@ -38,26 +44,24 @@
     <ImageView
         android:id="@+id/image"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="80dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/guideline1"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline3"
+        app:layout_constraintStart_toEndOf="@+id/guideline1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/title"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
         android:gravity="center"
-        android:textSize="28sp"
-        app:layout_constraintBottom_toTopOf="@+id/guideline1"
+        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline3"
         app:layout_constraintTop_toTopOf="parent" />
@@ -69,15 +73,13 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
         android:gravity="center"
         android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@+id/guideline2"
-        app:layout_constraintEnd_toStartOf="@+id/guideline3"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/guideline1" />
+        app:layout_constraintEnd_toEndOf="@+id/title"
+        app:layout_constraintStart_toStartOf="@+id/title"
+        app:layout_constraintTop_toBottomOf="@+id/title" />
 
-    <TextView
+    <!--<TextView
         android:id="@+id/selecciones"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -90,21 +92,20 @@
         app:layout_constraintBottom_toTopOf="@+id/guideline2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/guideline3"
-        app:layout_constraintTop_toTopOf="@+id/guideline1" />
+        app:layout_constraintTop_toTopOf="@+id/guideline1" />-->
+
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="0dp"
         android:layout_height="30dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginTop="8dp"
         android:gravity="center"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline2">
+        app:layout_constraintTop_toBottomOf="@+id/image">
 
         <Button
             android:id="@+id/Btmenos"
@@ -134,8 +135,30 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginStart="8dp"
-            android:text="@string/delete" />
+            android:text="@string/delete"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/btModificar"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Modificar"
+            android:textSize="10sp"
+            android:visibility="gone" />
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/seleccionesLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
 
     <!--<NumberPicker

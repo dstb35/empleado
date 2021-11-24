@@ -65,12 +65,12 @@
     <Button
         android:id="@+id/Btcatalog"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginTop="8dp"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:width="160dp"
         android:onClick="Catalog"
         android:text="@string/catalog"
+        app:layout_constraintBottom_toBottomOf="@+id/Btotal"
         app:layout_constraintEnd_toStartOf="@+id/Btcomprar"
         app:layout_constraintTop_toTopOf="@+id/Btotal" />
 

@@ -117,5 +117,4 @@ public interface ApiService {
     @GET("eorders/products?_format=json")
     @Headers({"Content-type: application/json"})
     Call<ArrayList<Node>> getAllNodes(@Query("store_id") String store_id, @Query("langcode") String langcode, @Header("Authorization") String user_auth, @Header("X-CSRF-Token") String x_csrf_token);
-
 }

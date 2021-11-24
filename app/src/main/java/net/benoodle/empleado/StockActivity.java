@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.icu.lang.UCharacter;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -165,31 +167,26 @@ public class StockActivity extends AppCompatActivity {
                         LinearLayout nodeLayout = new LinearLayout(context);
                         nodeLayout.setOrientation(LinearLayout.HORIZONTAL);
                         nodeLayout.setLayoutParams(lp);
-                        //nodeLayout.setGravity(Gravity.CENTER);
                         Switch swStock = new Switch(context);
-                        //SwitchCompat swStock = new SwitchCompat(StockActivity.this);
                         swStock.setLayoutParams(new LinearLayout.LayoutParams(
                                 switchWidth.intValue(), LinearLayout.LayoutParams.MATCH_PARENT));
                         swStock.setText(node.getTitle());
                         swStock.setSwitchMinWidth(120);
-                        if (Build.VERSION.SDK_INT >= 26) {
-                            swStock.setAutoSizeTextTypeUniformWithConfiguration(2, 100, 2, TypedValue.COMPLEX_UNIT_DIP);
-                        } else {
-                            swStock.setTextSize(18
-                            );
-                        }
-                        //swStock.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
                         swStock.setChecked(node.getStatus());
                         swStock.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                                 stock.switchStock(node.getProductID(), compoundButton.isChecked());
                             }
                         });
+                        LinearLayout txtLayout = new LinearLayout(context);
+                        txtLayout.setOrientation(LinearLayout.HORIZONTAL);
+                        txtLayout.setLayoutParams(lp);
+                        txtLayout.setGravity(Gravity.CENTER);
                         EditText price = new EditText(context);
                         price.setText(node.getPrice());
                         price.setLayoutParams(textParams);
                         price.setTextSize(14);
-                        price.setInputType(EditorInfo.TYPE_NUMBER_FLAG_DECIMAL);
+                        price.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
                         price.addTextChangedListener(new TextWatcher() {
                             @Override
                             public void beforeTextChanged(CharSequence charSequence, int start, int before, int count) {
@@ -209,15 +206,8 @@ public class StockActivity extends AppCompatActivity {
                         });
                         EditText stockText = new EditText(context);
                         stockText.setLayoutParams(textParams);
-                        /*if (Build.VERSION.SDK_INT >= 26) {
-                            stockText.setAutoSizeTextTypeUniformWithConfiguration(2, 14, 2, TypedValue.COMPLEX_UNIT_DIP);
-                        } else {
-                            TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(stockText, 2, 14, 2, TypedValue.COMPLEX_UNIT_DIP);
-                        }*/
                         stockText.setTextSize(14);
-                        //stockText.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
-                        //stockText.setGravity(Gravity.CENTER);
-                        stockText.setInputType(EditorInfo.TYPE_NUMBER_FLAG_SIGNED);
+                        stockText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
                         stockText.setText(String.valueOf(node.getStock()));
                         stockText.addTextChangedListener(new TextWatcher() {
                             @Override
@@ -237,8 +227,9 @@ public class StockActivity extends AppCompatActivity {
                                 }
                             });
                         nodeLayout.addView(swStock);
-                        nodeLayout.addView(price);
-                        nodeLayout.addView(stockText);
+                        txtLayout.addView(price);
+                        txtLayout.addView(stockText);
+                        nodeLayout.addView(txtLayout);
                         container.addView(nodeLayout);
                         }
                     }

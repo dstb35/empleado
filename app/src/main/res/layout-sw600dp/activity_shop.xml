@@ -8,20 +8,6 @@
     tools:context="net.benoodle.empleado.ShopActivity">
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.1" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.25" />
-
-    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -54,19 +40,6 @@
         app:layout_constraintTop_toTopOf="@+id/cart"
         app:srcCompat="@drawable/ic_settings" />-->
 
-    <TextView
-        android:id="@+id/total"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:background="@drawable/shape"
-        android:minWidth="400dp"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/guideline1"
-        app:layout_constraintEnd_toStartOf="@+id/review"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <Button
         android:id="@+id/review"
         android:layout_width="0dp"
@@ -87,17 +60,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="8dp"
         android:onClick="doReprint"
         android:text="@string/reprint"
-        app:layout_constraintBottom_toTopOf="@+id/guideline1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@+id/guideline3"
         app:layout_constraintTop_toBottomOf="@+id/review" />
 
-    <HorizontalScrollView
+    <!--<HorizontalScrollView
         android:id="@+id/main_types_scroll"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -119,9 +91,25 @@
             android:layout_gravity="center"
             android:gravity="center_horizontal"
             android:orientation="horizontal" />
-    </HorizontalScrollView>
+    </HorizontalScrollView>-->
 
-    <androidx.recyclerview.widget.RecyclerView
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/products"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
+
+    <!--<androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -133,18 +121,35 @@
         app:layout_constraintEnd_toStartOf="@+id/guideline3"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline2"
-        tools:listitem="@layout/main_node" />
+        tools:listitem="@layout/main_node" />-->
 
+
+    <TextView
+        android:id="@+id/total"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/shape"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/guideline3"
+        app:layout_constraintTop_toBottomOf="@+id/reprint" />
 
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_margin="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:background="@drawable/menubar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/guideline3"
-        app:layout_constraintTop_toBottomOf="@+id/guideline2">
+        app:layout_constraintTop_toBottomOf="@+id/total">
 
         <LinearLayout
             android:id="@+id/resumen"

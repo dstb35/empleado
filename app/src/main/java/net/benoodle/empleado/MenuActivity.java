@@ -3,6 +3,7 @@ package net.benoodle.empleado;
 import static net.benoodle.empleado.MainActivity.catalog;
 import static net.benoodle.empleado.MainActivity.order;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -48,7 +49,7 @@ public class MenuActivity extends AppCompatActivity {
     public void PedirSelecciones() {
         //productos[] son las opciones asociadas al menú.
         productos = node.getProductos();
-        if (productos != null){
+        if (productos != null) {
             numRepeticiones = productos.size();
         }
 
@@ -126,53 +127,56 @@ public class MenuActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
-                //AlertDialog.Builder builder = new AlertDialog.Builder(MenuActivity.this);
-                AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.MyCustomVerticalScrollBar));
-                builder.setTitle(getResources().getString(R.string.choose));
-                builder.setCancelable(false);
-                builder.setSingleChoiceItems(extrasTitulos, -1, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int position) {
-                        selecciones.add(extras.get(position));
-                        if (node.getProductID().compareTo(MainActivity.MENU_BE_NOODLE_KAKIGORI) == 0) {
-                            pedirKakigori();
-                        }else if ((node.getProductID().compareTo(MainActivity.MENU_BE_NOODLE) ==0) && (catalog.existsMenuKakigori()) && (catalog.getKakigoris().size() > 0)) {
-                            AlertDialog.Builder builder1 = new AlertDialog.Builder(new ContextThemeWrapper(MenuActivity.this, R.style.MyCustomVerticalScrollBar));
-                            builder1.setTitle(getResources().getString(R.string.ask_kakigori));
-                            builder1.setCancelable(false);
-                            builder1.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    try {
-                                        node = catalog.getNodeById(MainActivity.MENU_BE_NOODLE_KAKIGORI);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
+                if (!MenuActivity.this.isFinishing()) {
+                    //AlertDialog.Builder builder = new AlertDialog.Builder(MenuActivity.this);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.MyCustomVerticalScrollBar));
+                    builder.setTitle(getResources().getString(R.string.choose));
+                    builder.setCancelable(false);
+                    builder.setSingleChoiceItems(extrasTitulos, -1, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int position) {
+                            dialog.dismiss();
+                            selecciones.add(extras.get(position));
+                            if (node.getProductID().compareTo(MainActivity.MENU_BE_NOODLE_KAKIGORI) == 0) {
+                                pedirKakigori();
+                            } else if ((node.getProductID().compareTo(MainActivity.MENU_BE_NOODLE) == 0) && (catalog.existsMenuKakigori()) && (catalog.getKakigoris().size() > 0)) {
+                                AlertDialog.Builder builder1 = new AlertDialog.Builder(new ContextThemeWrapper(MenuActivity.this, R.style.MyCustomVerticalScrollBar));
+                                builder1.setTitle(getResources().getString(R.string.ask_kakigori));
+                                builder1.setCancelable(false);
+                                builder1.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        try {
+                                            node = catalog.getNodeById(MainActivity.MENU_BE_NOODLE_KAKIGORI);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                        pedirKakigori();
                                     }
-                                    pedirKakigori();
-                                }
-                            });
-                            builder1.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog1, int which) {
-                                    añadirMenu();
-                                    dialog1.dismiss();
-                                }
-                            });
-                            AlertDialog dialog1 = builder1.create();
-                            dialog1.show();
-                        }else{
-                            añadirMenu();
+                                });
+                                builder1.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog1, int which) {
+                                        añadirMenu();
+                                        dialog1.dismiss();
+                                    }
+                                });
+                                AlertDialog dialog1 = builder1.create();
+                                dialog1.show();
+                            } else {
+                                añadirMenu();
+                            }
                         }
-                    }
-                });
-                builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.menu_canceled), Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
-                });
-                AlertDialog dialog = builder.create();
-                dialog.show();
-                dialog.getListView().setScrollbarFadingEnabled(false);
+                    });
+                    builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            Toast.makeText(getApplicationContext(), getResources().getString(R.string.menu_canceled), Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                    dialog.getListView().setScrollbarFadingEnabled(false);
+                }
             } else {
                 Toast.makeText(getApplicationContext(), getResources().getString(R.string.no_stock_dessert), Toast.LENGTH_SHORT).show();
                 finish();
@@ -190,7 +194,7 @@ public class MenuActivity extends AppCompatActivity {
                 kakigoris.add(node);
             }
         }*/
-        if (catalog.getKakigoris().size() < 1){
+        if (catalog.getKakigoris().size() < 1) {
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.no_stock_kakigori), Toast.LENGTH_SHORT).show();
             finish();
         }
@@ -222,14 +226,14 @@ public class MenuActivity extends AppCompatActivity {
         dialog.getListView().setScrollbarFadingEnabled(false);
     }
 
-    public void añadirMenu (){
+    public void añadirMenu() {
         try {
             order.addMenuItem(node.getProductID(), selecciones, 1);
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.no_sell), Toast.LENGTH_SHORT).show();
         }
         Toast.makeText(getApplicationContext(), getResources().getString(R.string.menu_added), Toast.LENGTH_SHORT).show();
-        setResult(0);
+        //setResult(0);
         finish();
     }
 }

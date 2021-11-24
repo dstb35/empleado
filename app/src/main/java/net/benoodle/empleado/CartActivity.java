@@ -1,6 +1,7 @@
 package net.benoodle.empleado;
 
 import static android.view.View.GONE;
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static net.benoodle.empleado.MainActivity.catalog;
 import static net.benoodle.empleado.MainActivity.order;
 import static net.benoodle.empleado.ShopActivity.lastOrder;
@@ -15,6 +16,7 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -23,6 +25,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,6 +34,9 @@ import com.mazenrashed.printooth.Printooth;
 import com.mazenrashed.printooth.ui.ScanningActivity;
 
 import net.benoodle.empleado.model.Cuppon;
+import net.benoodle.empleado.model.Node;
+import net.benoodle.empleado.model.Order;
+import net.benoodle.empleado.model.OrderItem;
 import net.benoodle.empleado.model.User;
 import net.benoodle.empleado.retrofit.ApiService;
 import net.benoodle.empleado.retrofit.SharedPrefManager;
@@ -41,8 +47,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -66,6 +74,8 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.Elimi
     private boolean semaforo;
     private View mProgressView;
     private SwitchCompat swcobrado;
+    private int pos;
+    private Button btComprar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +94,7 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.Elimi
         sharedPrefManager = new SharedPrefManager(this);
         swcobrado.setChecked(sharedPrefManager.getSPEncargado());
         order.setPagado(sharedPrefManager.getSPEncargado());
+        this.btComprar = findViewById(R.id.Btcomprar);
         if (sharedPrefManager.getSPEncargado()) {
             swcobrado.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
@@ -132,9 +143,9 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.Elimi
         super.onResume();
         this.semaforo = TRUE;
         CambiarAdaptador();
-        ActualizarTotal();
+        actualizarTotal();
         if (order.getOrderItems().size() == 0) {
-            Toast.makeText(getApplicationContext(), getResources().getString(R.string.cart_empty), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, getResources().getString(R.string.cart_empty), Toast.LENGTH_LONG).show();
             findViewById(R.id.Btcomprar).setVisibility(GONE);
         }
     }
@@ -143,9 +154,14 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.Elimi
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == ScanningActivity.SCANNING_FOR_PRINTER && resultCode == Activity.RESULT_OK) {
-            Toast.makeText(getApplicationContext(), "Impresora encontrada", Toast.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(getApplicationContext(), "No se encontraron impresoras", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "Impresora encontrada", Toast.LENGTH_LONG).show();
+        } else if (requestCode == ScanningActivity.SCANNING_FOR_PRINTER && resultCode != Activity.RESULT_OK) {
+            Toast.makeText(context, "No se encontraron impresoras", Toast.LENGTH_LONG).show();
+            //Cuando el botoón modificar rehacía el menú nuevo colocar al final
+        /*} else if (requestCode == 1 && resultCode == 0) {
+            //Colocar en la posición original, modificación de menú
+            order.getOrderItems().set(pos, order.getOrderItems().get(order.getOrderItems().size() - 1));
+            order.getOrderItems().remove(order.getOrderItems().size() - 1);*/
         }
     }
 
@@ -160,6 +176,7 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.Elimi
     /*Método asociado al botón Comprar*/
     public void Comprar(View v) {
         if (semaforo) {
+            btComprar.setClickable(FALSE);
             semaforo = FALSE;
             mProgressView.setVisibility(View.VISIBLE);
             order.setEmail(sharedPrefManager.getSPEmail());
@@ -217,27 +234,27 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.Elimi
                 if (response.isSuccessful()) {
                     Cuppon cuppon = response.body();
                     if ((cuppon.getType().compareTo("product") == 0) && (!order.orderContainsProduct(cuppon.getProduct().toString()))) {
-                        Toast.makeText(getApplicationContext(), R.string.cuppon_product, Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, R.string.cuppon_product, Toast.LENGTH_LONG).show();
                     } else if (order.applyCuppon(cuppon)) {
-                        ActualizarTotal();
-                        Toast.makeText(getApplicationContext(), R.string.cuppon_ok, Toast.LENGTH_LONG).show();
+                        actualizarTotal();
+                        Toast.makeText(context, R.string.cuppon_ok, Toast.LENGTH_LONG).show();
                     } else {
                         Toast.makeText(context, R.string.cuppon_already_use, Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     JSONObject jObjError = new JSONObject(response.errorBody().string());
                     Toast.makeText(context, jObjError.getString("message"), Toast.LENGTH_LONG).show();
-                    //Toast.makeText(getApplicationContext(), response.errorBody().string(), Toast.LENGTH_LONG).show();
+                    //Toast.makeText(context, response.errorBody().string(), Toast.LENGTH_LONG).show();
                 }
             } catch (Exception e) {
-                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
             }
         }
 
         @Override
         public void onFailure(Call<Cuppon> call, Throwable t) {
             mProgressView.setVisibility(View.GONE);
-            Toast.makeText(getApplicationContext(), t.toString(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, t.toString(), Toast.LENGTH_LONG).show();
         }
     };
 
@@ -246,96 +263,88 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.Elimi
         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
             String id = "";
             mProgressView.setVisibility(GONE);
-            semaforo = TRUE;
             if (response.isSuccessful()) {
                 try {
                     JSONObject jsonRESULTS = new JSONObject(response.body().string());
                     id = jsonRESULTS.getJSONArray("order_id").getJSONObject(0).getString("value");
-                    order.setOrderId(id);
-                    if (sharedPrefManager.getSPAutoprint()) {
-                        MainActivity.print(order, context, sharedPrefManager.getSPCopies());
-                    }
+                    //order.setOrderId(id);
                     lastOrder = order;
-                    //order = new Order(sharedPrefManager.getSPStore());
+                    lastOrder.setOrderId(id);
+                    if (sharedPrefManager.getSPAutoprint()) {
+                        MainActivity.print(lastOrder, context, sharedPrefManager.getSPCopies());
+                    }
+                    order = new Order(sharedPrefManager.getSPStore());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                AlertDialog.Builder builder = new AlertDialog.Builder(CartActivity.this);
-                /*if (sharedPrefManager.getSPModus()) {
-                    builder.setTitle(String.format("%s%s", getResources().getString(R.string.ordermoduson), id));
-                } else {
-                    builder.setTitle(String.format("%s%s", getResources().getString(R.string.ordermodusoff), id));
-                }*/
-                builder.setTitle(String.format("Pedido nº: %s", id));
-                builder.setCancelable(false);
-                builder.setPositiveButton("Ok",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                setResult(RESULT_OK);
-                                finish();
-                            }
-                        });
-                builder.setNeutralButton("Calcular cambio",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                AlertDialog.Builder builder = new AlertDialog.Builder(CartActivity.this);
-                                builder.setTitle("Introduce importe recibido");
-                                final EditText input = new EditText(CartActivity.this);
-                                input.setInputType(InputType.TYPE_CLASS_NUMBER);
-                                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                                        LinearLayout.LayoutParams.MATCH_PARENT,
-                                        LinearLayout.LayoutParams.MATCH_PARENT);
-                                input.setLayoutParams(lp);
-                                builder.setView(input);
-                                builder.setCancelable(true);
-                                builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                                    @Override
-                                    public void onCancel(DialogInterface dialogInterface) {
-                                        setResult(RESULT_OK);
-                                        finish();
-                                    }
-                                });
-                                builder.setPositiveButton("Calcular",
-                                        new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                float amount = Float.parseFloat(input.getText().toString());
-                                                AlertDialog.Builder builder = new AlertDialog.Builder(CartActivity.this);
-                                                try {
-                                                    amount -= order.getTotal();
-                                                } catch (Exception e) {
+                if (!CartActivity.this.isFinishing()) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(CartActivity.this);
+                    builder.setTitle(String.format("Pedido nº: %s", id));
+                    builder.setCancelable(false);
+                    builder.setPositiveButton("Ok",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    setResult(RESULT_OK);
+                                    finish();
+                                }
+                            });
+                    builder.setNeutralButton("Calcular cambio",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(CartActivity.this);
+                                    builder.setTitle("Introduce importe recibido");
+                                    final EditText input = new EditText(CartActivity.this);
+                                    input.setInputType(InputType.TYPE_CLASS_NUMBER);
+                                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                                            LinearLayout.LayoutParams.MATCH_PARENT,
+                                            LinearLayout.LayoutParams.MATCH_PARENT);
+                                    input.setLayoutParams(lp);
+                                    builder.setView(input);
+                                    builder.setCancelable(true);
+                                    builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                        @Override
+                                        public void onCancel(DialogInterface dialogInterface) {
+                                            setResult(RESULT_OK);
+                                            finish();
+                                        }
+                                    });
+                                    builder.setPositiveButton("Calcular",
+                                            new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    float amount = Float.parseFloat(input.getText().toString());
+                                                    AlertDialog.Builder builder = new AlertDialog.Builder(CartActivity.this);
+                                                    try {
+                                                        amount -= order.getTotal();
+                                                    } catch (Exception e) {
+                                                    }
+                                                    builder.setTitle(String.format("El cambio es %.2f ", amount));
+                                                    builder.setPositiveButton("Aceptar",
+                                                            new DialogInterface.OnClickListener() {
+                                                                @Override
+                                                                public void onClick(DialogInterface dialog, int which) {
+                                                                    setResult(RESULT_OK);
+                                                                    finish();
+                                                                }
+                                                            });
+                                                    AlertDialog dialog2 = builder.create();
+                                                    dialog2.show();
                                                 }
-                                                builder.setTitle(String.format("El cambio es %.2f ", amount));
-                                                builder.setPositiveButton("Aceptar",
-                                                        new DialogInterface.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(DialogInterface dialog, int which) {
-                                                                setResult(RESULT_OK);
-                                                                finish();
-                                                            }
-                                                        });
-                                                AlertDialog dialog2 = builder.create();
-                                                dialog2.show();
-                                            }
-                                        });
-                                AlertDialog dialog1 = builder.create();
-                                dialog1.show();
-                            }
-                        });
-                /*builder.setPositiveButton(R.string.gotIt, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        setResult(RESULT_OK);
-                        finish();
-                    }
-                });*/
-                AlertDialog dialog = builder.create();
-                dialog.show();
+                                            });
+                                    AlertDialog dialog1 = builder.create();
+                                    dialog1.show();
+                                }
+                            });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
             } else if (response.code() == 409) {
+                semaforo = TRUE;
+                btComprar.setClickable(TRUE);
                 //En el server cuando algún producto haya sido despublicado durante una compra
                 //se lanza el error 409 con los id's que no se pueden comprar para quitarlos del carrito
                 try {
@@ -345,7 +354,7 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.Elimi
                         catalog.actualizarStock(node.get("id").toString(), node.get("stock").toString());
                         order.removeOrderItemByStock(node.get("id").toString());
                     }
-                    ActualizarTotal();
+                    actualizarTotal();
                     adaptador.notifyDataSetChanged();
                     AlertDialog.Builder builder = new AlertDialog.Builder(CartActivity.this);
                     TextView textView = new TextView(context);
@@ -371,10 +380,10 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.Elimi
             } else {
                 try {
                     JSONObject jObjError = new JSONObject(response.errorBody().string());
-                    Toast.makeText(getApplicationContext(), jObjError.get("message").toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, jObjError.get("message").toString(), Toast.LENGTH_LONG).show();
                     order.setOrderId("");
                 } catch (Exception e) {
-                    Toast.makeText(getApplicationContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
                 }
             }
         }
@@ -384,17 +393,18 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.Elimi
             Toast.makeText(context, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
             mProgressView.setVisibility(GONE);
             semaforo = TRUE;
+            btComprar.setClickable(TRUE);
         }
     };
 
     @Override
-    public void Eliminar(int i) {
+    public void eliminar(int i) {
         try {
             order.removeOrderItem(i);
         } catch (NoSuchElementException e) {
-            Toast.makeText(getApplicationContext(), getResources().getString(R.string.cuppon_removed), Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, getResources().getString(R.string.cuppon_removed), Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
-            Toast.makeText(getApplicationContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
         }
 
         if (order.getOrderItems().isEmpty()) {
@@ -403,7 +413,7 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.Elimi
     }
 
     @Override
-    public void ActualizarTotal() {
+    public void actualizarTotal() {
         try {
             Btotal.setText("");
             Btotal.setText(String.format("%s%s €", getResources().getString(R.string.total), String.format("%.2f", order.getTotal())));
@@ -415,7 +425,7 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.Elimi
     }
 
     @Override
-    public void Anadir(String productID, int quantity, Boolean menu, int i) {
+    public void anadir(String productID, int quantity, Boolean menu, int i) {
         try {
             if (menu && quantity > 0) {
                 //Ahora al añadir menus será una copia exacta, no se pedirán opciones
@@ -427,10 +437,10 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.Elimi
             } else if (!menu) {
                 order.addOrderItem(catalog.getNodeById(productID), quantity);
             } else if (menu && quantity < 0) {
-                this.Eliminar(i);
+                this.eliminar(i);
             }
         } catch (NoSuchElementException e) {
-            Toast.makeText(getApplicationContext(), getResources().getString(R.string.cuppon_removed), Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, getResources().getString(R.string.cuppon_removed), Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             Toast.makeText(this, getResources().getString(R.string.no_sell), Toast.LENGTH_SHORT).show();
         }
@@ -439,4 +449,57 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.Elimi
             finish();
         }
     }
+
+    //Modifica una selección de menú de un orderItem. Pos es la posición de la selección dentro del orderiTem
+    //i es la posición del node dentro de order
+    @Override
+    public void modificar(Node node, int pos, int i) {
+        ArrayList<Node> opciones = new ArrayList<>();
+        //mirar que no sea el menú be Noodle y se esté modificando el kakigori del final del menú
+        if ((node.getProductID().compareTo(MainActivity.MENU_BE_NOODLE_KAKIGORI) == 0) && (pos == order.getOrderItems().size() - 1)) {
+            opciones = catalog.getKakigoris();
+        } else {
+            opciones = catalog.OpcionesMenu(node.getType());
+        }
+        try {
+            if (opciones.isEmpty()) {
+                Toast.makeText(getApplicationContext(), getResources().getString(R.string.no_stock) + node.getType(), Toast.LENGTH_SHORT).show();
+            } else {
+                String[] titulos = new String[opciones.size()];
+                for (int j = 0; j < opciones.size(); j++) {
+                    titulos[j] = opciones.get(j).getTitle();
+                }
+                if (!CartActivity.this.isFinishing()) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.MyCustomVerticalScrollBar));
+                    builder.setTitle(getResources().getString(R.string.choose) + " " + node.getType());
+                    builder.setCancelable(false);
+                    ArrayList<Node> finalOpciones = opciones;
+                    builder.setSingleChoiceItems(titulos, -1, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int position) {
+                            //La posición de productos[] debería coincidir con la posición de opciones.
+                            String newSele = finalOpciones.get(position).getProductID();
+                            order.getOrderItem(i).getSelecciones().set(pos, newSele);
+                            dialog.dismiss();
+                        }
+                    });
+                    builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            Toast.makeText(getApplicationContext(), getResources().getString(R.string.menu_canceled), Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                    dialog.getListView().setScrollbarFadingEnabled(false);
+                }
+            }
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), getResources().getString(R.string.product_not_id), Toast.LENGTH_SHORT).show();
+        }
+    }
+        /*Intent intent = new Intent(this, MenuActivity.class);
+        intent.putExtra("id", productID);
+        this.startActivityForResult(intent, 1);*/
 }
+

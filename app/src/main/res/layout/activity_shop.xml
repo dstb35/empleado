@@ -7,35 +7,16 @@
     android:orientation="vertical"
     tools:context="net.benoodle.empleado.ShopActivity">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.10" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.3" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.63" />
-
     <TextView
         android:id="@+id/total"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         android:background="@drawable/shape"
         android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/guideline1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -44,13 +25,14 @@
         android:id="@+id/review"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:onClick="ShowCart"
         android:text="@string/review"
         android:textSize="14sp"
         app:layout_constraintEnd_toStartOf="@+id/reprint"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/guideline1" />
+        app:layout_constraintTop_toBottomOf="@+id/total" />
 
     <Button
         android:id="@+id/reprint"
@@ -62,9 +44,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/review"
-        app:layout_constraintTop_toTopOf="@+id/guideline1" />
+        app:layout_constraintTop_toTopOf="@+id/review" />
 
-    <HorizontalScrollView
+    <!--<HorizontalScrollView
         android:id="@+id/main_types_scroll"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -103,23 +85,36 @@
             android:layout_height="match_parent"
             android:layout_marginTop="16dp"
             tools:listitem="@layout/main_node" />
-    </LinearLayout>
+    </LinearLayout>-->
+
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/review">
+
+        <LinearLayout
+            android:id="@+id/products"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
 
     <ScrollView
         android:id="@+id/scrollView5"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:background="@drawable/menubar"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline3"
-        app:layout_constraintTop_toBottomOf="@+id/guideline2"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintEnd_toEndOf="parent">
 
         <LinearLayout
             android:id="@+id/resumen"

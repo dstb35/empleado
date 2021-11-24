@@ -32,14 +32,17 @@ public class Node implements Parcelable {
     private String id;
     private String name;
     private String grade;
+    private String sku;
 
-    public Node(String productID, String title, String url, String type, Integer stock) {
+    public Node(String productID, String title, String url, String type, Integer stock, String price, String sku) {
         this.productID = productID;
         this.title = title;
         this.url = url;
         this.type = type;
         this.stock = stock;
         this.status = true;
+        this.price = price;
+        this.sku = sku;
     }
 
     public Node(Parcel in) {
@@ -157,5 +160,9 @@ public class Node implements Parcelable {
 
     public String getUrl() {
         return url;
+    }
+
+    public String getSku() {
+        return sku;
     }
 }

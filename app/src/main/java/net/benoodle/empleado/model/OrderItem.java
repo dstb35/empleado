@@ -50,7 +50,6 @@ public class OrderItem {
     public void setSelecciones(ArrayList<String> selecciones) {
         this.selecciones = selecciones;
     }
-
 }
 
 
