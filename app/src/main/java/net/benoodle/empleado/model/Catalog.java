@@ -1,6 +1,5 @@
 package net.benoodle.empleado.model;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
@@ -8,25 +7,35 @@ public class Catalog {
     private ArrayList<Node> catalog = new ArrayList<>();
     private ArrayList<String> types = new ArrayList<>();
     private ArrayList<Node> kakigoris = new ArrayList<>();
+    private ArrayList<Node> cafes = new ArrayList<>();
     private String[] kakigorisTitulos;
 
     public Catalog(ArrayList<Node> catalog) {
         //Agrupar kakigoris para que se muestren como un producto
         Pattern pattern = Pattern.compile("^*kakigori.*");
+        //Array de cafés para el menú café
+        Pattern cafePat = Pattern.compile("^*cafe|café.*");
+        Boolean nomenu = false; //El último marcará si hacen menú o no.
+
         for (Node node : catalog) {
             if (pattern.matcher(node.getTitle().toLowerCase()).matches()) {
                 kakigoris.add(node);
+                nomenu = node.getNomenu();
+            }else if (cafePat.matcher(node.getTitle().toLowerCase()).matches()) {
+                cafes.add(node);
             }
         }
         this.catalog = catalog;
         if (kakigoris.size() > 0) {
             catalog.removeAll(kakigoris);
-            this.catalog.add(new Node("0", "Kakigori", kakigoris.get(0).getUrl(), "bebidas", -1, kakigoris.get(0).getPrice(), kakigoris.get(0).getSku()));
+            this.catalog.add(new Node("0", "Kakigori", kakigoris.get(0).getUrl(), "bebidas", -1, kakigoris.get(0).getPrice(), kakigoris.get(0).getSku(), nomenu));
             kakigorisTitulos = new String[kakigoris.size()];
             for (int i = 0; i < kakigoris.size(); i++) {
                 kakigorisTitulos[i] = kakigoris.get(i).getTitle();
             }
         }
+
+
 
         // Ordenar el catalogo por SKU
         int size = catalog.size();
@@ -249,7 +258,7 @@ public class Catalog {
     public ArrayList<Node> OpcionesMenu(String tipo) {
         ArrayList<Node> opciones = new ArrayList<>();
         for (Node node : catalog) {
-            if ((node.getType().toLowerCase().compareTo(tipo) == 0) && (this.isStock(node.getProductID(), 1) && (node.getProductID().compareTo("0") != 0))) {
+            if (!node.getNomenu() && (node.getType().toLowerCase().compareTo(tipo) == 0) && (this.isStock(node.getProductID(), 1) && (node.getProductID().compareTo("0") != 0))) {
                 opciones.add(node);
             }
         }
@@ -258,6 +267,7 @@ public class Catalog {
         }
         return opciones;
     }
+
 
     public void actualizarStock(String id, String stock) {
         int i = this.getPosById(id);
@@ -340,5 +350,9 @@ public class Catalog {
             }
         }
         return false;
+    }
+
+    public ArrayList<Node> getCafes() {
+        return cafes;
     }
 }

@@ -92,10 +92,12 @@
         android:layout_marginTop="16dp"
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/txtCambio"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/guideline1"
-        tools:listitem="@layout/cart_node" />
+        tools:listitem="@layout/cart_node">
+
+    </androidx.recyclerview.widget.RecyclerView>
 
     <ProgressBar
         android:id="@+id/login_progress"
@@ -109,4 +111,134 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <EditText
+        android:id="@+id/txtCambio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="8dp"
+        android:ems="10"
+        android:inputType="numberDecimal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/recycler_view"
+        app:layout_constraintTop_toTopOf="@+id/recycler_view" />
+
+    <ImageView
+        android:id="@+id/img100"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:onClick="sumar"
+        android:tag="100"
+        app:layout_constraintEnd_toEndOf="@+id/txtCambio"
+        app:layout_constraintStart_toStartOf="@+id/txtCambio"
+        app:layout_constraintTop_toBottomOf="@+id/txtCambio"
+        app:srcCompat="@drawable/_100e" />
+
+    <ImageView
+        android:id="@+id/img50"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="8dp"
+        android:onClick="sumar"
+        android:tag="50"
+        app:layout_constraintEnd_toEndOf="@+id/img100"
+        app:layout_constraintStart_toStartOf="@+id/img100"
+        app:layout_constraintTop_toBottomOf="@+id/img100"
+        app:srcCompat="@drawable/_50e" />
+
+    <ImageView
+        android:id="@+id/img20"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="8dp"
+        android:onClick="sumar"
+        android:tag="20"
+        app:layout_constraintEnd_toEndOf="@+id/img100"
+        app:layout_constraintStart_toStartOf="@+id/img100"
+        app:layout_constraintTop_toBottomOf="@+id/img50"
+        app:srcCompat="@drawable/_20e" />
+
+    <ImageView
+        android:id="@+id/img10"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="8dp"
+        android:onClick="sumar"
+        android:tag="10"
+        app:layout_constraintEnd_toEndOf="@+id/img100"
+        app:layout_constraintStart_toStartOf="@+id/img100"
+        app:layout_constraintTop_toBottomOf="@+id/img20"
+        app:srcCompat="@drawable/_10e" />
+
+    <ImageView
+        android:id="@+id/img5"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="8dp"
+        android:onClick="sumar"
+        android:tag="5"
+        app:layout_constraintEnd_toEndOf="@+id/img100"
+        app:layout_constraintStart_toStartOf="@+id/img100"
+        app:layout_constraintTop_toBottomOf="@+id/img10"
+        app:srcCompat="@drawable/_5e" />
+
+    <ImageView
+        android:id="@+id/img2"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="16dp"
+        android:onClick="sumar"
+        android:tag="2"
+        app:layout_constraintEnd_toStartOf="@+id/img1"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/recycler_view"
+        app:layout_constraintTop_toBottomOf="@+id/img5"
+        app:srcCompat="@drawable/_2e" />
+
+    <ImageView
+        android:id="@+id/img1"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:onClick="sumar"
+        android:tag="1"
+        app:layout_constraintEnd_toStartOf="@+id/img050"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/img2"
+        app:layout_constraintTop_toTopOf="@+id/img2"
+        app:srcCompat="@drawable/_1e" />
+
+    <ImageView
+        android:id="@+id/img050"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:onClick="sumar"
+        android:tag="0.5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/img1"
+        app:layout_constraintTop_toTopOf="@+id/img2"
+        app:srcCompat="@drawable/_50cent" />
+
+    <Button
+        android:id="@+id/btCalcular"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="calcularCambio"
+        android:text="Introducir"
+        app:layout_constraintBottom_toBottomOf="@+id/btReiniciar"
+        app:layout_constraintEnd_toStartOf="@+id/btReiniciar"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/recycler_view"
+        app:layout_constraintTop_toTopOf="@+id/btReiniciar" />
+
+    <Button
+        android:id="@+id/btReiniciar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="reiniciar"
+        android:text="Reiniciar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/btCalcular" />
 </androidx.constraintlayout.widget.ConstraintLayout>

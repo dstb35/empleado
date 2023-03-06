@@ -90,9 +90,10 @@ public interface ApiService {
     @Headers({"Content-type: application/json"})
     Call<Order> modificar(@Header("Authorization") String user_auth, @Header("X-CSRF-Token") String x_csrf_token, @Body HashMap<String, Object> body);
 
-    @HTTP(method = "DELETE", path = "/eorders/modificar?_format=json", hasBody=true)
+    //@HTTP(method = "DELETE", path = "/eorders/modificar", hasBody=true)
+    @POST("/eorders/borrar")
     @Headers({"Content-type: application/json"})
-    Call<ResponseBody> borrar(@Header("Authorization") String user_auth, @Header("X-CSRF-Token") String x_csrf_token, @Body HashMap<String, String> body);
+    Call<ResponseBody> borrar(@Header("Authorization") String user_auth, @Header("X-CSRF-Token") String x_csrf_token, @Body ArrayList <String> body);
 
     @GET("eorders/stores?_format=json")
     @Headers({"Content-type: application/json"})

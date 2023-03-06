@@ -16,6 +16,8 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -87,11 +89,19 @@ public class StoresActivity extends AppCompatActivity implements LocationListene
             locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, this, null);
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10000, 100, (LocationListener) this);
             cargarStores();
-        } catch (Exception e){
+        } catch (Exception e) {
             Toast.makeText(context, "Permiso de ubicación necesario para comprobar la disponibilidad de stands", Toast.LENGTH_LONG).show();
         }
-
     }
+
+    private ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    cargarStores();
+                } else {
+                    Toast.makeText(context, "Permiso de ubicación necesario para comprobar la disponibilidad de stands", Toast.LENGTH_LONG).show();
+                }
+            });
 
     /* Carga todas las tiendas basadas en el zip code del teléfono */
     public void cargarStores() {
@@ -126,7 +136,7 @@ public class StoresActivity extends AppCompatActivity implements LocationListene
                     Toast.makeText(context, "", Toast.LENGTH_LONG).show();
                 }
             }
-        }else{
+        } else {
             Toast.makeText(context, "No se ha podido acceder a la ubicación, revisa los permisos de la aplicación y activa la ubicación.", Toast.LENGTH_LONG).show();
         }
     }
@@ -184,7 +194,7 @@ public class StoresActivity extends AppCompatActivity implements LocationListene
                                 Intent intent = new Intent(context, MainActivity.class);
                                 startActivity(intent);
                             }
-                        } catch (Exception e){
+                        } catch (Exception e) {
                             Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
                         }
                     }

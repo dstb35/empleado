@@ -181,9 +181,11 @@ public class LoginActivity extends OptionsMenuActivity {
                             }
                         } else {
                             try {
-                                JSONObject jsonRESULTS = new JSONObject(response.errorBody().string());
+                                /*JSONObject jsonRESULTS = new JSONObject(response.errorBody().string());
                                 String error_message = jsonRESULTS.getString("message");
-                                Toast.makeText(LoginActivity.this, error_message, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(LoginActivity.this, error_message, Toast.LENGTH_SHORT).show();*/
+                                /*TODO revisar otras apps*/
+                                Toast.makeText(LoginActivity.this, response.errorBody().string(), Toast.LENGTH_SHORT).show();
                             } catch (Exception e) {
                                 Toast.makeText(LoginActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                             }

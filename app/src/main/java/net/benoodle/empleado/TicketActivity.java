@@ -1,9 +1,11 @@
 package net.benoodle.empleado;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
@@ -23,6 +25,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -52,6 +56,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -64,17 +69,13 @@ public class TicketActivity extends AppCompatActivity {
     private SwitchCompat cobrado;
     private ApiService mApiService;
     private SharedPrefManager sharedPrefManager;
-    private String id; //store_id;
+    private String id;
     private Order order;
     private Context context;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
-    //private HashMap<String, Object> body = new HashMap<>();
-    //private ArrayList<OrderItem>  orderItemsDelete = new ArrayList<>();
-    //private Printing printing = null;
-    //PrintingCallback printingCallback = null;
     private OrderItemAdaptador adaptador;
-    private int numCopias;
+    private View mProgressView;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,15 +91,14 @@ public class TicketActivity extends AppCompatActivity {
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
         }
+        this.mProgressView = findViewById(R.id.login_progress);
         this.recyclerView = findViewById(R.id.recycler_view);
         this.layoutManager = new LinearLayoutManager(this);
         this.recyclerView.setLayoutManager(layoutManager);
         this.adaptador = new OrderItemAdaptador(new ArrayList<OrderItem>(), "imprimir");
         this.recyclerView.setAdapter(adaptador);
         this.context = getApplicationContext();
-        //this.store_id = sharedPrefManager.getSPStore();
         this.orderID = findViewById(R.id.orderID);
-        //this.customer = findViewById(R.id.customer);
         this.total = findViewById(R.id.total);
         this.btModificar = findViewById(R.id.btCompletarAct);
         this.btModificar.setText("Imprimir");
@@ -107,9 +107,16 @@ public class TicketActivity extends AppCompatActivity {
         this.cobrado.setClickable(false);
         this.btCompletar = findViewById(R.id.btEntregarAct);
         this.btCompletar.setVisibility(View.GONE);
-        this.numCopias = sharedPrefManager.getSPCopies();
         Printooth.INSTANCE.init(this);
-        pedirOrder();
+        id = getIntent().getStringExtra("id");
+        if (id == null) {
+            pedirOrder();
+        } else {
+            mApiService.getOrders(id, sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Ordercallback);
+        }
+
+
+        //Version nueva de android 12
         if (!Printooth.INSTANCE.hasPairedPrinter()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(TicketActivity.this);
             builder.setTitle("¿Quieres conectar una impresora?");
@@ -118,43 +125,39 @@ public class TicketActivity extends AppCompatActivity {
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            startActivityForResult(new Intent(context, ScanningActivity.class), ScanningActivity.SCANNING_FOR_PRINTER);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                if ((ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) || (ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED)) {
+                                    ActivityCompat.requestPermissions(TicketActivity.this, new String[]{Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT}, 101);
+                                } else {
+                                    startActivityForResult(new Intent(context, ScanningActivity.class), ScanningActivity.SCANNING_FOR_PRINTER);
+                                }
+                            } else {
+                                startActivityForResult(new Intent(context, ScanningActivity.class), ScanningActivity.SCANNING_FOR_PRINTER);
+                            }
                         }
                     });
             builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
-                    finish();
+                    //finish();
                 }
             });
             AlertDialog dialog = builder.create();
             dialog.show();
         }
-        /*if (Printooth.INSTANCE.hasPairedPrinter()) {
-            printer = Printooth.INSTANCE.getPairedPrinter();
-            this.initListeners();
-            pedirOrder();
-        }else{
-            AlertDialog.Builder builder = new AlertDialog.Builder(TicketActivity.this);
-            builder.setTitle("¿Quieres conectar una impresora?");
-            builder.setCancelable(true);
-            builder.setPositiveButton("Si",
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            startActivityForResult(new Intent(context, ScanningActivity.class), ScanningActivity.SCANNING_FOR_PRINTER);
-                        }
-                    });
-            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                    finish();
-                }
-            });
-            AlertDialog dialog = builder.create();
-            dialog.show();
-        }*/
+    }
 
+    //Veriosn nueva de android 12
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 101) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startActivityForResult(new Intent(context, ScanningActivity.class), ScanningActivity.SCANNING_FOR_PRINTER);
+            } else {
+                Toast.makeText(context, "Se necesita el permiso bluetooth para buscar impresoras", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     private void pedirOrder() {
@@ -174,6 +177,7 @@ public class TicketActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         id = input.getText().toString();
                         mApiService.getOrders(id, sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken()).enqueue(Ordercallback);
+                        mProgressView.setVisibility(View.VISIBLE);
                     }
                 });
         builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -187,118 +191,88 @@ public class TicketActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    /*private void initListeners () {
-        if (printing != null && printingCallback == null) {
-            this.printingCallback = new PrintingCallback() {
-                public void connectingWithPrinter() {
-                    Toast.makeText(getApplicationContext(), "Conectando a la impresora", Toast.LENGTH_SHORT).show();
-                }
-
-                public void printingOrderSentSuccessfully() {
-                    Toast.makeText(getApplicationContext(), "Conexión realizada", Toast.LENGTH_SHORT).show();
-                }
-
-                public void connectionFailed(@NonNull String error) {
-                    Toast.makeText(getApplicationContext(), "Conexión fallida :" + error, Toast.LENGTH_SHORT).show();
-                }
-
-                public void onError(@NonNull String error) {
-                    Toast.makeText(getApplicationContext(), "Error :" + error, Toast.LENGTH_SHORT).show();
-                }
-
-                public void onMessage(@NonNull String message) {
-                    Toast.makeText(getApplicationContext(), "Mensaje :" + message, Toast.LENGTH_SHORT).show();
-                }
-            };
-            Printooth.INSTANCE.printer().setPrintingCallback(printingCallback);
-        }
-    }*/
-
     Callback<ArrayList<Order>> Ordercallback = new Callback<ArrayList<Order>>() {
         @Override
         public void onResponse(Call<ArrayList<Order>> call, Response<ArrayList<Order>> response) {
+            mProgressView.setVisibility(View.GONE);
             try {
                 if (response.isSuccessful()) {
                     ArrayList<Order> orders = response.body();
                     order = orders.get(0);
+                    //El pedido del QR o introducido a mano no pertenece a la tienda que estamos, eso supone stocks diferentes.
+                    if (order.getStore().compareTo(sharedPrefManager.getSPStore()) != 0) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(TicketActivity.this);
+                        builder.setMessage("Este pedido no pertenece a esta tienda. Cambia la tienda para tener el stock correcto");
+                        builder.setCancelable(false);
+                        builder.setPositiveButton("Ok",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                        finish();
+                                    }
+                                });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
+                    if (order.getImpreso().compareTo("1") == 0) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(TicketActivity.this);
+                        builder.setMessage("¡ALERTA!");
+                        builder.setMessage("Este pedido ya ha sido impreso. Avisa al encargado");
+                        builder.setCancelable(false);
+                        builder.setPositiveButton("Ok",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
                     orderID.setText(String.format("Pedido: %s", order.getOrderId()));
                     estado.setText(String.format("Estado: %s. Empleado: %s. Tienda: %s. Cliente: %s", order.getState(), order.getEmpleado(), order.getStore(), order.getCustomer()));
                     total.setText(String.format("Importe: %S €", order.getTotalasString()));
                     cobrado.setChecked(order.getPagado());
                     adaptador.updateOrderItems(order.getOrderItems());
-                    /*LinearLayout items = findViewById(R.id.items);
-                    items.removeAllViews();
-                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT);
-                    //Anchura del layout para dividir el espacio
-                    float width = (float)items.getWidth();
-                    Double itemWidth = width*0.75;
-                    Double quantityWidth = width*0.25;
-                    orderID.setText("Número de pedido: "+order.getOrderId());
-                    estado.setText("Estado: "+order.getState()+". Empleado: "+order.getEmpleado()+". Tienda: "+order.getStore()+" . Cliente: "+order.getCustomer());
-                    //customer.setText(order.getCustomer());
-                    total.setText("Total: "+order.getTotalasString()+" €");
-                    cobrado.setChecked(order.getPagado());
-                    for (int j=0; j<order.getOrderItems().size(); j++){
-                        LinearLayout itemLayout = new LinearLayout(context);
-                        itemLayout.setOrientation(LinearLayout.HORIZONTAL);
-                        itemLayout.setLayoutParams(lp);
-                        TextView item = new TextView(context);
-                        item.setWidth(itemWidth.intValue());
-                        TextView quantity = new TextView(context);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            item.setTextAppearance(R.style.MyCustomTextView);
-                            quantity.setTextAppearance(R.style.MyCustomTextView);
-                        }
-                        quantity.setMaxWidth(quantityWidth.intValue());
-                        quantity.setMinWidth(80);
-                        StringBuilder string = new StringBuilder();
-                        OrderItem orderitem = order.getOrderItems().get(j);
-                        try {
-                            string.append(j+1+". Producto: " + catalog.getNodeById(orderitem.getProductID()).getTitle() + System.getProperty("line.separator"));
-                        } catch (Exception e) {
-                            string.append(j+1+". Producto: " + e.getLocalizedMessage() + System.getProperty("line.separator"));
-                        }
-                        if (orderitem.getSelecciones() != null) {
-                            string.append("Seleccion menú: ");
-                            for (String seleccion : orderitem.getSelecciones()) {
-                                try {
-                                    string.append(catalog.getNodeById(seleccion).getTitle() + ". ");
-                                } catch (Exception e) {
-                                    string.append(e.getLocalizedMessage() + " ");
-                                }
-                            }
-                            string.append(System.getProperty("line.separator"));
-                        }
-                        string.append(System.getProperty("line.separator"));
-                        quantity.setText(String.valueOf(orderitem.getQuantity()));
-                        item.setText(string.toString());
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            item.setAutoSizeTextTypeUniformWithConfiguration(20, 100, 2, TypedValue.COMPLEX_UNIT_DIP);
-                        }
-                        itemLayout.addView(item);
-                        itemLayout.addView(quantity);
-                        items.addView(itemLayout);
-                    }*/
+
                     btModificar.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            HashMap<String, String> body = new HashMap<>();
+                            body.put("id", id);
+                            body.put("state", "deliver");
                             if (!order.getPagado()) {
                                 AlertDialog.Builder builder = new AlertDialog.Builder(TicketActivity.this);
-                                builder.setTitle("El pedido que vas a imprimir no está pagado. Primero cobra y modifica el pedido");
+                                builder.setTitle("El pedido que vas a imprimir no está pagado. ¿Quieres cobrar el pedido?");
                                 builder.setCancelable(false);
-                                builder.setPositiveButton("Aceptar",
+                                builder.setNegativeButton("No",
                                         new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
-                                                finish();
+                                                dialog.dismiss();
                                             }
                                         });
+                                builder.setPositiveButton("Sí",
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                if (sharedPrefManager.getSPEncargado()) {
+                                                    mProgressView.setVisibility(View.VISIBLE);
+                                                    mApiService.cobrar(sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken(), body).enqueue(Cobrarcallback);
+                                                } else {
+                                                    Toast.makeText(context, "Solo los encargados pueden cobrar pedidos", Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                        });
+
                                 AlertDialog dialog = builder.create();
                                 dialog.show();
                             } else {
                                 MainActivity.print(order, context, sharedPrefManager.getSPCopies());
+                                body.put("impreso", "1");
+                                mApiService.completar(sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken(), body).enqueue(Completarcallback);
+                                order.setImpreso("1");
                                 finish();
                             }
                         }
@@ -316,6 +290,7 @@ public class TicketActivity extends AppCompatActivity {
 
         @Override
         public void onFailure(Call<ArrayList<Order>> call, Throwable t) {
+            mProgressView.setVisibility(View.GONE);
             Toast.makeText(TicketActivity.this, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
         }
     };
@@ -329,9 +304,59 @@ public class TicketActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == ScanningActivity.SCANNING_FOR_PRINTER && resultCode == Activity.RESULT_OK) {
             Toast.makeText(getApplicationContext(), "Impresora encontrada", Toast.LENGTH_LONG).show();
-            pedirOrder();
+            if (id == null) {
+                pedirOrder();
+            }
         } else {
             Toast.makeText(getApplicationContext(), "No se encontraron impresoras", Toast.LENGTH_LONG).show();
         }
     }
+
+    Callback<ResponseBody> Completarcallback = new Callback<ResponseBody>() {
+        @Override
+        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            mProgressView.setVisibility(View.GONE);
+            if (response.isSuccessful()) {
+                Toast.makeText(getApplicationContext(), "Pedido impreso.", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(getApplicationContext(), response.toString(), Toast.LENGTH_LONG).show();
+            }
+        }
+
+        @Override
+        public void onFailure(Call<ResponseBody> call, Throwable t) {
+            mProgressView.setVisibility(View.GONE);
+            Toast.makeText(context, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+        }
+    };
+
+    Callback<ResponseBody> Cobrarcallback = new Callback<ResponseBody>() {
+        @Override
+        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            mProgressView.setVisibility(View.GONE);
+            if (response.isSuccessful()) {
+                if (sharedPrefManager.getSPAutoprint()) {
+                    order.setPagado(true);
+                    order.setImpreso("1");
+                    cobrado.setChecked(true);
+                    order.setImpreso("1");
+                    MainActivity.print(order, context, sharedPrefManager.getSPCopies());
+                }
+                Toast.makeText(getApplicationContext(), "Pedido cobrado.", Toast.LENGTH_LONG).show();
+            } else {
+                try {
+                    JSONObject jObjError = new JSONObject(response.errorBody().string());
+                    Toast.makeText(getApplicationContext(), jObjError.get("message").toString(), Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+
+        @Override
+        public void onFailure(Call<ResponseBody> call, Throwable t) {
+            mProgressView.setVisibility(View.GONE);
+            Toast.makeText(context, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+        }
+    };
 }

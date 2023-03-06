@@ -5,14 +5,24 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 //import static net.benoodle.empleado.retrofit.UtilsApi.BASE_URL_API;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.preference.EditTextPreference;
 import androidx.preference.Preference;
+import androidx.preference.PreferenceScreen;
 
-public class PreferenciasActivity extends AppCompatActivity  {
+import com.mazenrashed.printooth.Printooth;
+
+public class PreferenciasActivity extends AppCompatActivity {
+
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -25,7 +35,7 @@ public class PreferenciasActivity extends AppCompatActivity  {
                 .commit();
     }
 
-    public void doDone(View v){
+    public void doDone(View v) {
         finish();
     }
 

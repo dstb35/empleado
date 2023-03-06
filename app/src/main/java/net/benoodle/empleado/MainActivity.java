@@ -1,7 +1,5 @@
 package net.benoodle.empleado;
 
-import androidx.annotation.NonNull;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -47,17 +45,12 @@ import com.mazenrashed.printooth.data.printable.Printable;
 import com.mazenrashed.printooth.data.printable.TextPrintable;
 import com.mazenrashed.printooth.data.printer.DefaultPrinter;
 import com.mazenrashed.printooth.ui.ScanningActivity;
-import com.mazenrashed.printooth.utilities.Printing;
-import com.mazenrashed.printooth.utilities.PrintingCallback;
 
 import org.json.JSONObject;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Objects;
-
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -68,6 +61,7 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
     private ApiService mApiService;
     private SharedPrefManager sharedPrefManager;
     public static final String MENU = "menu";
+    public static final String DESAYUNO = "52";
     public static ArrayList<Order> orders = new ArrayList<>();
     public static Order order;
     public User user;
@@ -90,6 +84,7 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
     public static final int REQUEST_CODE = 1;
     public static final String MENU_BE_NOODLE_KAKIGORI = "28";
     public static final String MENU_BE_NOODLE = "5";
+    private ArrayList<String> orderDeleted = new ArrayList<>();
     //private SwitchCompat swPause;
 
     @Override
@@ -456,17 +451,17 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
                     public void onClick(DialogInterface dialog, int which) {
                         String id = input.getText().toString();
                         if (!id.isEmpty()) {
-                            body.put(id, id);
+                            orderDeleted.add(id);
                         }
-                        if (body.isEmpty()) {
+                        if (orderDeleted.isEmpty()) {
                             Toast.makeText(context, "La lista está vacía, no se borraron pedidos", Toast.LENGTH_SHORT).show();
                         } else {
-                            mApiService.borrar(sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken(), body)
+                            mApiService.borrar(sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken(), orderDeleted)
                                     .enqueue(new Callback<ResponseBody>() {
                                         @Override
                                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                                             if (response.isSuccessful()) {
-                                                for (String id : body.values()) {
+                                                for (String id : orderDeleted) {
                                                     for (Order order : orders) {
                                                         if (order.getOrderId().compareTo(id) == 0) {
                                                             orders.remove(order);
@@ -510,7 +505,7 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
                     public void onClick(DialogInterface dialog, int which) {
                         String id = input.getText().toString();
                         if (!id.isEmpty()) {
-                            body.put(id, id);
+                            orderDeleted.add(id);
                         }
                         askPedido();
                     }
@@ -556,7 +551,6 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
     }
 
     public static void print(Order order, Context context, int numCopias) {
-        //if (printing != null) {
         if (Printooth.INSTANCE.hasPairedPrinter() && order.getPagado()) {
             try {
                 StringBuilder string = new StringBuilder();
@@ -591,6 +585,7 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
                 }
                 ArrayList<Printable> al = new ArrayList<>();
                 Bitmap image = BitmapFactory.decodeResource(context.getResources(), R.drawable.logo);
+                //image = Bitmap.createScaledBitmap(image, 80, 80, true);
                 for (int i = 0; i < numCopias; i++) {
                     al.add(new ImagePrintable.Builder(image).build());
                     al.add((new TextPrintable.Builder())

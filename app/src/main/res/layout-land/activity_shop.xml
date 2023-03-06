@@ -17,28 +17,6 @@
         app:layout_constraintGuide_percent="0.8"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!--<HorizontalScrollView
-        android:id="@+id/main_types_scroll"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_margin="8dp"
-        android:background="@drawable/menubar"
-        android:foregroundGravity="center"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/guideline1"
-        app:layout_constraintEnd_toEndOf="@+id/guideline3"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <LinearLayout
-            android:id="@+id/main_types_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal" />
-    </HorizontalScrollView>-->
-
     <Button
         android:id="@+id/review"
         android:layout_width="wrap_content"
@@ -51,7 +29,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
     <Button
         android:id="@+id/reprint"
         android:layout_width="wrap_content"
@@ -59,40 +36,34 @@
         android:onClick="doReprint"
         android:text="@string/reprint"
         app:layout_constraintBottom_toBottomOf="@+id/review"
-        app:layout_constraintEnd_toStartOf="@+id/total"
+        app:layout_constraintEnd_toStartOf="@+id/qr"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/review"
         app:layout_constraintTop_toTopOf="@+id/review" />
 
-    <!--<androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:fadeScrollbars="false"
-        android:scrollbarStyle="insideOverlay"
-        android:scrollbars="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline3"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline1"
-        tools:listitem="@layout/main_node" />-->
+    <Button
+        android:id="@+id/qr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="doQr"
+        android:text="QR"
+        app:layout_constraintBottom_toBottomOf="@+id/reprint"
+        app:layout_constraintEnd_toStartOf="@+id/total"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/reprint" />
 
     <TextView
         android:id="@+id/total"
         android:layout_width="127dp"
-        android:layout_height="0dp"
+        android:layout_height="48dp"
         android:background="@drawable/shape"
         android:scrollbarSize="2dp"
         android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="@+id/review"
+        app:layout_constraintBottom_toBottomOf="@+id/qr"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/reprint"
-        app:layout_constraintTop_toTopOf="@+id/review" />
+        app:layout_constraintStart_toEndOf="@+id/qr"
+        app:layout_constraintTop_toTopOf="@+id/qr" />
 
     <ScrollView
         android:id="@+id/scrollView1"

@@ -3,9 +3,11 @@ package net.benoodle.empleado;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Paint;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
+import android.text.Layout;
 import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -20,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
@@ -32,9 +35,13 @@ import net.benoodle.empleado.retrofit.SharedPrefManager;
 import net.benoodle.empleado.retrofit.UtilsApi;
 
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -44,7 +51,7 @@ import retrofit2.Response;
 import static net.benoodle.empleado.MainActivity.catalog;
 
 public class StoreActivity extends AppCompatActivity {
-    private TextView TxtStore, TxtTotals;
+    private TextView TxtStore, TxtTotals, producto, cantidad;
     private EditText zipcode, country, name;
     private Button btSave, btCancel;
     private SwitchCompat swmodus, swactive, swubi, swprice;
@@ -53,6 +60,7 @@ public class StoreActivity extends AppCompatActivity {
     private Context context;
     private View mProgressView;
     private Store store;
+    private LinearLayout productos;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +88,7 @@ public class StoreActivity extends AppCompatActivity {
         this.btSave = findViewById(R.id.btSave);
         this.btCancel = findViewById(R.id.btCancel);
         this.mProgressView = findViewById(R.id.login_progress);
+        this.productos = findViewById(R.id.productos);
         this.btSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -96,6 +105,7 @@ public class StoreActivity extends AppCompatActivity {
     }
 
     Callback<Store> StoreCallback = new Callback<Store>() {
+        @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
         public void onResponse(Call<Store> call, Response<Store> response) {
             mProgressView.setVisibility(View.GONE);
@@ -127,6 +137,26 @@ public class StoreActivity extends AppCompatActivity {
                     } else {
                         swprice.setChecked(true);
                     }
+                    Set<Map.Entry<String, Map<String, String>>> types = store.getProductos().entrySet();
+                    Iterator<Map.Entry<String, Map<String, String>>> it = types.iterator();
+                    while (it.hasNext()) {
+                        Map.Entry<String, Map<String, String>> type = it.next();
+                        TextView tipo = new TextView(context);
+                        tipo.setTextAppearance(R.style.MyCustomTextView);
+                        tipo.setTextSize(22);
+                        tipo.setText(type.getKey().substring(0, 1).toUpperCase() + type.getKey().substring(1));
+                        productos.addView(tipo);
+                        Set<Map.Entry<String, String>> products = type.getValue().entrySet();
+                        Iterator<Map.Entry<String, String>> iterator= products.iterator();
+                        while (iterator.hasNext()){
+                            Map.Entry<String, String> product = iterator.next();
+                            TextView producto = new TextView(context);
+                            producto.setTextAppearance(R.style.MyCustomTextView);
+                            producto.setTextSize(14);
+                            producto.setText(String.format("%s: %s unidades.", product.getKey(), product.getValue()));
+                            productos.addView(producto);
+                        }
+                    }
                 } else {
                     JSONObject jObjError = new JSONObject(response.errorBody().string());
                     Toast.makeText(context, jObjError.get("message").toString(), Toast.LENGTH_LONG).show();
@@ -144,33 +174,33 @@ public class StoreActivity extends AppCompatActivity {
     };
 
     public void ConfirmarCambios() {
-        if (store != null){
+        if (store != null) {
             store.setName(name.getText().toString());
             store.setZipcode(zipcode.getText().toString());
             store.setCountry(country.getText().toString());
-            if (swactive.isChecked()){
+            if (swactive.isChecked()) {
                 store.setActiva("1");
-            }else{
+            } else {
                 store.setActiva("0");
             }
-            if (swmodus.isChecked()){
+            if (swmodus.isChecked()) {
                 store.setModus("1");
-            }else{
+            } else {
                 store.setModus("0");
             }
-            if (swubi.isChecked()){
+            if (swubi.isChecked()) {
                 store.setSaltarubi("1");
-            }else{
+            } else {
                 store.setSaltarubi("0");
             }
-            if (swprice.isChecked()){
+            if (swprice.isChecked()) {
                 store.setPricealt("1");
-            }else{
+            } else {
                 store.setPricealt("0");
             }
             mProgressView.setVisibility(View.VISIBLE);
             mApiService.postStore(sharedPrefManager.getSPBasicAuth(), sharedPrefManager.getSPCsrfToken(), store)
-                    .enqueue(new Callback<ResponseBody>(){
+                    .enqueue(new Callback<ResponseBody>() {
                         @Override
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                             mProgressView.setVisibility(View.GONE);

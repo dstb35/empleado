@@ -2,6 +2,10 @@ package net.benoodle.empleado.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 public class Store {
     @SerializedName("name")
     private String name;
@@ -27,6 +31,8 @@ public class Store {
     private String count;
     @SerializedName("day")
     private String day;
+    @SerializedName("productos")
+    private Map<String, Map<String, String>> productos;
 
     public Store(String name){
         this.name = name.toLowerCase();
@@ -107,5 +113,6 @@ public class Store {
     public String getDay() {
         return day;
     }
-}
+    public Map<String, Map<String, String>> getProductos() {return productos; }
 
+}

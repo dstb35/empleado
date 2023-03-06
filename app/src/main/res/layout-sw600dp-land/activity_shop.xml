@@ -3,9 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="8dp"
     android:orientation="horizontal"
-    tools:context="net.benoodle.empleado.ShopActivity">
+    tools:context="net.benoodle.empleado.ShopActivity"
+    tools:layout_editor_absoluteX="8dp"
+    tools:layout_editor_absoluteY="8dp">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline1"
@@ -27,28 +28,6 @@
         app:layout_constraintGuide_percent="0.8"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!--<HorizontalScrollView
-        android:id="@+id/main_types_scroll"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_margin="8dp"
-        android:background="@drawable/menubar"
-        android:foregroundGravity="center"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/guideline1"
-        app:layout_constraintEnd_toEndOf="@+id/guideline3"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <LinearLayout
-            android:id="@+id/main_types_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal" />
-    </HorizontalScrollView>-->
-
     <ScrollView
         android:id="@+id/scrollView1"
         android:layout_width="0dp"
@@ -67,18 +46,13 @@
 
     <Button
         android:id="@+id/review"
-        android:layout_width="0dp"
+        android:layout_width="221dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="8dp"
         android:onClick="ShowCart"
         android:text="@string/review"
         app:layout_constraintBottom_toTopOf="@+id/reprint"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/guideline3"
+        app:layout_constraintStart_toStartOf="@+id/guideline3"
         app:layout_constraintTop_toTopOf="parent" />
 
 
@@ -86,33 +60,24 @@
         android:id="@+id/reprint"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
         android:onClick="doReprint"
         android:text="@string/reprint"
-        app:layout_constraintBottom_toTopOf="@+id/guideline1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="@+id/guideline3"
+        app:layout_constraintBottom_toTopOf="@+id/qr"
+        app:layout_constraintEnd_toEndOf="@+id/review"
+        app:layout_constraintStart_toStartOf="@+id/review"
         app:layout_constraintTop_toBottomOf="@+id/review" />
 
-    <!--<androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:fadeScrollbars="false"
-        android:scrollbarStyle="insideOverlay"
-        android:scrollbars="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline3"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline1"
-        tools:listitem="@layout/main_node" />-->
+    <Button
+        android:id="@+id/qr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="doQr"
+        android:text="QR"
+        app:layout_constraintBottom_toTopOf="@+id/guideline1"
+        app:layout_constraintEnd_toEndOf="@+id/reprint"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/reprint"
+        app:layout_constraintTop_toBottomOf="@+id/reprint" />
 
     <TextView
         android:id="@+id/total"

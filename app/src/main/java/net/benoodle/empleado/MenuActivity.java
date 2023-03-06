@@ -59,7 +59,13 @@ public class MenuActivity extends AppCompatActivity {
         extras = node.getExtras();
 
         for (String producto : productos) {
-            final ArrayList<Node> opciones = catalog.OpcionesMenu(producto);
+            final ArrayList<Node> opciones;
+            //Menú desayuno
+            if (node.getProductID().compareTo(MainActivity.DESAYUNO)  == 0){
+                opciones = catalog.getCafes();
+            }else{
+                opciones = catalog.OpcionesMenu(producto);
+            }
             if (opciones.isEmpty()) {
                 Toast.makeText(getApplicationContext(), getResources().getString(R.string.no_stock) + producto, Toast.LENGTH_SHORT).show();
                 finish();

@@ -32,4 +32,8 @@
         android:key="version"
         android:summary="">
     </PreferenceScreen>
+    <PreferenceCategory
+        android:key="printer"
+        android:summary="Impresora">
+    </PreferenceCategory>
 </androidx.preference.PreferenceScreen>

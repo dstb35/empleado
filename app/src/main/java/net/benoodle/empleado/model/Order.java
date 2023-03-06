@@ -19,16 +19,12 @@ public class Order {
     private String email;
     @SerializedName("store_id")
     private String store_id;
-    /*@SerializedName("store") CAMBIADO
-    private String store;*/
     @SerializedName("placed")
     private Boolean placed = TRUE;
     @SerializedName("state")
     private String state;
-    //@SerializedName("orderItems") CAMBIADO
     @SerializedName ("order_items")
     private ArrayList<OrderItem> orderItems = new ArrayList<>();
-    //@SerializedName("orderId") CAMBIADO
     @SerializedName("order_id")
     private String orderId;
     @SerializedName("total")
@@ -39,14 +35,12 @@ public class Order {
     private String voluntario;
     @SerializedName("pagado")
     private Boolean pagado;
-    /*@SerializedName("cuppons")
-    private HashMap<String, String> cuppons = new HashMap<>();*/
     @SerializedName("cuppons")
     private ArrayList<Cuppon> cuppons = new ArrayList<>();
-    /*@SerializedName("customer") CAMBIADO
-    private String customer;*/
     @SerializedName("updated")
     private String updated;
+    @SerializedName("impreso")
+    private String impreso;
 
 
     public Order() {
@@ -464,4 +458,11 @@ public class Order {
 
     public OrderItem getOrderItem(int i) { return orderItems.get(i); }
 
+    public String getImpreso() {
+        return impreso;
+    }
+
+    public void setImpreso(String impreso) {
+        this.impreso = impreso;
+    }
 }

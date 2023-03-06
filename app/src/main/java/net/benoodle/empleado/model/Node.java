@@ -28,13 +28,14 @@ public class Node implements Parcelable {
     private ArrayList<String> extras;
     @SerializedName("url")
     private String url;
+    private Boolean nomenu;
     private String body;
     private String id;
     private String name;
     private String grade;
     private String sku;
 
-    public Node(String productID, String title, String url, String type, Integer stock, String price, String sku) {
+    public Node(String productID, String title, String url, String type, Integer stock, String price, String sku, Boolean nomenu) {
         this.productID = productID;
         this.title = title;
         this.url = url;
@@ -43,6 +44,7 @@ public class Node implements Parcelable {
         this.status = true;
         this.price = price;
         this.sku = sku;
+        this.nomenu = nomenu;
     }
 
     public Node(Parcel in) {
@@ -164,5 +166,9 @@ public class Node implements Parcelable {
 
     public String getSku() {
         return sku;
+    }
+
+    public Boolean getNomenu() {
+        return nomenu;
     }
 }

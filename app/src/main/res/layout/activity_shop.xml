@@ -29,8 +29,7 @@
         android:onClick="ShowCart"
         android:text="@string/review"
         android:textSize="14sp"
-        app:layout_constraintEnd_toStartOf="@+id/reprint"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/total" />
 
@@ -38,66 +37,35 @@
         android:id="@+id/reprint"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:onClick="doReprint"
         android:text="@string/reprint"
-        app:layout_constraintBottom_toBottomOf="@+id/review"
+        app:layout_constraintEnd_toStartOf="@+id/qr"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/review" />
+
+    <Button
+        android:id="@+id/qr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="doQr"
+        android:text="QR"
+        app:layout_constraintBottom_toBottomOf="@+id/reprint"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/review"
-        app:layout_constraintTop_toTopOf="@+id/review" />
+        app:layout_constraintStart_toEndOf="@+id/reprint"
+        app:layout_constraintTop_toTopOf="@+id/reprint" />
 
-    <!--<HorizontalScrollView
-        android:id="@+id/main_types_scroll"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_margin="8dp"
-        android:background="@drawable/menubar"
-        android:foregroundGravity="center"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_min="80dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/review">
-
-        <LinearLayout
-            android:id="@+id/main_types_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal" />
-
-    </HorizontalScrollView>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/main_types_scroll">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="16dp"
-            tools:listitem="@layout/main_node" />
-    </LinearLayout>-->
 
     <ScrollView
         android:id="@+id/scrollView1"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="8dp"
+        android:layout_width="379dp"
+        android:layout_height="610dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/review">
+        app:layout_constraintTop_toBottomOf="@+id/reprint">
 
         <LinearLayout
             android:id="@+id/products"

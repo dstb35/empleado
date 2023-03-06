@@ -25,7 +25,6 @@ public class SharedPrefManager {
     public static final String STORE = "store";
     public static final String MODUS = "modus";
     public static final String VOLUNTARIOS = "voluntarios";
-    //public static final String AUTOASSIGN = "autoassign";
     public static final String ENCARGADO = "encargado";
     public static final String COPIES = "copies";
     public static final String AUTOPRINT = "autoprint";
