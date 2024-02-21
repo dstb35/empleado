@@ -95,7 +95,7 @@ public class TracingActivity extends AppCompatActivity {
             finish();
         }
         try {
-            mApiService = UtilsApi.getAPIService(sharedPrefManager.getURL());
+            mApiService = UtilsApi.getAPIService();
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
         }

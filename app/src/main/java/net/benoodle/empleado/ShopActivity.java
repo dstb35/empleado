@@ -16,6 +16,7 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -69,6 +70,10 @@ public class ShopActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(decorView.SYSTEM_UI_FLAG_FULLSCREEN);
         setContentView(R.layout.activity_shop);
         this.context = getApplicationContext();
         sharedPrefManager = new SharedPrefManager(this);
@@ -78,7 +83,7 @@ public class ShopActivity extends AppCompatActivity {
             finish();
         }
         try {
-            mApiService = UtilsApi.getAPIService(sharedPrefManager.getURL());
+            mApiService = UtilsApi.getAPIService();
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
         }

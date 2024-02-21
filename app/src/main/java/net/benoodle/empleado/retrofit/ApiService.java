@@ -26,6 +26,10 @@ public interface ApiService {
     @Headers({"Content-type: application/x-www-form-urlencoded"})
     Call<ResponseBody> loginRequest(@Body LoginData body);
 
+    @POST("user/logout?_format=json")
+    @Headers({"Content-type: application/x-www-form-urlencoded"})
+    Call<ResponseBody> logoutRequest(@Header("X-CSRF-Token") String x_csrf_token, @Header("Cookie") String cookie, @Query("token") String logout_token);
+
     @GET("eorders/sincobrar?_format=json")
     @Headers({"Content-type: application/json"})
     Call<ArrayList<Order>> getSinCobrar(@Query("store_id") String store_id, @Header("Authorization") String user_auth, @Header("X-CSRF-Token") String x_csrf_token);

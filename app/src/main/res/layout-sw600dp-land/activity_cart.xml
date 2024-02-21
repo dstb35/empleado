@@ -24,15 +24,14 @@
 
     <TextView
         android:id="@+id/Btotal"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
         android:autoSizeTextType="uniform"
         android:textSize="28sp"
-        app:layout_constraintBottom_toTopOf="@+id/guideline1"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintBottom_toTopOf="@+id/recycler_view"
+        app:layout_constraintEnd_toStartOf="@+id/swCobrado"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -43,46 +42,50 @@
         android:minHeight="48dp"
         android:text="@string/paid"
         android:textSize="28sp"
-        app:layout_constraintBottom_toBottomOf="@+id/Btcuppon"
+        app:layout_constraintBottom_toTopOf="@+id/guideline1"
         app:layout_constraintEnd_toStartOf="@+id/Btcuppon"
-        app:layout_constraintStart_toStartOf="@+id/guideline2"
-        app:layout_constraintTop_toTopOf="@+id/Btcuppon"
-        app:layout_constraintWidth_min="240dp"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/Btotal"
+        app:layout_constraintTop_toTopOf="@+id/Btotal"
         app:switchMinWidth="70dp" />
 
     <Button
         android:id="@+id/Btcuppon"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginEnd="8dp"
+        android:layout_height="48dp"
         android:width="160dp"
         android:onClick="Docuppon"
         android:text="@string/cuppon"
-        app:layout_constraintBottom_toBottomOf="@+id/Btcatalog"
+        app:layout_constraintBottom_toBottomOf="@+id/swCobrado"
         app:layout_constraintEnd_toStartOf="@+id/Btcatalog"
-        app:layout_constraintTop_toTopOf="@+id/Btcatalog" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/swCobrado"
+        app:layout_constraintTop_toTopOf="@+id/swCobrado" />
 
     <Button
         android:id="@+id/Btcatalog"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
         android:width="160dp"
         android:onClick="Catalog"
         android:text="@string/catalog"
-        app:layout_constraintBottom_toBottomOf="@+id/Btotal"
+        app:layout_constraintBottom_toBottomOf="@+id/Btcuppon"
         app:layout_constraintEnd_toStartOf="@+id/Btcomprar"
-        app:layout_constraintTop_toTopOf="@+id/Btotal" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/Btcuppon"
+        app:layout_constraintTop_toTopOf="@+id/Btcuppon" />
 
     <Button
         android:id="@+id/Btcomprar"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
+        android:layout_height="48dp"
         android:width="160dp"
         android:onClick="Comprar"
         android:text="@string/finish_order"
         app:layout_constraintBottom_toBottomOf="@+id/Btcatalog"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/Btcatalog"
         app:layout_constraintTop_toTopOf="@+id/Btcatalog" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -186,7 +189,6 @@
         android:id="@+id/img2"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_marginTop="16dp"
         android:onClick="sumar"
         android:tag="2"
         app:layout_constraintEnd_toStartOf="@+id/img1"
@@ -235,10 +237,13 @@
         android:id="@+id/btReiniciar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:onClick="reiniciar"
         android:text="Reiniciar"
+        app:layout_constraintBaseline_toBottomOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/btCalcular" />
+        app:layout_constraintStart_toEndOf="@+id/btCalcular"
+        app:layout_constraintTop_toBottomOf="@+id/img1" />
 </androidx.constraintlayout.widget.ConstraintLayout>

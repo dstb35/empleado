@@ -132,7 +132,7 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
             adaptador.notifyDataSetChanged();
         }
         try {
-            mApiService = UtilsApi.getAPIService(sharedPrefManager.getURL());
+            mApiService = UtilsApi.getAPIService();
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
         }
@@ -585,7 +585,7 @@ public class MainActivity extends OptionsMenuActivity implements MainAdaptador.A
                 }
                 ArrayList<Printable> al = new ArrayList<>();
                 Bitmap image = BitmapFactory.decodeResource(context.getResources(), R.drawable.logo);
-                //image = Bitmap.createScaledBitmap(image, 80, 80, true);
+                image = Bitmap.createScaledBitmap(image, 100, 100, true);
                 for (int i = 0; i < numCopias; i++) {
                     al.add(new ImagePrintable.Builder(image).build());
                     al.add((new TextPrintable.Builder())

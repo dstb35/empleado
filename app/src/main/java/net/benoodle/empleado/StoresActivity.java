@@ -33,14 +33,14 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class StoresActivity extends AppCompatActivity implements LocationListener {
+public class StoresActivity extends AppCompatActivity /*implements LocationListener*/ {
 
     private Context context;
     private SharedPrefManager sharedPrefManager;
     private ApiService mApiService;
     private Button btRefresh;
     private Double latitude, longitude;
-    private LocationManager locationManager;
+    //private LocationManager locationManager;
     private String zipcode, country;
     private ArrayList<Store> stores;
     private RadioGroup radioGroup;
@@ -54,8 +54,8 @@ public class StoresActivity extends AppCompatActivity implements LocationListene
         setContentView(R.layout.activity_stores);
         this.context = getApplicationContext();
         sharedPrefManager = new SharedPrefManager(this);
-        mApiService = UtilsApi.getAPIService(sharedPrefManager.getURL());
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        mApiService = UtilsApi.getAPIService();
+        //locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (!sharedPrefManager.getSPIsLoggedIn()) {
             Intent intent = new Intent(StoresActivity.this, LoginActivity.class);
             startActivity(intent);
@@ -71,16 +71,18 @@ public class StoresActivity extends AppCompatActivity implements LocationListene
                 cargarStores();
             }
         });
-        try {
+        cargarStores();
+        //Quitar lo de localización
+        /*try {
             if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 101);
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
-    public void onResume() {
+    /*public void onResume() {
         super.onResume();
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
@@ -92,20 +94,25 @@ public class StoresActivity extends AppCompatActivity implements LocationListene
         } catch (Exception e) {
             Toast.makeText(context, "Permiso de ubicación necesario para comprobar la disponibilidad de stands", Toast.LENGTH_LONG).show();
         }
-    }
+    }*/
 
-    private ActivityResultLauncher<String> requestPermissionLauncher =
+    /*private ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
                     cargarStores();
                 } else {
                     Toast.makeText(context, "Permiso de ubicación necesario para comprobar la disponibilidad de stands", Toast.LENGTH_LONG).show();
                 }
-            });
+            });*/
 
     /* Carga todas las tiendas basadas en el zip code del teléfono */
     public void cargarStores() {
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        //Quitado lo de ubicación
+        mProgressView.setVisibility(View.VISIBLE);
+        zipcode = "0";
+        country = "0";
+        mApiService.getStores(sharedPrefManager.getSPBasicAuth(), zipcode, country, sharedPrefManager.getSPCsrfToken()).enqueue(Storescallback);
+        /*if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
         }
         if (locationManager != null) {
@@ -138,10 +145,10 @@ public class StoresActivity extends AppCompatActivity implements LocationListene
             }
         } else {
             Toast.makeText(context, "No se ha podido acceder a la ubicación, revisa los permisos de la aplicación y activa la ubicación.", Toast.LENGTH_LONG).show();
-        }
+        }*/
     }
 
-    @Override
+   /* @Override
     public void onLocationChanged(Location location) {
         cargarStores();
     }
@@ -158,7 +165,7 @@ public class StoresActivity extends AppCompatActivity implements LocationListene
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
         cargarStores();
-    }
+    }*/
 
     Callback<ArrayList<Store>> Storescallback = new Callback<ArrayList<Store>>() {
         @Override

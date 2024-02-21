@@ -80,7 +80,7 @@ public class StockActivity extends AppCompatActivity {
         }
         //user = new User(sharedPrefManager.getSPEmail(), sharedPrefManager.getSPName(), sharedPrefManager.getSPUserId());
         try {
-            mApiService = UtilsApi.getAPIService(sharedPrefManager.getURL());
+            mApiService = UtilsApi.getAPIService();
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
         }

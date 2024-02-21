@@ -87,7 +87,7 @@ public class TicketActivity extends AppCompatActivity {
         sharedPrefManager = new SharedPrefManager(this);
         new SharedPrefManager(this);
         try {
-            mApiService = UtilsApi.getAPIService(sharedPrefManager.getURL());
+            mApiService = UtilsApi.getAPIService();
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
         }

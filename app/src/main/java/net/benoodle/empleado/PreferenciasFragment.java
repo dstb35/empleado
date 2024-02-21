@@ -25,13 +25,17 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
 import com.mazenrashed.printooth.Printooth;
+import com.mazenrashed.printooth.data.printable.Printable;
+import com.mazenrashed.printooth.data.printable.TextPrintable;
+import com.mazenrashed.printooth.data.printer.DefaultPrinter;
 import com.mazenrashed.printooth.ui.ScanningActivity;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class PreferenciasFragment extends PreferenceFragmentCompat {
     private PreferenceScreen direccion;
-    private Preference eliminar, asignar;
+    private Preference eliminar, asignar, logout, prueba;
     private PreferenceCategory category;
 
     @Override
@@ -58,12 +62,12 @@ public class PreferenciasFragment extends PreferenceFragmentCompat {
             public boolean onPreferenceClick(Preference preference) {
                 try {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        if ((ContextCompat.checkSelfPermission(getContext(), Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) || (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED))  {
+                        if ((ContextCompat.checkSelfPermission(getContext(), Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) || (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED)) {
                             requestPermissions(new String[]{Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT}, 101);
-                        }else{
+                        } else {
                             startActivityForResult(new Intent(getContext(), ScanningActivity.class), ScanningActivity.SCANNING_FOR_PRINTER);
                         }
-                    }else{
+                    } else {
                         startActivityForResult(new Intent(getContext(), ScanningActivity.class), ScanningActivity.SCANNING_FOR_PRINTER);
                     }
                 } catch (Exception e) {
@@ -78,6 +82,36 @@ public class PreferenciasFragment extends PreferenceFragmentCompat {
             initPrinter();
         }
         category.addPreference(asignar);
+        prueba = new Preference(getContext());
+        prueba.setTitle("Imprimir prueba");
+        prueba.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                if (Printooth.INSTANCE.hasPairedPrinter()) {
+                    StringBuilder string = new StringBuilder();
+                    string.append(System.getProperty("line.separator"));
+                    string.append(Printooth.INSTANCE.getPairedPrinter().getAddress());
+                    string.append(System.getProperty("line.separator"));
+                    ArrayList<Printable> al = new ArrayList<>();
+
+                    al.add((new TextPrintable.Builder())
+                            .setText(string.toString())
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_60())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                            .setEmphasizedMode(DefaultPrinter.Companion.getEMPHASIZED_MODE_NORMAL())
+                            .setUnderlined(DefaultPrinter.Companion.getUNDERLINED_MODE_ON())
+                            .setCharacterCode(DefaultPrinter.Companion.getCHARCODE_PC1252())
+                            .setNewLinesAfter(1)
+                            .build());
+                    Printooth.INSTANCE.printer().print(al);
+                    return true;
+                } else {
+                    Toast.makeText(getContext(), "No hay impresora vinculada", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+            }
+        });
+        category.addPreference(prueba);
 
     }
 
@@ -106,6 +140,7 @@ public class PreferenciasFragment extends PreferenceFragmentCompat {
 
     private void initPrinter() {
         direccion.setTitle(Printooth.INSTANCE.getPairedPrinter().getName() + " " + Printooth.INSTANCE.getPairedPrinter().getAddress());
+        Printooth.INSTANCE.setPrinter(Printooth.INSTANCE.getPairedPrinter().getName(), Printooth.INSTANCE.getPairedPrinter().getAddress());
         eliminar.setTitle("Eliminar");
         eliminar.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override

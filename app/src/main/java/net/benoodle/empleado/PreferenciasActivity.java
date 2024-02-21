@@ -1,6 +1,7 @@
 package net.benoodle.empleado;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
@@ -19,7 +20,14 @@ import androidx.preference.PreferenceScreen;
 
 import com.mazenrashed.printooth.Printooth;
 
+import net.benoodle.empleado.retrofit.ApiService;
+import net.benoodle.empleado.retrofit.SharedPrefManager;
+import net.benoodle.empleado.retrofit.UtilsApi;
+
 public class PreferenciasActivity extends AppCompatActivity {
+
+    protected SharedPrefManager sharedPrefManager;
+    protected ApiService mApiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +41,16 @@ public class PreferenciasActivity extends AppCompatActivity {
                 .beginTransaction()
                 .replace(R.id.activity_preferencias, new PreferenciasFragment())
                 .commit();
+        sharedPrefManager = new SharedPrefManager(this);
+        mApiService = UtilsApi.getAPIService();
+
     }
 
+    public void doLogout(View view) {
+        mApiService.logoutRequest(sharedPrefManager.getSPCsrfToken(), sharedPrefManager.getSPCookie(), sharedPrefManager.getSPLogoutToken());
+        sharedPrefManager.logout();
+        startActivity(new Intent(this, LoginActivity.class));
+    }
     public void doDone(View v) {
         finish();
     }

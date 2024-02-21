@@ -12,9 +12,9 @@ import net.benoodle.empleado.OrderDetailActivity;
 
 public class SharedPrefManager {
 
-    public static final String SP_HUBBING_APP = "preferencias_principal";
     public static final String SP_NAME = "spName";
     public static final String SP_EMAIL = "spEmail";
+    public static final String SP_PASSWORD = "spPassword";
     public static final String SP_CSRF_TOKEN = "spCsrfToken";
     public static final String SP_LOGOUT_TOKEN = "spLogoutToken";
     public static final String SP_USER_ID = "spUserId";
@@ -59,12 +59,16 @@ public class SharedPrefManager {
         return sp.getString(SP_EMAIL, "");
     }
 
-    public String getURL() {
-        return sp.getString("URL", "https://benoodle.net");
-    }
-
     public void logout() {
-        spEditor.clear();
+        spEditor.remove(SP_EMAIL);
+        spEditor.remove(SP_NAME);
+        spEditor.remove(SP_IS_LOGGED_IN);
+        spEditor.remove(SP_LOGOUT_TOKEN);
+        spEditor.remove(SP_CSRF_TOKEN);
+        spEditor.remove(SP_BASIC_AUTH);
+        spEditor.remove(SP_USER_ID);
+        spEditor.remove(COOKIE);
+        spEditor.remove(COOKIE_EXPIRES);
         spEditor.apply();
     }
 
@@ -74,7 +78,7 @@ public class SharedPrefManager {
     public String getSPCsrfToken() {
         return sp.getString(SP_CSRF_TOKEN, "");
     }
-    public String getSPCsrfLogoutToken() {
+    public String getSPLogoutToken() {
         return sp.getString(SP_LOGOUT_TOKEN, "");
     }
     public String getSPUserId() {

@@ -72,7 +72,7 @@ public class StoreActivity extends AppCompatActivity {
         sharedPrefManager = new SharedPrefManager(this);
         this.context = getApplicationContext();
         try {
-            mApiService = UtilsApi.getAPIService(sharedPrefManager.getURL());
+            mApiService = UtilsApi.getAPIService();
         } catch (Exception e) {
             Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
         }

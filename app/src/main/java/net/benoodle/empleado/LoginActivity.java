@@ -32,6 +32,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Objects;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -96,19 +97,26 @@ public class LoginActivity extends OptionsMenuActivity {
     protected void onStart() {
         super.onStart();
         PreferenceManager.setDefaultValues(this, R.xml.preferencias, false);
-        URL = sharedPrefManager.getURL();
-        mApiService = UtilsApi.getAPIService(URL);
+        mApiService = UtilsApi.getAPIService();
+        if (sharedPrefManager.getSPIsLoggedIn()) {
+            Intent intent = new Intent(LoginActivity.this, StoresActivity.class);
+            startActivity(intent);
+            finish();
+        }
         //tURL.setText("URL: "+URL);
         //mUsernameView.setText(sharedPrefManager.getSPEmail());
     }
 
     public void takeCredentials() {
-        email = mUsernameView.getText().toString().trim();
-        password = mPasswordView.getText().toString().trim();
-        if (email.isEmpty() || password.isEmpty()) {
+        try{
+            email = mUsernameView.getText().toString().trim();
+            password = mPasswordView.getText().toString().trim();
+        } catch (NullPointerException e){
+            Toast.makeText(getApplicationContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+        }
+
+        if (email == null || email.isEmpty() || password == null || password.isEmpty()) {
             Toast.makeText(getApplicationContext(), "Los campos email y password no pueden estar vacíos", Toast.LENGTH_SHORT).show();
-        } else if (URL.isEmpty()) {
-            Toast.makeText(getApplicationContext(), "La URL no puede estar vacía", Toast.LENGTH_SHORT).show();
         } else {
             try {
                 mProgressView.setVisibility(View.VISIBLE);
@@ -153,13 +161,14 @@ public class LoginActivity extends OptionsMenuActivity {
                                     }
                                     sharedPrefManager.saveSPString(SharedPrefManager.SP_NAME, name);
                                     sharedPrefManager.saveSPString(SharedPrefManager.SP_EMAIL, email);
+                                    sharedPrefManager.saveSPString(SharedPrefManager.SP_PASSWORD, password);
+                                    sharedPrefManager.saveSPBoolean(SharedPrefManager.SP_IS_LOGGED_IN, true);
                                     sharedPrefManager.saveSPString(SharedPrefManager.SP_CSRF_TOKEN, csrf_token);
                                     sharedPrefManager.saveSPString(SharedPrefManager.SP_LOGOUT_TOKEN, logout_token);
                                     sharedPrefManager.saveSPString(SharedPrefManager.SP_USER_ID, user_id);
                                     sharedPrefManager.saveSPBoolean(SharedPrefManager.SP_IS_LOGGED_IN, true);
                                     sharedPrefManager.saveSPString(SharedPrefManager.COOKIE, Cookies[0]);
                                     sharedPrefManager.saveSPString(SharedPrefManager.COOKIE_EXPIRES, Cookies[1]);
-                                    //sharedPrefManager.saveSPBoolean(SharedPrefManager.AUTOASSIGN, checkBox.isChecked());
                                     String basic_auth = name + ":" + password;
                                     byte[] bytes_basic_auth = basic_auth.getBytes();
                                     String encoded_basic_auth = android.util.Base64.encodeToString(bytes_basic_auth, android.util.Base64.DEFAULT);
@@ -176,18 +185,21 @@ public class LoginActivity extends OptionsMenuActivity {
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
+                                sharedPrefManager.logout();
                             } catch (IOException e) {
                                 e.printStackTrace();
+                                sharedPrefManager.logout();
                             }
                         } else {
                             try {
                                 /*JSONObject jsonRESULTS = new JSONObject(response.errorBody().string());
                                 String error_message = jsonRESULTS.getString("message");
                                 Toast.makeText(LoginActivity.this, error_message, Toast.LENGTH_SHORT).show();*/
-                                /*TODO revisar otras apps*/
+                                sharedPrefManager.logout();
                                 Toast.makeText(LoginActivity.this, response.errorBody().string(), Toast.LENGTH_SHORT).show();
                             } catch (Exception e) {
                                 Toast.makeText(LoginActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                sharedPrefManager.logout();
                             }
                         }
                     }
@@ -195,12 +207,13 @@ public class LoginActivity extends OptionsMenuActivity {
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable t) {
                         Toast.makeText(LoginActivity.this, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                        sharedPrefManager.logout();
                         mProgressView.setVisibility(View.GONE);
                     }
                 });
     }
 
-    @Override
+    /*@Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
@@ -216,11 +229,11 @@ public class LoginActivity extends OptionsMenuActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
+    }*/
 
-    public void LanzarPreferencias() {
+    /*public void LanzarPreferencias() {
         Intent intent = new Intent(this, PreferenciasActivity.class);
         this.startActivity(intent);
-    }
+    }*/
 
 }

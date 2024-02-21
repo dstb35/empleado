@@ -5,11 +5,6 @@
     android:key="preferencias_principal"
     app:defaultValue="false">
     <EditTextPreference
-        android:inputType="text"
-        android:key="URL"
-        android:title="Dirección del servidor"
-        android:defaultValue="https://benoodle.net"/>
-    <EditTextPreference
         android:key="store"
         android:title="Tienda"
         android:inputType="number"

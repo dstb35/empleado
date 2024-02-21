@@ -84,7 +84,7 @@ public class OrderDetailActivity extends AppCompatActivity  {
         setContentView(R.layout.activity_order_detail);
         sharedPrefManager = new SharedPrefManager(this);
         try {
-            mApiService = UtilsApi.getAPIService(sharedPrefManager.getURL());
+            mApiService = UtilsApi.getAPIService();
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
         }

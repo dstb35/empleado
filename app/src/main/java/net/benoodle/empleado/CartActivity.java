@@ -117,7 +117,7 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.Elimi
         } else {
             swcobrado.setClickable(false);
         }
-        mApiService = UtilsApi.getAPIService(sharedPrefManager.getURL());
+        mApiService = UtilsApi.getAPIService();
         this.Btotal = findViewById(R.id.Btotal);
         mProgressView = findViewById(R.id.login_progress);
         if (!sharedPrefManager.getSPIsLoggedIn()) {
